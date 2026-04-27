@@ -34,7 +34,7 @@ rando_bloc <- function(n,
                        arm_code= NULL){
 
   # Valeurs par défaut
-  if (is.null(ratio))     { ratio <- rep(1, k) }
+  if (is.null(ratio))     { ratio     <- rep(1, k) }
 
   if (is.null(arm_label)) { arm_label <- paste0("Groupe", 1:k) }
 
@@ -79,7 +79,7 @@ rando_bloc <- function(n,
   # Vérification arm_label si fourni
   if (!is.null(arm_label)) {
     if (length(arm_label) != k) {
-      stop("La longueur de 'labe' doit être égale à k.")}
+      stop("La longueur de 'label' doit être égale à k.")}
   }
 
   # Vérification arm_code si fourni
@@ -98,15 +98,12 @@ rando_bloc <- function(n,
   allocation = c()
 
   # Liste aléatoire des m blocs avec leurs taille
-  # m est e nombre total de blocs dans la liste
   m <- sum(nb_block)
-  # générer une liste contenant les m tailles de blocs total
   block_list=c()
   for (i in 1:length(block_sizes)){
     x= rep(block_sizes[i], times=nb_block[i])
     block_list <- c(block_list,x)
   }
-  # répartir de facon aléatoire les m blocs
   block_list <- sample(block_list)
 
   # Génération du contenu de chaque bloc
@@ -120,15 +117,11 @@ rando_bloc <- function(n,
 
   # Construire le data.frame
   df <- data.frame(
-    "Numéro de randomisation" = id_var <- formatC(1:n, width = nchar(n), flag = "0") ,
-    "Code du traitement" = arm_code[allocation],
-    "Libellé du traitement:" = arm_label[allocation],
+    RDNUM= 1:n,
+    RDGRP = arm_code[allocation],
+    RDGRP_LIB  = arm_label[allocation],
     stringsAsFactors = FALSE
   )
 
   return(df)
 }
-
-
-
-
