@@ -1,4 +1,47 @@
-#FONCTION 1 — init_essai()
+
+
+#' FONCTION init_essai()
+#'
+#' @description
+#' Définit, initialise et stocke les paramètres de l'essai clinique dans l'environnement interne
+#' du package. Doit être appelée avant toute génération de liste.
+#'
+#'
+#' @param nom_etude Caractère. Nom de l'étude .
+#' @param circuit Caractère. Circuit de randomisation : "ennov" "redcap".
+#' @param k Entier. Nombre de groupes de traitement (>= 2).
+#' @param block_sizes Vecteur numérique. Tailles réelles des blocs.
+#' @param nb_block Vecteur numérique. Nombre de blocs souhaités pour chaque taille.
+#' @param ratio Vecteur numérique de longueur k. Ratio d'allocation pour chaque bloc.
+#'   Si NULL, un ratio équilibré 1:1:...:1 est utilisé..
+#' @param arm_label Vecteur de caractères de longueur k. Libellés des groupes de traitement.
+#'   Si NULL, "Groupe1", "Groupe2"... sont utilisés.
+#' @param arm_code Vecteur numérique de longueur k. Codes des groupes de traitement.
+#'   Si NULL, 1, 2, ..., k sont utilisés..
+#' @param strat_vars Liste optionnelle décrivant les variables de stratification.
+#'   Chaque élément est une liste avec:
+#'   codes (vecteur numérique) et labels (vecteur de caractères).
+#'   Exemple : list(sexe = list(codes = c(1,2), labels = c("Homme","Femme"))).
+#'
+#'
+#' @return Invisible. Stocke les paramètres dans l'environnement interne.
+#'
+#' @examples
+#' \dontrun{
+#' init_essai(
+#'   nom_etude   = "ESSAI_CLINIQUE",
+#'   circuit     = "ennov",
+#'   k           = 2,
+#'   block_sizes = c(4,6),
+#'   nb_block    = c(10,10),
+#'   arm_label   = c("Traitement", "Placebo"),
+#'   strat_vars  = list(
+#'     sexe   = list(codes = c(1, 2), labels = c("Femme", "Homme")),
+#'     centre = list(codes = c(1, 2), labels = c("Centre1", "Centre2"))
+#'   )
+#' )
+#' }
+#' @export
 
 
 init_essai <- function(nom_etude,
@@ -12,8 +55,8 @@ init_essai <- function(nom_etude,
                        strat_vars = NULL) {
 
   # Vérification circuit
-  if (!circuit %in% c("Ennov", "REDCap")) {
-    stop("'circuit' doit être 'Ennov' ou 'REDCap'.")}
+  if (!circuit %in% c("ennov", "redcap")) {
+    stop("'circuit' doit être 'ennov' ou 'redcap'.")}
 
   # Valeurs par défaut
   if (is.null(ratio))     {ratio     <- rep(1, k)}
@@ -74,7 +117,7 @@ init_essai <- function(nom_etude,
   n_strates    <- if (!is.null(strat_vars))
     prod(sapply(strat_vars, function(v) length(v$codes))) else 1
 
-  message("✔ Essai initialisé : ", nom_etude)
+  message("✔ Essai initialise : ", nom_etude)
   message("  Circuit      : ", circuit)
 
   invisible(NULL)
