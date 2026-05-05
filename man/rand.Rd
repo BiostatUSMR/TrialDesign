@@ -27,7 +27,7 @@ un fichier PDF avec les libellés lisibles
 }
 \examples{
 \dontrun{
-rand(seed = 42, type = "FICTIVE", version = "V1")
+rand(seed = 42, statut = "FICTIVE", version = "V1")
 }
 
 }

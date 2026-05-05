@@ -4,12 +4,12 @@
 \alias{corresp}
 \title{FONCTION corresp()}
 \usage{
-corresp(i, j, seed, statut, version, boi_label = NULL, chemin = NULL)
+corresp(mini, maxi, seed, statut, version, boi_label = NULL, chemin = NULL)
 }
 \arguments{
-\item{i}{Entier. Premier numéro de boîte.}
+\item{mini}{Entier. Premier numéro de boîte.}
 
-\item{j}{Entier. Dernier numéro de boîte.}
+\item{maxi}{Entier. Dernier numéro de boîte.}
 
 \item{seed}{Entier. Graine aléatoire pour la reproductibilité.}
 
@@ -34,7 +34,7 @@ un fichier PDF avec les libellés lisibles
 }
 \examples{
 \dontrun{
-corresp(i = 1, j = 50, seed = 42, type = "FICTIVE", version = "v01",
+corresp(mini = 1, maxi = 50, seed = 42, statut = "FICTIVE", version = "v01",
         boi_label = "Kit")
 
 }

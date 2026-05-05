@@ -1,55 +1,4 @@
 
-###########################################################
-# FONCTION INTERNE .corresp_ennov()
-
-.corresp_ennov <- function(i, j, seed) {
-
-  k         <- .trialdesign_env$k
-  arm_code  <- .trialdesign_env$arm_code
-  arm_label <- .trialdesign_env$arm_label
-
-  set.seed(seed)
-  boites     <- sample(i:j)
-  allocation <- sample(seq_len(k), size = length(boites), replace = TRUE)
-
-  data.frame(
-    RDBOI     = boites,
-    RDGRP     = arm_code[allocation],
-    RDGRP_LIB = arm_label[allocation],
-    stringsAsFactors = FALSE
-  )
-}
-
-
-###########################################################
-# FONCTION INTERNE .corresp_redcap()
-
-.corresp_redcap <- function(i, j, seed, boi_label = NULL) {
-
-  k         <- .trialdesign_env$k
-  arm_code  <- .trialdesign_env$arm_code
-  arm_label <- .trialdesign_env$arm_label
-
-  set.seed(seed)
-  boites     <- sample(i:j)
-  allocation <- sample(seq_len(k), size = length(boites), replace = TRUE)
-
-  if (is.null(boi_label)) {
-    RDBOI_LIB <- paste0("Boîte de traitement n°", boites)
-  } else {
-    RDBOI_LIB <- paste0(boi_label, " n°", boites)
-  }
-
-  data.frame(
-    RDBOI     = boites,
-    RDBOI_LIB = RDBOI_LIB,
-    RDGRP     = arm_code[allocation],
-    RDGRP_LIB = arm_label[allocation],
-    stringsAsFactors = FALSE
-  )
-}
-
-
 ######################################################################################################################
 
 
@@ -62,8 +11,8 @@
 #' un fichier PDF avec les libellés lisibles
 #'
 #'
-#' @param i Entier. Premier numéro de boîte.
-#' @param j Entier. Dernier numéro de boîte.
+#' @param mini Entier. Premier numéro de boîte.
+#' @param maxi Entier. Dernier numéro de boîte.
 #' @param seed Entier. Graine aléatoire pour la reproductibilité.
 #' @param statut Caractère. Satut de la liste générée "FINALE" ou "FICTIVE".
 #' @param version Caractère. Version de la liste générée. Ex : "V01".
@@ -76,13 +25,13 @@
 #'
 #' @examples
 #' \dontrun{
-#' corresp(i = 1, j = 50, seed = 42, type = "FICTIVE", version = "v01",
+#' corresp(mini = 1, maxi = 50, seed = 42, statut = "FICTIVE", version = "v01",
 #'         boi_label = "Kit")
 #'
 #'}
 #' @export
 
-corresp <- function(i, j, seed, statut, version,
+corresp <- function(mini, maxi, seed, statut, version,
                     boi_label = NULL,
                     chemin    = NULL) {
 
@@ -93,14 +42,14 @@ corresp <- function(i, j, seed, statut, version,
   if (is.null(chemin)) chemin <- getwd()
 
   # Vérifications
-  if (!is.numeric(i) || i != round(i) || i <= 0) {
-    stop("'i' doit être un entier strictement positif.")
+  if (!is.numeric(mini) || mini != round(mini) || mini <= 0) {
+    stop("'mini' doit être un entier strictement positif.")
   }
-  if (!is.numeric(j) || j != round(j) || j <= 0) {
-    stop("'j' doit être un entier strictement positif.")
+  if (!is.numeric(maxi) || maxi != round(maxi) || maxi <= 0) {
+    stop("'maxi' doit être un entier strictement positif.")
   }
-  if (j <= i) {
-    stop("'j' doit être strictement supérieur à 'i'.")
+  if (maxi <= mini) {
+    stop("'maxi' doit être strictement supérieur à 'mini'.")
   }
   if (!is.numeric(seed) || seed != round(seed)) {
     stop("'seed' doit être un entier.")
@@ -118,9 +67,9 @@ corresp <- function(i, j, seed, statut, version,
 
   # Génération selon le circuit
   df <- if (circuit == "ennov") {
-    .corresp_ennov(i, j, seed)
+    .corresp_ennov(mini, maxi, seed)
   } else {
-    .corresp_redcap(i, j, seed, boi_label)
+    .corresp_redcap(mini, maxi, seed, boi_label)
   }
 
   message("✔ Liste de correspondance generee — ", nrow(df), " boîtes.")
@@ -157,5 +106,3 @@ corresp <- function(i, j, seed, statut, version,
 
   invisible(NULL)
 }
-
-
