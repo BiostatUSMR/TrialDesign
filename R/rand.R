@@ -72,7 +72,7 @@ rand <- function(seed, statut, version, chemin = NULL) {
     cols_rdstr <- grep("^RDSTR\\d*$", names(df), value = TRUE)
     df_txt     <- df[, c(cols_rdstr, "RDNUM", "RDGRP"), drop = FALSE]
     write.table(df_txt, file = nom_data, row.names = FALSE,
-                col.names = FALSE, sep = ",")
+                col.names = FALSE, sep = ";")
   }
 
   # Export PDF
