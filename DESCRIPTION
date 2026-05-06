@@ -17,5 +17,7 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
 Imports: rmarkdown,
-         utils
+         utils,
+         dplyr,
+         clinfun
 Suggests: knitr
