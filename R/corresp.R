@@ -93,7 +93,7 @@ corresp <- function(mini, maxi, seed, statut, version,
                 file      = nom_data,
                 row.names = FALSE,
                 col.names = FALSE,
-                sep       = "\t")
+                sep       = ";")
   }
 
   # Export PDF — toutes les colonnes avec libellés lisibles
