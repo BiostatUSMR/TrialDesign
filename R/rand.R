@@ -72,13 +72,14 @@ rand <- function(seed, statut, version, chemin = NULL) {
     cols_rdstr <- grep("^RDSTR\\d*$", names(df), value = TRUE)
     df_txt     <- df[, c(cols_rdstr, "RDNUM", "RDGRP"), drop = FALSE]
     write.table(df_txt, file = nom_data, row.names = FALSE,
-                col.names = FALSE, sep = ",")
+                col.names = FALSE, sep = ";")
   }
 
   # Export PDF
-  nom_pdf   <- file.path(chemin, paste0(nom_base, ".pdf"))
+  nom_pdf <- paste0(nom_base, ".pdf")
 
-  .export_pdf(df, nom_pdf, chemin)
+  .export_pdf(df, nom_pdf, chemin, type_doc = "randomisation")
+
 
   message("✔ Fichiers exportes :")
   message("  ", nom_data)

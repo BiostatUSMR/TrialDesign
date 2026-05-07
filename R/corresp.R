@@ -97,12 +97,13 @@ corresp <- function(mini, maxi, seed, statut, version,
   }
 
   # Export PDF — toutes les colonnes avec libellés lisibles
-  nom_pdf <- file.path(chemin, paste0(nom_base, ".pdf"))
-  .export_pdf(df, nom_pdf, chemin)
+  nom_pdf <- paste0(nom_base, ".pdf")
+  .export_pdf(df, nom_pdf, chemin, type_doc = "correspondance")
 
   message("✔ Fichiers exportes :")
   message("  ", nom_data)
-  message("  ", nom_pdf)
+  message("  ", file.path(chemin, nom_pdf))
+
 
   invisible(NULL)
 }
