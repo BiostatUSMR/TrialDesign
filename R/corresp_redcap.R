@@ -13,9 +13,9 @@
   allocation <- sample(seq_len(k), size = length(boites), replace = TRUE)
 
   if (is.null(boi_label)) {
-    RDBOI_LIB <- paste0("Boîte de traitement n°", boites)
+    RDBOI_LIB <- paste0("Bo\u00eete de traitement n\u00b0", boites)
   } else {
-    RDBOI_LIB <- paste0(boi_label, " n°", boites)
+    RDBOI_LIB <- paste0(boi_label, " n\u00b0", boites)
   }
 
   data.frame(

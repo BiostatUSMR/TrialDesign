@@ -1,37 +1,5 @@
-#' Générer le code LaTeX de la page de garde
-#'
-#' Cette fonction récupère les informations de l'étude stockées dans l'environnement
-#' interne du package (`.trialdesign_env`) pour générer le bloc LaTeX correspondant
-#' à la page de garde du document.
-#'
-#' @param type Caractère. Type de document à générer : "randomisation" (par défaut)
-#' pour la liste de randomisation, ou tout autre valeur pour la liste de correspondance boîtes/traitements.
-#'
-#' @return Une chaîne de caractères (string) contenant le code source LaTeX de la page de garde.
-#'
-#' @details La fonction nécessite que l'environnement `.trialdesign_env` soit
-#' préalablement renseigné avec les variables : `nom_etude`, `id_etude`,
-#' `libelle_etude`, `investigateur`, `biostatisticien`, `methodologiste`,
-#' `indice_document` et `code_usmr`.
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' # Remplissage de l'environnement interne pour le test
-#' .trialdesign_env$nom_etude       <- "VACCIN-COVID-2026"
-#' .trialdesign_env$id_etude        <- "PHASE-III-8942"
-#' .trialdesign_env$libelle_etude   <- "Évaluation de l'efficacité d'un candidat vaccin"
-#' .trialdesign_env$investigateur   <- "Pr. Jean-Loup Durand"
-#' .trialdesign_env$biostatisticien  <- "Mme Sarah Analyse"
-#' .trialdesign_env$methodologiste   <- "Dr. Marc Protocol"
-#' .trialdesign_env$indice_document  <- "A"
-#' .trialdesign_env$code_usmr        <- "EN-USM-2026-001"
-#'
-#' # Génération et affichage du rendu
-#' rando_tex <- .make_garde(type = "randomisation")
-#' cat(rando_tex)
-#' }
+##FONCTION INTERNE .make_garde
+
 .make_garde <- function(type = "randomisation") {
 
   # Récupération des variables
@@ -62,7 +30,7 @@
 \\begin{tabular}{|m{0.28\\textwidth}|m{0.48\\textwidth}|m{0.18\\textwidth}|}
 \\hline
 \\centering \\vspace{2pt} \\includegraphics[width=0.25\\textwidth]{", gsub('\\\\','/', logo), "} \\vspace{2pt} &
-\\centering \\textbf{Entité d'application : USMR} \\par \\textbf{Emetteur : USMR} &
+\\centering \\textbf{Entit\u00e9 d'application : USMR} \\par \\textbf{Emetteur : USMR} &
 \\centering \\textbf{", code_usmr, "} \\tabularnewline \\hline
 & \\centering \\textbf{DOCUMENT D'ENREGISTREMENT} &
 Ind : ", indice_doc, " \\par Page : 1 / \\pageref{LastPage} \\tabularnewline \\hline
@@ -93,7 +61,7 @@ Ind : ", indice_doc, " \\par Page : 1 / \\pageref{LastPage} \\tabularnewline \\h
     \\large
     \\textbf{Investigateur coordonnateur :} ", investigateur, " \\\\[0.3cm]
     \\textbf{Biostatisticien :} ", biostat, " \\\\[0.3cm]
-    \\textbf{Méthodologiste :} ", methodo, "
+    \\textbf{M\u00e9thodologiste :} ", methodo, "
 \\end{flushleft}
 
 \\end{titlepage}

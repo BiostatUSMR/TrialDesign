@@ -4,38 +4,63 @@
 \alias{corresp}
 \title{FONCTION corresp()}
 \usage{
-corresp(mini, maxi, seed, statut, version, boi_label = NULL, chemin = NULL)
+corresp(
+  mini,
+  maxi,
+  seed,
+  statut,
+  version,
+  boi_label = NULL,
+  col_widths = NULL,
+  chemin = NULL
+)
 }
 \arguments{
-\item{mini}{Entier. Premier numéro de boîte.}
+\item{mini}{Entier. Premier numero de boite.}
 
-\item{maxi}{Entier. Dernier numéro de boîte.}
+\item{maxi}{Entier. Dernier numero de boite.}
 
-\item{seed}{Entier. Graine aléatoire pour la reproductibilité.}
+\item{seed}{Entier. Graine aleatoire pour la reproductibilite.}
 
-\item{statut}{Caractère. Satut de la liste générée "FINALE" ou "FICTIVE".}
+\item{statut}{Caractere. Statut de la liste generee "FINALE" ou "FICTIVE".}
 
-\item{version}{Caractère. Version de la liste générée. Ex : "V01".}
+\item{version}{Caractere. Version de la liste generee. Ex : "V01".}
 
-\item{boi_label}{Caractère. Libellé Boîte de traitement.
-Si NULL, "Boîte de traitement n°xxx"}
+\item{boi_label}{Caractere. Libelle personnalise pour les boites.
+Si NULL, "Boite de traitement n°xxx" est utilise.
+Utilise uniquement en circuit REDCap.}
 
-\item{chemin}{Caractère.Caractère.Chemin vers le répertoire de sortie.
-Si NULL, répertoire de travail courant .}
+\item{col_widths}{Vecteur de caracteres. Largeurs des colonnes du tableau PDF.
+Ex : c("2cm", "3cm", "4cm"). Si NULL, largeurs automatiques.
+Doit avoir autant d'elements que de colonnes dans le data.frame de sortie.}
+
+\item{chemin}{Caractere. Chemin vers le repertoire de sortie.
+Si NULL, repertoire de travail courant.}
 }
 \value{
 Invisible. Exporte les fichiers et affiche leur chemin.
 }
 \description{
-Génère la liste de correspondance boîtes–traitements selon le circuit
-défini dans init_essai(), puis exporte automatiquement deux fichiers :
-un fichier de données (.txt pour Ennov et .csv  pour REDCap)
-un fichier PDF avec les libellés lisibles
+Genere la liste de correspondance boites-traitements selon le circuit
+defini dans init_essai(), puis exporte automatiquement deux fichiers :
+un fichier de donnees (.txt pour Ennov, .csv pour REDCap)
+un fichier PDF avec les libelles lisibles et une page de garde.
 }
 \examples{
 \dontrun{
-corresp(mini = 1, maxi = 50, seed = 42, statut = "FICTIVE", version = "v01",
-        boi_label = "Kit")
+# Sans largeurs personnalisees
+corresp(mini = 1, maxi = 50, seed = 42,
+        statut = "FICTIVE", version = "V01")
 
+# Avec largeurs personnalisees
+corresp(mini = 1, maxi = 50, seed = 42,
+        statut = "FICTIVE", version = "V01",
+        col_widths = c("2cm", "3cm", "4cm"))
+
+# Circuit REDCap avec libelle personnalise
+corresp(mini = 1, maxi = 50, seed = 42,
+        statut = "FICTIVE", version = "V01",
+        boi_label = "Kit")
 }
+
 }

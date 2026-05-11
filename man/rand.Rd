@@ -4,30 +4,39 @@
 \alias{rand}
 \title{FONCTION rand()}
 \usage{
-rand(seed, statut, version, chemin = NULL)
+rand(seed, statut, version, col_widths = NULL, chemin = NULL)
 }
 \arguments{
-\item{seed}{Entier. Graine aléatoire pour la reproductibilité.}
+\item{seed}{Entier. Graine aleatoire pour la reproductibilite.}
 
-\item{statut}{Caractère. Statut de la liste générée "FINALE" ou "FICTIVE".}
+\item{statut}{Caractere. Statut de la liste generee "FINALE" ou "FICTIVE".}
 
-\item{version}{Caractère. Version de la liste générée. Ex : "V01".}
+\item{version}{Caractere. Version de la liste generee. Ex : "V01".}
 
-\item{chemin}{Caractère.Chemin vers le répertoire de sortie.
-Si NULL, répertoire de travail courant .}
+\item{col_widths}{Vecteur de caracteres. Largeurs des colonnes du tableau PDF.
+Ex : c("2cm", "3cm", "4cm"). Si NULL, largeurs automatiques.
+Doit avoir autant d'elements que de colonnes dans le data.frame de sortie.}
+
+\item{chemin}{Caractere. Chemin vers le repertoire de sortie.
+Si NULL, repertoire de travail courant.}
 }
 \value{
 Invisible. Exporte les fichiers et affiche leur chemin.
 }
 \description{
-Génère la liste de randomisation selon le circuit défini dans
+Genere la liste de randomisation selon le circuit defini dans
 init_essai(), puis exporte automatiquement deux fichiers :
-un fichier de données (.csv pour Ennov, .txt pour REDCap)
-un fichier PDF avec les libellés lisibles
+un fichier de donnees (.txt pour Ennov, .csv pour REDCap)
+un fichier PDF avec les libelles lisibles et une page de garde.
 }
 \examples{
 \dontrun{
-rand(seed = 42, statut = "FICTIVE", version = "V1")
+# Sans largeurs personnalisees
+rand(seed = 42, statut = "FICTIVE", version = "V01")
+
+# Avec largeurs personnalisees
+rand(seed = 42, statut = "FICTIVE", version = "V01",
+     col_widths = c("1.5cm", "2cm", "4cm", "2cm", "4cm"))
 }
 
 }

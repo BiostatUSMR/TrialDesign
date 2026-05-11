@@ -1,5 +1,3 @@
-
-
 #' FONCTION init_essai()
 #'
 #' @description
@@ -22,7 +20,22 @@
 #'   Chaque élément est une liste avec:
 #'   codes (vecteur numérique) et labels (vecteur de caractères).
 #'   Exemple : list(sexe = list(codes = c(1,2), labels = c("Homme","Femme"))).
-#'
+#' @param id_etude Caractère . Identifiant officiel de l'étude.
+#'   Ex : "CHUBX2024/01". Par défaut NULL.
+#' @param libelle_etude Caractère . Libellé complet de l'étude.
+#'   Par défaut NULL.
+#' @param investigateur Caractère. Nom de l'investigateur coordinateur.
+#'   Par défaut NULL.
+#' @param methodologiste Caractère . Nom du méthodologiste.
+#'   Par défaut NULL.
+#' @param biostatisticien Caractère . Nom du biostatisticien.
+#'   Par défaut NULL.
+#' @param confidentiel Logique. Si TRUE, affiche la mention CONFIDENTIEL sur
+#'   la page de garde. Par défaut FALSE.
+#' @param code_usmr Caractère . Code du document USMR.
+#'    Par défaut NULL.
+#' @param indice_document Caractère . Indice du document.
+#'   Par défaut NULL.
 #'
 #' @return Invisible. Stocke les paramètres dans l'environnement interne.
 #'
@@ -64,7 +77,7 @@ init_essai <- function(nom_etude,
 
   # --- Vérification circuit ---
   if (!circuit %in% c("ennov", "redcap")) {
-    stop("'circuit' doit être 'ennov' ou 'redcap'.")
+    stop("'circuit' doit \u00eatre 'ennov' ou 'redcap'.")
   }
 
   # --- Valeurs par défaut ---
@@ -74,7 +87,7 @@ init_essai <- function(nom_etude,
 
   # --- Vérifications arguments randomisation ---
   if (!is.numeric(k) || k < 2 || k != round(k))
-    stop("'k' doit être un entier >= 2.")
+    stop("'k' doit \u00eatre un entier >= 2.")
 
   if (!is.numeric(block_sizes) || any(block_sizes <= 0))
     stop("'block_sizes' doit contenir des entiers strictement positifs.")
@@ -83,28 +96,28 @@ init_essai <- function(nom_etude,
     stop("'nb_block' doit contenir des entiers strictement positifs.")
 
   if (length(block_sizes) != length(nb_block))
-    stop("'block_sizes' et 'nb_block' doivent avoir la même longueur.")
+    stop("'block_sizes' et 'nb_block' doivent avoir la m\u00eame longueur.")
 
   if (any(block_sizes %% sum(ratio) != 0))
-    stop("Chaque taille de bloc doit être divisible par sum(ratio) = ", sum(ratio), ".")
+    stop("Chaque taille de bloc doit \u00eatre divisible par sum(ratio) = ", sum(ratio), ".")
 
   if (length(ratio) != k)
-    stop("'ratio' doit être un vecteur de longueur k.")
+    stop("'ratio' doit \u00eatre un vecteur de longueur k.")
 
   if (length(arm_label) != k)
-    stop("'arm_label' doit avoir exactement k éléments.")
+    stop("'arm_label' doit avoir exactement k \u00e9l\u00e9ments.")
 
   if (!is.numeric(arm_code) || length(arm_code) != k)
-    stop("'arm_code' doit être un vecteur numérique de longueur k.")
+    stop("'arm_code' doit \u00eatre un vecteur num\u00e9rique de longueur k.")
 
   if (!is.null(strat_vars)) {
     if (!is.list(strat_vars))
-      stop("'strat_vars' doit être une liste.")
+      stop("'strat_vars' doit \u00eatre une liste.")
     for (var in names(strat_vars)) {
       if (!all(c("codes", "labels") %in% names(strat_vars[[var]])))
         stop("La variable '", var, "' doit contenir 'codes' et 'labels'.")
       if (length(strat_vars[[var]]$codes) != length(strat_vars[[var]]$labels))
-        stop("'codes' et 'labels' de '", var, "' doivent avoir la même longueur.")
+        stop("'codes' et 'labels' de '", var, "' doivent avoir la m\u00eame longueur.")
     }
   }
 
@@ -121,7 +134,7 @@ init_essai <- function(nom_etude,
 
   # --- Stockage page de garde ---
   .trialdesign_env$id_etude      <- id_etude
-  .trialdesign_env$libelle_etude <- libelle_etude # Stockage du libellé
+  .trialdesign_env$libelle_etude <- libelle_etude # Stockage du libell\u00e9
   .trialdesign_env$investigateur <- investigateur
   .trialdesign_env$methodologiste <- methodologiste
   .trialdesign_env$biostatisticien <- biostatisticien
@@ -132,7 +145,7 @@ init_essai <- function(nom_etude,
   .trialdesign_env$indice_document <- indice_document
 
   # --- Message ---
-  message("✔ Essai initialisé : ", nom_etude)
+  message("\u2714 Essai initialis\u00e9 : ", nom_etude)
   message("  Circuit      : ", circuit)
 
   invisible(NULL)
