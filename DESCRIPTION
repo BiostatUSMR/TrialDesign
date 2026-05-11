@@ -18,5 +18,6 @@ LazyData: true
 RoxygenNote: 7.3.3
 Imports: rmarkdown,
          utils,
+         tinytex
 Suggests: knitr,
          kableExtra
