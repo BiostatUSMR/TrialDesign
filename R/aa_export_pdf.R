@@ -1,7 +1,34 @@
+# Packages LaTeX requis pour la generation du PDF
+.latex_pkgs <- c("lastpage", "tabularx", "array", "helvet",
+                 "fontenc", "booktabs", "longtable", "multirow",
+                 "float", "colortbl", "environ", "trimspaces",
+                 "ulem", "makecell")
+
+# Verifie et installe silencieusement les packages LaTeX manquants
+.check_latex_deps <- function() {
+  if (!requireNamespace("tinytex", quietly = TRUE)) {
+    warning("Le package 'tinytex' n'est pas installe. ",
+            "Impossible de verifier les dependances LaTeX.")
+    return(invisible(NULL))
+  }
+  installed <- tinytex::tl_pkgs()
+  manquants <- .latex_pkgs[!.latex_pkgs %in% installed]
+  if (length(manquants) > 0) {
+    message("Installation des packages LaTeX manquants : ",
+            paste(manquants, collapse = ", "), " ...")
+    tinytex::tlmgr_install(manquants)
+    message("Installation terminee.")
+  }
+  invisible(NULL)
+}
+
 .export_pdf <- function(df, nom_pdf, chemin,
                         page_garde = TRUE,
                         type_doc   = "randomisation",
                         col_widths = NULL) {
+
+  # Verification et installation des dependances LaTeX
+  .check_latex_deps()
 
   df_pdf <- .rename_pdf(df)
 
