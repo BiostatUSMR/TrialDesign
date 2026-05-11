@@ -5,8 +5,8 @@
 .rename_pdf <- function(df) {
   rename_map <- c(
     RDNUM     = "Numéro de randomisation",
-    RDGRP     = "Code groupe de randomisation",
-    RDGRP_LIB = "Libellé groupe de randomisation",
+    RDGRP     = " Code Traitement",
+    RDGRP_LIB = "Libellé Traitement",
     RDSTR     = "Code strate",
     RDSTR_LIB = "Libellé strate",
     RDBOI     = "Numéro de boîte de traitement",
@@ -30,4 +30,3 @@
                       names(df))
   df
 }
-

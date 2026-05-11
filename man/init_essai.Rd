@@ -13,7 +13,15 @@ init_essai(
   ratio = NULL,
   arm_label = NULL,
   arm_code = NULL,
-  strat_vars = NULL
+  strat_vars = NULL,
+  id_etude = NULL,
+  libelle_etude = NULL,
+  investigateur = NULL,
+  methodologiste = NULL,
+  biostatisticien = NULL,
+  confidentiel = FALSE,
+  code_usmr = NULL,
+  indice_document = NULL
 )
 }
 \arguments{
