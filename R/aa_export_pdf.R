@@ -1,5 +1,5 @@
 # Packages LaTeX requis pour la generation du PDF
-.latex_pkgs <- c("lastpage", "tabularx", "array", "helvet",
+.latex_pkgs <- c("tabularx", "array", "helvet",
                  "fontenc", "booktabs", "longtable", "multirow",
                  "float", "colortbl", "environ", "trimspaces",
                  "ulem", "makecell")
@@ -57,7 +57,6 @@
     "  pdf_document:",
     "    latex_engine: xelatex",
     "header-includes:",
-    "  - \\usepackage{lastpage}",
     "  - \\usepackage{tabularx}",
     "  - \\usepackage{array}",
     "  - \\usepackage[scaled]{helvet}",
@@ -77,7 +76,8 @@
     "```{r echo=FALSE, message=FALSE, warning=FALSE}",
     lib_code,
     kable_code,
-    "```"
+    "```",
+    "\\label{enddocument}"
   )
 
   writeLines(contenu, rmd_temp)

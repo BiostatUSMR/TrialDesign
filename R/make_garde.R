@@ -33,7 +33,7 @@
 \\centering \\textbf{Entit\u00e9 d'application : USMR} \\par \\textbf{Emetteur : USMR} &
 \\centering \\textbf{", code_usmr, "} \\tabularnewline \\hline
 & \\centering \\textbf{DOCUMENT D'ENREGISTREMENT} &
-Ind : ", indice_doc, " \\par Page : 1 / \\pageref{LastPage} \\tabularnewline \\hline
+Ind : ", indice_doc, " \\par Page : 1 / \\pageref{enddocument} \\tabularnewline \\hline
 \\multicolumn{3}{|c|}{\\rule{0pt}{3ex} \\large \\textbf{", titre_doc, "} \\rule[-1.5ex]{0pt}{0pt}} \\\\ \\hline
 \\end{tabular}
 
