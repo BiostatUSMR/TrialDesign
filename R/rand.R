@@ -1,73 +1,93 @@
 #' FONCTION rand()
 #'
 #' @description
-#' Genere la liste de randomisation selon le circuit defini dans
-#' init_essai(), puis exporte automatiquement deux fichiers :
-#' un fichier de donnees (.txt pour Ennov, .csv pour REDCap)
-#' un fichier PDF avec les libelles lisibles et une page de garde.
+#' G\u00e9n\u00e8re la liste de randomisation selon le circuit d\u00e9fini dans l'objet
+#' \code{essai} cr\u00e9\u00e9 par \code{init_essai()}, exporte automatiquement deux
+#' fichiers (donn\u00e9es + PDF), et retourne le data.frame g\u00e9n\u00e9r\u00e9 pour
+#' inspection visuelle.
 #'
-#' @param seed Entier. Graine aleatoire pour la reproductibilite.
-#' @param statut Caractere. Statut de la liste generee "FINALE" ou "FICTIVE".
-#' @param version Caractere. Version de la liste generee. Ex : "V01".
-#' @param col_widths Vecteur de caracteres. Largeurs des colonnes du tableau PDF.
-#'   Ex : c("2cm", "3cm", "4cm"). Si NULL, largeurs automatiques.
-#'   Doit avoir autant d'elements que de colonnes dans le data.frame de sortie.
-#' @param chemin Caractere. Chemin vers le repertoire de sortie.
-#'   Si NULL, repertoire de travail courant.
+#' @param essai Liste. Objet cr\u00e9\u00e9 par \code{init_essai()}.
+#'   Exemple : \code{essai <- init_essai(...)}.
+#' @param seed Entier. Graine al\u00e9atoire pour la reproductibilit\u00e9.
+#' @param statut Caract\u00e8re. Statut de la liste g\u00e9n\u00e9r\u00e9e : \code{"FINALE"} ou
+#'   \code{"FICTIVE"}.
+#' @param version Caract\u00e8re. Version de la liste g\u00e9n\u00e9r\u00e9e. Ex : \code{"v01"}.
+#' @param col_widths Vecteur de caract\u00e8res. Largeurs des colonnes du tableau PDF.
+#'   Ex : \code{c("2cm", "3cm", "4cm")}. Si NULL, largeurs automatiques.
+#'   Doit avoir autant d'\u00e9l\u00e9ments que de colonnes dans le data.frame de sortie.
+#' @param chemin Caract\u00e8re. Chemin vers le r\u00e9pertoire de sortie.
+#'   Si NULL, r\u00e9pertoire de travail courant.
 #'
 #' @importFrom utils write.csv write.table
 #' @importFrom rmarkdown render
 #'
-#' @return Invisible. Exporte les fichiers et affiche leur chemin.
+#' @return Le data.frame de la liste de randomisation (retour\u00e9 visiblement
+#'   pour inspection). Les fichiers sont export\u00e9s en parall\u00e8le.
 #'
 #' @examples
 #' \dontrun{
-#' # Sans largeurs personnalisees
-#' rand(seed = 42, statut = "FICTIVE", version = "V01")
+#' essai <- init_essai(
+#'   nom_etude = "ESSAI_ABC", circuit = "ennov", k = 2,
+#'   block_sizes = c(4), nb_block = c(10),
+#'   arm_label = c("Placebo", "Traitement"), arm_code = c(0, 1)
+#' )
 #'
-#' # Avec largeurs personnalisees
-#' rand(seed = 42, statut = "FICTIVE", version = "V01",
-#'      col_widths = c("1.5cm", "2cm", "4cm", "2cm", "4cm"))
+#' # Inspection du data.frame + export des fichiers
+#' df <- rand(essai, seed = 42, statut = "FICTIVE", version = "v01")
+#' head(df)
+#'
+#' # Deux essais en parall\u00e8le sans conflit
+#' essai_A <- init_essai("ESSAI_A", circuit = "ennov", ...)
+#' essai_B <- init_essai("ESSAI_B", circuit = "redcap", ...)
+#' df_A <- rand(essai_A, seed = 42, statut = "FICTIVE", version = "v01")
+#' df_B <- rand(essai_B, seed = 99, statut = "FICTIVE", version = "v01")
 #' }
 #'
 #' @export
 
-rand <- function(seed, statut, version,
+rand <- function(essai, seed, statut, version,
                  col_widths = NULL,
                  chemin     = NULL) {
 
-  circuit    <- .trialdesign_env$circuit
-  nom_etude  <- .trialdesign_env$nom_etude
+  # --- V\u00e9rification de l'objet essai ---
+  if (!is.list(essai) || is.null(essai$circuit)) {
+    stop(
+      "'essai' doit \u00eatre un objet cr\u00e9\u00e9 par init_essai().\n",
+      "Exemple : essai <- init_essai(...) puis rand(essai, seed = 42, ...)"
+    )
+  }
 
-  # Valeur par defaut
+  circuit   <- essai$circuit
+  nom_etude <- essai$nom_etude
+
+  # --- Valeur par d\u00e9faut ---
   if (is.null(chemin)) chemin <- getwd()
 
-  # Verifications
-  if (!is.numeric(seed) || seed != round(seed)) {
-    stop("'seed' doit etre un entier.")
-  }
-  if (!statut %in% c("FINALE", "FICTIVE")) {
-    stop("'statut' doit etre 'FINALE' ou 'FICTIVE'.")
-  }
-  if (!dir.exists(chemin)) {
-    stop("Le chemin specifie n'existe pas.")
-  }
-  if (!is.null(col_widths) && !is.character(col_widths)) {
-    stop("'col_widths' doit etre un vecteur de caracteres. Ex : c('2cm', '3cm').")
-  }
+  # --- V\u00e9rifications ---
+  if (!is.numeric(seed) || seed != round(seed))
+    stop("'seed' doit \u00eatre un entier.")
 
-  # Generation du data.frame
-  df <- if (circuit == "ennov") .rand_ennov(seed) else .rand_redcap(seed)
+  if (!statut %in% c("FINALE", "FICTIVE"))
+    stop("'statut' doit \u00eatre 'FINALE' ou 'FICTIVE'.")
 
-  message("\u2714 Liste de randomisation generee - ", nrow(df), " sujets.")
+  if (!dir.exists(chemin))
+    stop("Le chemin sp\u00e9cifi\u00e9 n'existe pas.")
 
-  # Nom de base des fichiers
+  if (!is.null(col_widths) && !is.character(col_widths))
+    stop("'col_widths' doit \u00eatre un vecteur de caract\u00e8res. Ex : c('2cm', '3cm').")
+
+  # --- G\u00e9n\u00e9ration du data.frame ---
+  df <- if (circuit == "ennov") .rand_ennov(essai, seed) else .rand_redcap(essai, seed)
+
+  message("\u2714 Liste de randomisation g\u00e9n\u00e9r\u00e9e \u2014 ", nrow(df), " sujets.")
+
+  # --- Nom de base des fichiers ---
   ext      <- if (circuit == "redcap") "csv" else "txt"
   date_str <- format(Sys.Date(), "%Y%m%d")
   nom_base <- paste0(nom_etude, " - Liste de randomisation ",
                      statut, " - ", version, " - ", date_str)
 
-  # Export donnees
+  # --- Export donn\u00e9es ---
   nom_data <- file.path(chemin, paste0(nom_base, ".", ext))
 
   if (circuit == "redcap") {
@@ -79,15 +99,16 @@ rand <- function(seed, statut, version,
                 col.names = FALSE, sep = ";")
   }
 
-  # Export PDF
+  # --- Export PDF ---
   nom_pdf <- paste0(nom_base, ".pdf")
-  .export_pdf(df, nom_pdf, chemin,
+  .export_pdf(essai, df, nom_pdf, chemin,
               type_doc   = "randomisation",
               col_widths = col_widths)
 
-  message("\u2714 Fichiers exportes :")
+  message("\u2714 Fichiers export\u00e9s :")
   message("  ", nom_data)
-  message("  ", nom_pdf)
+  message("  ", file.path(chemin, nom_pdf))
 
-  invisible(NULL)
+  # --- Retour visible du data.frame pour inspection ---
+  return(df)
 }

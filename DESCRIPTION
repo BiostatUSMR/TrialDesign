@@ -1,26 +1,37 @@
 Package: trialdesign
 Type: Package
-Title: Generate Randomization Lists for Clinical Trials
+Title: Generate Randomization Lists and Sample Size Calculations for Clinical Trials
 Version: 0.1.0
 Authors@R: c(
-    person("USMR", "CHU de Bordeaux", role = c("aut", "cre"),email = "biostatisticien.usmr@chu-bordeaux.fr"),
-    person("Typhania", "Akoto", role = "aut",email = "biostatisticien.usmr@chu-bordeaux.fr"),
-    person("Thomas", "Ferté", role = "aut",email = "biostatisticien.usmr@chu-bordeaux.fr"),
-    person("Marion", "Kret", role = "aut",email = "biostatisticien.usmr@chu-bordeaux.fr"),
-    person("Aurore", "Georget", role = "aut",email = "biostatisticien.usmr@chu-bordeaux.fr"))
-Description: Provides tools to generate randomization and correspondence 
-    lists for clinical trials. Supports block randomization with or without 
-    stratification, and allows export in formats compatible with Ennov (CSV) 
-    and REDCap (TXT).
+    person("USMR", "CHU de Bordeaux", role = c("aut", "cre"), email = "biostatisticien.usmr@chu-bordeaux.fr"),
+    person("Typhania", "Akoto",  role = "aut", email = "biostatisticien.usmr@chu-bordeaux.fr"),
+    person("Thomas",  "Ferté",  role = "aut", email = "biostatisticien.usmr@chu-bordeaux.fr"),
+    person("Marion",  "Kret",   role = "aut", email = "biostatisticien.usmr@chu-bordeaux.fr"),
+    person("Aurore",  "Georget",role = "aut", email = "biostatisticien.usmr@chu-bordeaux.fr"))
+Description: Provides tools for the design of clinical trials. Supports block
+    randomization with or without stratification, export of randomization and
+    correspondence lists in formats compatible with Ennov and REDCap, and
+    sample size calculation for superiority and non-inferiority trials on
+    continuous and binary endpoints, including cluster randomized trials (CRT,
+    baseline period, and stepped-wedge designs).
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
-Imports: rmarkdown,
-         utils,
-         tinytex,
-         clinfun,
-         dplyr,
-         purrr
-Suggests: knitr,
-         kableExtra
+Imports:
+    clinfun,
+    dplyr,
+    exact2x2,
+    MKpower,
+    presize,
+    purrr,
+    pwrss,
+    rmarkdown,
+    stats,
+    tidyr,
+    tinytex,
+    utils,
+    WMWssp
+Suggests:
+    knitr,
+    kableExtra

@@ -5,6 +5,7 @@
 \title{FONCTION corresp()}
 \usage{
 corresp(
+  essai,
   mini,
   maxi,
   seed,
@@ -16,51 +17,56 @@ corresp(
 )
 }
 \arguments{
-\item{mini}{Entier. Premier numero de boite.}
+\item{essai}{Liste. Objet cr\u00e9\u00e9 par \code{init_essai()}.
+Exemple : \code{essai <- init_essai(...)}.}
 
-\item{maxi}{Entier. Dernier numero de boite.}
+\item{mini}{Entier. Premier num\u00e9ro de bo\u00eete.}
 
-\item{seed}{Entier. Graine aleatoire pour la reproductibilite.}
+\item{maxi}{Entier. Dernier num\u00e9ro de bo\u00eete.}
 
-\item{statut}{Caractere. Statut de la liste generee "FINALE" ou "FICTIVE".}
+\item{seed}{Entier. Graine al\u00e9atoire pour la reproductibilit\u00e9.}
 
-\item{version}{Caractere. Version de la liste generee. Ex : "V01".}
+\item{statut}{Caract\u00e8re. Statut de la liste g\u00e9n\u00e9r\u00e9e : \code{"FINALE"} ou
+\code{"FICTIVE"}.}
 
-\item{boi_label}{Caractere. Libelle personnalise pour les boites.
-Si NULL, "Boite de traitement n°xxx" est utilise.
-Utilise uniquement en circuit REDCap.}
+\item{version}{Caract\u00e8re. Version de la liste g\u00e9n\u00e9r\u00e9e. Ex : \code{"v01"}.}
 
-\item{col_widths}{Vecteur de caracteres. Largeurs des colonnes du tableau PDF.
-Ex : c("2cm", "3cm", "4cm"). Si NULL, largeurs automatiques.
-Doit avoir autant d'elements que de colonnes dans le data.frame de sortie.}
+\item{boi_label}{Caract\u00e8re. Libell\u00e9 personnalis\u00e9 pour les bo\u00eetes.
+Si NULL, \code{"Bo\u00eete de traitement n\u00b0xxx"} est utilis\u00e9.
+Utilis\u00e9 uniquement en circuit REDCap.}
 
-\item{chemin}{Caractere. Chemin vers le repertoire de sortie.
-Si NULL, repertoire de travail courant.}
+\item{col_widths}{Vecteur de caract\u00e8res. Largeurs des colonnes du tableau PDF.
+Ex : \code{c("2cm", "3cm", "4cm")}. Si NULL, largeurs automatiques.}
+
+\item{chemin}{Caract\u00e8re. Chemin vers le r\u00e9pertoire de sortie.
+Si NULL, r\u00e9pertoire de travail courant.}
 }
 \value{
-Invisible. Exporte les fichiers et affiche leur chemin.
+Le data.frame de la liste de correspondance (retourn\u00e9 visiblement
+  pour inspection). Les fichiers sont export\u00e9s en parall\u00e8le.
 }
 \description{
-Genere la liste de correspondance boites-traitements selon le circuit
-defini dans init_essai(), puis exporte automatiquement deux fichiers :
-un fichier de donnees (.txt pour Ennov, .csv pour REDCap)
-un fichier PDF avec les libelles lisibles et une page de garde.
+G\u00e9n\u00e8re la liste de correspondance bo\u00eetes\u2013traitements selon le circuit
+d\u00e9fini dans l'objet \code{essai} cr\u00e9\u00e9 par \code{init_essai()}, exporte
+automatiquement deux fichiers (donn\u00e9es + PDF), et retourne le data.frame
+g\u00e9n\u00e9r\u00e9 pour inspection visuelle.
 }
 \examples{
 \dontrun{
-# Sans largeurs personnalisees
-corresp(mini = 1, maxi = 50, seed = 42,
-        statut = "FICTIVE", version = "V01")
+essai <- init_essai(
+  nom_etude = "ESSAI_ABC", circuit = "ennov", k = 2,
+  block_sizes = c(4), nb_block = c(10),
+  arm_label = c("Placebo", "Traitement"), arm_code = c(0, 1)
+)
 
-# Avec largeurs personnalisees
-corresp(mini = 1, maxi = 50, seed = 42,
-        statut = "FICTIVE", version = "V01",
-        col_widths = c("2cm", "3cm", "4cm"))
+# Inspection du data.frame + export des fichiers
+df <- corresp(essai, mini = 1, maxi = 50, seed = 42,
+              statut = "FICTIVE", version = "v01")
+head(df)
 
-# Circuit REDCap avec libelle personnalise
-corresp(mini = 1, maxi = 50, seed = 42,
-        statut = "FICTIVE", version = "V01",
-        boi_label = "Kit")
+# Deux essais en parall\u00e8le sans conflit
+df_A <- corresp(essai_A, mini = 1, maxi = 100, seed = 42, ...)
+df_B <- corresp(essai_B, mini = 1, maxi = 100, seed = 42, ...)
 }
 
 }

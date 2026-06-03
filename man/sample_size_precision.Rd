@@ -2,7 +2,7 @@
 % Please edit documentation in R/sample_size_precision.R
 \name{sample_size_precision}
 \alias{sample_size_precision}
-\title{Calcul de la taille d'\u00e9chantillon par approche de pr\u00e9cision}
+\title{FONCTION sample_size_precision}
 \usage{
 sample_size_precision(
   p = NULL,
@@ -15,75 +15,35 @@ sample_size_precision(
 )
 }
 \arguments{
-\item{p}{Vecteur num\u00e9rique. Proportion(s) \u00e0 estimer, entre 0 et 1.
-Mutuellement exclusif avec \code{sens} et \code{spec}.}
+\item{p}{proportion à estimer (numérique entre 0 et 1)}
 
-\item{prev}{Vecteur num\u00e9rique. Pr\u00e9valence de la maladie dans la population,
-entre 0 et 1. Requis si \code{sens} ou \code{spec} est sp\u00e9cifi\u00e9.}
+\item{prev}{prévalence de la maladie dans la population étudiée}
 
-\item{sens}{Vecteur num\u00e9rique. Sensibilit\u00e9 attendue du test diagnostique,
-entre 0 et 1.}
+\item{sens}{sensibilité attendue du test diagnostique (entre 0 et 1)}
 
-\item{spec}{Vecteur num\u00e9rique. Sp\u00e9cificit\u00e9 attendue du test diagnostique,
-entre 0 et 1.}
+\item{spec}{spécificité attendue du test diagnostique (entre 0 et 1)}
 
-\item{precision}{Vecteur num\u00e9rique. Demi-largeur souhait\u00e9e de l'intervalle
-de confiance. Par d\u00e9faut \code{0.05}.}
+\item{precision}{demi-largeur souhaitée de l’intervalle de confiance}
 
-\item{conf.level}{Num\u00e9rique. Niveau de confiance de l'intervalle.
-Par d\u00e9faut \code{0.95}.}
+\item{conf.level}{niveau de confiance de l’intervalle de confiance}
 
-\item{missing_rate}{Vecteur num\u00e9rique. Taux de donn\u00e9es manquantes attendu,
-entre 0 et 1 (exclu). Par d\u00e9faut \code{0}.}
+\item{missing_rate}{proportion attendue de données manquantes}
 }
 \value{
-Un data.frame dont les colonnes varient selon le type d'estimation :
-  \itemize{
-    \item Proportion : \code{p}, \code{precision}, \code{conf.level},
-      \code{missing_prop}, \code{n_prop}, \code{n_prop_ajuste}
-    \item Sensibilit\u00e9 seule : \code{sens}, \code{prev}, \code{precision},
-      \code{conf.level}, \code{missing_prop}, \code{n_sens}, \code{n_sens_ajuste}
-    \item Sp\u00e9cificit\u00e9 seule : \code{spec}, \code{prev}, \code{precision},
-      \code{conf.level}, \code{missing_prop}, \code{n_spec}, \code{n_spec_ajuste}
-    \item Sensibilit\u00e9 + Sp\u00e9cificit\u00e9 : toutes les colonnes ci-dessus combin\u00e9es
-  }
-  Les effectifs sont syst\u00e9matiquement arrondis \u00e0 l'entier sup\u00e9rieur.
+Un data.frame dont les colonnes dependent du mode de calcul :
+  proportion (n_prop, n_prop_ajuste), sensibilite (n_sens, n_sens_ajuste),
+  specificite (n_spec, n_spec_ajuste), ou les deux simultanement.
 }
 \description{
-Calcule la taille d'\u00e9chantillon n\u00e9cessaire pour estimer avec une pr\u00e9cision
-donn\u00e9e une proportion, une sensibilit\u00e9, une sp\u00e9cificit\u00e9, ou simultan\u00e9ment
-la sensibilit\u00e9 et la sp\u00e9cificit\u00e9 d'un test diagnostique.
-Le calcul repose sur la m\u00e9thode de Wilson via le package \pkg{presize}.
-}
-\details{
-La largeur totale de l'intervalle de confiance utilis\u00e9e dans les calculs
-est \code{2 * precision}. Les arguments \code{p} et \code{sens}/\code{spec}
-sont mutuellement exclusifs. La pr\u00e9valence (\code{prev}) est obligatoire
-pour le calcul de la sensibilit\u00e9 et de la sp\u00e9cificit\u00e9 car elle d\u00e9termine
-le nombre de cas positifs et n\u00e9gatifs n\u00e9cessaires.
+Calcule la taille d'échantillon nécessaire pour estimer avec une précision donnée :
+- une proportion
+- une sensibilité,
+- une spécificité,
+- ou simultanément la sensibilité et la spécificité d'un test diagnostique.
 }
 \examples{
 \dontrun{
-# Estimation d'une proportion
-sample_size_precision(
-  p = c(0.10, 0.20, 0.30),
-  missing_rate = c(0.10, 0.20)
-)
-
-# Sensibilit\u00e9 et sp\u00e9cificit\u00e9 simultan\u00e9ment
-sample_size_precision(
-  prev = c(0.20, 0.30),
-  sens = c(0.80, 0.85),
-  spec = c(0.85, 0.90),
-  missing_rate = 0.10
-)
-
-# Sp\u00e9cificit\u00e9 seule
-sample_size_precision(
-  prev = c(0.20, 0.30),
-  spec = c(0.80, 0.85),
-  missing_rate = 0.10
-)
+sample_size_precision(p=c(0.10,0.15,0.20,0.25,0.30,0.35,0.40),
+missing_rate =c(0.1,0.2))
 }
-
 }

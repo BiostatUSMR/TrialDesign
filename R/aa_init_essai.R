@@ -1,61 +1,57 @@
 #' FONCTION init_essai()
 #'
 #' @description
-#' Définit, initialise et stocke les paramètres de l'essai clinique dans l'environnement interne
-#' du package. Doit être appelée avant toute génération de liste.
+#' D\u00e9finit et valide les param\u00e8tres de l'essai clinique, puis les retourne
+#' sous forme d'un objet liste. Cet objet doit \u00eatre assign\u00e9 et pass\u00e9 en
+#' argument \u00e0 rand() et corresp().
 #'
-#'
-#' @param nom_etude Caractère. Nom de l'étude .
-#' @param circuit Caractère. Circuit de randomisation : "ennov" "redcap".
+#' @param nom_etude Caract\u00e8re. Nom de l'\u00e9tude (utilis\u00e9 dans les noms de fichiers).
+#' @param circuit Caract\u00e8re. Circuit de randomisation : \code{"ennov"} ou \code{"redcap"}.
 #' @param k Entier. Nombre de groupes de traitement (>= 2).
-#' @param block_sizes Vecteur numérique. Tailles réelles des blocs.
-#' @param nb_block Vecteur numérique. Nombre de blocs souhaités pour chaque taille.
-#' @param ratio Vecteur numérique de longueur k. Ratio d'allocation pour chaque bloc.
-#'   Si NULL, un ratio équilibré 1:1:...:1 est utilisé..
-#' @param arm_label Vecteur de caractères de longueur k. Libellés des groupes de traitement.
-#'   Si NULL, "Groupe1", "Groupe2"... sont utilisés.
-#' @param arm_code Vecteur numérique de longueur k. Codes des groupes de traitement.
-#'   Si NULL, 1, 2, ..., k sont utilisés..
-#' @param strat_vars Liste optionnelle décrivant les variables de stratification.
-#'   Chaque élément est une liste avec:
-#'   codes (vecteur numérique) et labels (vecteur de caractères).
-#'   Exemple : list(sexe = list(codes = c(1,2), labels = c("Homme","Femme"))).
-#' @param id_etude Caractère . Identifiant officiel de l'étude.
-#'   Ex : "CHUBX2024/01". Par défaut NULL.
-#' @param libelle_etude Caractère . Libellé complet de l'étude.
-#'   Par défaut NULL.
-#' @param investigateur Caractère. Nom de l'investigateur coordinateur.
-#'   Par défaut NULL.
-#' @param methodologiste Caractère . Nom du méthodologiste.
-#'   Par défaut NULL.
-#' @param biostatisticien Caractère . Nom du biostatisticien.
-#'   Par défaut NULL.
+#' @param block_sizes Vecteur num\u00e9rique. Tailles r\u00e9elles des blocs.
+#' @param nb_block Vecteur num\u00e9rique. Nombre de blocs souhait\u00e9s pour chaque taille.
+#' @param ratio Vecteur num\u00e9rique de longueur k. Ratio d'allocation.
+#'   Si NULL, un ratio \u00e9quilibr\u00e9 1:1:...:1 est utilis\u00e9.
+#' @param arm_label Vecteur de caract\u00e8res de longueur k. Libell\u00e9s des groupes.
+#'   Si NULL, "Groupe1", "Groupe2"... sont utilis\u00e9s.
+#' @param arm_code Vecteur num\u00e9rique de longueur k. Codes des groupes.
+#'   Si NULL, 1, 2, ..., k sont utilis\u00e9s.
+#' @param strat_vars Liste optionnelle d\u00e9crivant les variables de stratification.
+#'   Chaque \u00e9l\u00e9ment est une liste avec \code{codes} (vecteur num\u00e9rique) et
+#'   \code{labels} (vecteur de caract\u00e8res).
+#'   Exemple : \code{list(sexe = list(codes = c(1,2), labels = c("Homme","Femme")))}.
+#' @param id_etude Caract\u00e8re. Identifiant officiel de l'\u00e9tude. Ex : "CHUBX2024/01".
+#'   Par d\u00e9faut NULL.
+#' @param libelle_etude Caract\u00e8re. Libell\u00e9 complet de l'\u00e9tude. Par d\u00e9faut NULL.
+#' @param investigateur Caract\u00e8re. Nom de l'investigateur coordinateur.
+#'   Par d\u00e9faut NULL.
+#' @param methodologiste Caract\u00e8re. Nom du m\u00e9thodologiste. Par d\u00e9faut NULL.
+#' @param biostatisticien Caract\u00e8re. Nom du biostatisticien. Par d\u00e9faut NULL.
 #' @param confidentiel Logique. Si TRUE, affiche la mention CONFIDENTIEL sur
-#'   la page de garde. Par défaut FALSE.
-#' @param code_usmr Caractère . Code du document USMR.
-#'    Par défaut NULL.
-#' @param indice_document Caractère . Indice du document.
-#'   Par défaut NULL.
+#'   la page de garde. Par d\u00e9faut FALSE.
+#' @param code_usmr Caract\u00e8re. Code du document USMR. Par d\u00e9faut NULL.
+#' @param indice_document Caract\u00e8re. Indice du document. Par d\u00e9faut NULL.
 #'
-#' @return Invisible. Stocke les paramètres dans l'environnement interne.
+#' @return Une liste contenant tous les param\u00e8tres valid\u00e9s de l'essai.
+#'   Doit \u00eatre assign\u00e9e : \code{essai <- init_essai(...)}.
 #'
 #' @examples
 #' \dontrun{
-#' init_essai(
+#' essai <- init_essai(
 #'   nom_etude   = "ESSAI_CLINIQUE",
 #'   circuit     = "ennov",
 #'   k           = 2,
-#'   block_sizes = c(4,6),
-#'   nb_block    = c(10,10),
+#'   block_sizes = c(4, 6),
+#'   nb_block    = c(10, 10),
 #'   arm_label   = c("Traitement", "Placebo"),
 #'   strat_vars  = list(
 #'     sexe   = list(codes = c(1, 2), labels = c("Femme", "Homme")),
 #'     centre = list(codes = c(1, 2), labels = c("Centre1", "Centre2"))
 #'   )
 #' )
+#' rand(essai, seed = 42, statut = "FICTIVE", version = "v01")
 #' }
 #' @export
-
 
 init_essai <- function(nom_etude,
                        circuit,
@@ -75,17 +71,17 @@ init_essai <- function(nom_etude,
                        code_usmr         = NULL,
                        indice_document   = NULL) {
 
-  # --- Vérification circuit ---
+  # --- V\u00e9rification circuit ---
   if (!circuit %in% c("ennov", "redcap")) {
     stop("'circuit' doit \u00eatre 'ennov' ou 'redcap'.")
   }
 
-  # --- Valeurs par défaut ---
+  # --- Valeurs par d\u00e9faut ---
   if (is.null(ratio))     ratio     <- rep(1, k)
   if (is.null(arm_label)) arm_label <- paste0("Groupe", 1:k)
   if (is.null(arm_code))  arm_code  <- 1:k
 
-  # --- Vérifications arguments randomisation ---
+  # --- V\u00e9rifications arguments randomisation ---
   if (!is.numeric(k) || k < 2 || k != round(k))
     stop("'k' doit \u00eatre un entier >= 2.")
 
@@ -121,32 +117,37 @@ init_essai <- function(nom_etude,
     }
   }
 
-  # --- Stockage randomisation ---
-  .trialdesign_env$nom_etude   <- nom_etude
-  .trialdesign_env$circuit     <- circuit
-  .trialdesign_env$k           <- k
-  .trialdesign_env$block_sizes <- block_sizes
-  .trialdesign_env$nb_block    <- nb_block
-  .trialdesign_env$ratio       <- ratio
-  .trialdesign_env$arm_label   <- arm_label
-  .trialdesign_env$arm_code    <- arm_code
-  .trialdesign_env$strat_vars  <- strat_vars
+  # --- Construction de l'objet essai ---
+  essai <- list(
+    # Param\u00e8tres randomisation
+    nom_etude   = nom_etude,
+    circuit     = circuit,
+    k           = k,
+    block_sizes = block_sizes,
+    nb_block    = nb_block,
+    ratio       = ratio,
+    arm_label   = arm_label,
+    arm_code    = arm_code,
+    strat_vars  = strat_vars,
+    # Param\u00e8tres page de garde
+    id_etude        = id_etude,
+    libelle_etude   = libelle_etude,
+    investigateur   = investigateur,
+    methodologiste  = methodologiste,
+    biostatisticien = biostatisticien,
+    confidentiel    = confidentiel,
+    code_usmr       = code_usmr,
+    indice_document = indice_document
+  )
 
-  # --- Stockage page de garde ---
-  .trialdesign_env$id_etude      <- id_etude
-  .trialdesign_env$libelle_etude <- libelle_etude # Stockage du libell\u00e9
-  .trialdesign_env$investigateur <- investigateur
-  .trialdesign_env$methodologiste <- methodologiste
-  .trialdesign_env$biostatisticien <- biostatisticien
-  .trialdesign_env$confidentiel  <- confidentiel
-
-  # --- NOUVEAUX CHAMPS USMR ---
-  .trialdesign_env$code_usmr       <- code_usmr
-  .trialdesign_env$indice_document <- indice_document
-
-  # --- Message ---
+  # --- Message de confirmation ---
   message("\u2714 Essai initialis\u00e9 : ", nom_etude)
   message("  Circuit      : ", circuit)
+  message("  N/strate     : ", sum(block_sizes * nb_block))
+  if (!is.null(strat_vars)) {
+    n_strates <- prod(sapply(strat_vars, function(v) length(v$codes)))
+    message("  Strates      : ", n_strates)
+  }
 
-  invisible(NULL)
+  return(essai)
 }

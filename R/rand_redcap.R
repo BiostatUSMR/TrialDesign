@@ -1,16 +1,15 @@
-
 ###########################################################
-# FONCTION INTERNE  .rand_redcap()
+# FONCTION INTERNE .rand_redcap()
 
-.rand_redcap <- function(seed) {
+.rand_redcap <- function(essai, seed) {
 
-  k           <- .trialdesign_env$k
-  block_sizes <- .trialdesign_env$block_sizes
-  nb_block    <- .trialdesign_env$nb_block
-  ratio       <- .trialdesign_env$ratio
-  arm_label   <- .trialdesign_env$arm_label
-  arm_code    <- .trialdesign_env$arm_code
-  strat_vars  <- .trialdesign_env$strat_vars
+  k           <- essai$k
+  block_sizes <- essai$block_sizes
+  nb_block    <- essai$nb_block
+  ratio       <- essai$ratio
+  arm_label   <- essai$arm_label
+  arm_code    <- essai$arm_code
+  strat_vars  <- essai$strat_vars
   n           <- sum(block_sizes * nb_block)
 
   df <- data.frame()
@@ -22,8 +21,7 @@
     )
 
     for (r in seq_len(nrow(grilles))) {
-      dfi <- .rando_bloc(n, k, seed + r , block_sizes, nb_block,
-                         ratio, arm_label, arm_code)
+      dfi <- .rando_bloc(n, k, seed + r, block_sizes, nb_block, ratio, arm_label, arm_code)
 
       for (s in seq_along(strat_vars)) {
         nom_var                        <- names(strat_vars)[s]
@@ -36,8 +34,8 @@
     }
 
   } else {
-    df <- .rando_bloc(n, k, seed, block_sizes, nb_block, ratio, arm_label, arm_code) }
+    df <- .rando_bloc(n, k, seed, block_sizes, nb_block, ratio, arm_label, arm_code)
+  }
 
   df
 }
-

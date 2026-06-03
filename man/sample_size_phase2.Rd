@@ -2,7 +2,7 @@
 % Please edit documentation in R/sample_size_phase2.R
 \name{sample_size_phase2}
 \alias{sample_size_phase2}
-\title{Calcul de la taille d'échantillon pour un essai de phase II à un bras}
+\title{FONCTION sample_size_phase2}
 \usage{
 sample_size_phase2(
   p0,
@@ -15,95 +15,37 @@ sample_size_phase2(
 )
 }
 \arguments{
-\item{p0}{Numérique. Proportion de succès sous l'hypothèse nulle (taux
-inacceptable). Doit être compris entre 0 et 1, et strictement inférieur
-à \code{p1}. Peut être un vecteur pour tester plusieurs scénarios.}
+\item{p0}{Proportion de succès sous l'hypothèse nulle (taux inacceptable)}
 
-\item{p1}{Numérique. Proportion de succès sous l'hypothèse alternative
-(taux attendu). Doit être compris entre 0 et 1, et strictement supérieur
-à \code{p0}. Doit avoir la même longueur que \code{p0}.}
+\item{p1}{Proportion de succès sous l'hypothèse alternative (taux attendu)}
 
-\item{alpha}{Numérique. Niveau de signification (erreur de type I).
-Par défaut \code{0.05}.}
+\item{alpha}{Niveau de signification (erreur de type I, défaut = 0.05)}
 
-\item{power}{Numérique. Puissance souhaitée (1 - erreur de type II).
-Par défaut \code{0.80}.}
+\item{power}{Puissance souhaitée (1 - erreur de type II, défaut = 0.80)}
 
-\item{method}{Caractère. Méthode de calcul : \code{"ahern"} ou
-\code{"fleming"}.
-\itemize{
-  \item \code{"ahern"} : explore tous les couples \code{(n, r)} dans la
-    plage \code{[10, nmax]} et retient le plus petit \code{n} satisfaisant
-    les contraintes d'erreur de type I et de puissance.
-  \item \code{"fleming"} : utilise la fonction \code{ph2single()} du
-    package \code{clinfun}.
-}}
+\item{method}{Méthode de calcul ("ahern" ou "fleming")}
 
-\item{missing_rate}{Numérique. Proportion attendue de données manquantes,
-utilisée pour ajuster la taille d'échantillon. Doit être compris entre
-0 (inclus) et 1 (exclu). Par défaut \code{0} (aucun ajustement).}
+\item{missing_rate}{Proportion attendue de données manquantes (défaut = 0)}
 
-\item{nmax}{Entier. Taille maximale explorée pour la méthode A'Hern.
-Ignoré si \code{method = "fleming"}. Par défaut \code{200}.}
+\item{nmax}{Taille maximale testée pour A'Hern (défaut = 200)}
 }
 \value{
-Un data.frame avec une ligne par combinaison de paramètres et les
-  colonnes suivantes :
-  \describe{
-    \item{methode}{Méthode utilisée (\code{"ahern"} ou \code{"fleming"})}
-    \item{p0}{Proportion de succès sous H0}
-    \item{p1}{Proportion de succès sous H1}
-    \item{alpha}{Niveau de signification utilisé}
-    \item{power}{Puissance utilisée}
-    \item{missing_prop}{Proportion de données manquantes}
-    \item{n_patient}{Taille d'échantillon brute (sans ajustement)}
-    \item{n_ajuste}{Taille d'échantillon ajustée pour les données manquantes :
-      \eqn{n_{ajuste} = \lceil n_{patient} / (1 - missing\_prop) \rceil}}
-    \item{n_succes}{Nombre minimal de succès requis pour rejeter H0}
-  }
+Un data.frame avec les colonnes : methode, p0, p1, alpha, power,
+  missing_prop, n_patient, n_ajuste, n_succes.
 }
 \description{
-Calcule la taille d'échantillon nécessaire pour un essai de phase II à un
-bras selon les méthodes de A'Hern ou de Fleming. L'objectif est de tester
-si la proportion de succès attendue est suffisamment élevée pour justifier
-le passage en phase III.
-
-La règle de décision est définie par le couple \code{(n_patient, n_succes)} :
-si le nombre de succès observés est supérieur ou égal à \code{n_succes},
-l'hypothèse nulle H0 est rejetée.
-}
-\details{
-Les paramètres \code{p0} et \code{p1} peuvent être des vecteurs de même
-longueur pour évaluer plusieurs scénarios simultanément. La fonction
-construit toutes les combinaisons possibles via \code{expand.grid()}.
-
-Pour la méthode A'Hern, si aucune solution n'est trouvée dans la plage
-\code{[10, nmax]}, un avertissement est émis et \code{NA} est retourné
-pour le scénario concerné. Dans ce cas, augmentez \code{nmax}.
-
-Toutes les tailles d'échantillon sont arrondies à l'entier supérieur
-(\code{ceiling}).
+Calcule la taille d'échantillon nécessaire pour un essai de phase II à un bras
+selon les méthodes de A'Hern ou de Fleming, pour tester si la proportion de succès
+attendue est suffisamment élevée pour justifier un essai de phase III.
 }
 \examples{
-# Méthode A'Hern — deux scénarios
+ \dontrun{
 sample_size_phase2(
-  p0           = c(0.10, 0.20),
-  p1           = c(0.30, 0.40),
-  method       = "ahern",
-  missing_rate = 0.10,
-  nmax         = 200
-)
-
-# Méthode Fleming — avec ajustement pour données manquantes
-sample_size_phase2(
-  p0           = c(0.10, 0.20),
-  p1           = c(0.30, 0.40),
-  method       = "fleming",
-  missing_rate = 0.10
-)
-
-# Comparaison des deux méthodes sur un même scénario
-sample_size_phase2(p0 = 0.20, p1 = 0.40, method = "ahern")
-sample_size_phase2(p0 = 0.20, p1 = 0.40, method = "fleming")
+  p0 = c(0.10,0.20),
+  p1 = c(0.30,0.40),
+  method = "ahern",
+  missing_rate = 0.1,
+  nmax = 50)
+  }
 
 }

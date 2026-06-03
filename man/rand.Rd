@@ -4,39 +4,53 @@
 \alias{rand}
 \title{FONCTION rand()}
 \usage{
-rand(seed, statut, version, col_widths = NULL, chemin = NULL)
+rand(essai, seed, statut, version, col_widths = NULL, chemin = NULL)
 }
 \arguments{
-\item{seed}{Entier. Graine aleatoire pour la reproductibilite.}
+\item{essai}{Liste. Objet cr\u00e9\u00e9 par \code{init_essai()}.
+Exemple : \code{essai <- init_essai(...)}.}
 
-\item{statut}{Caractere. Statut de la liste generee "FINALE" ou "FICTIVE".}
+\item{seed}{Entier. Graine al\u00e9atoire pour la reproductibilit\u00e9.}
 
-\item{version}{Caractere. Version de la liste generee. Ex : "V01".}
+\item{statut}{Caract\u00e8re. Statut de la liste g\u00e9n\u00e9r\u00e9e : \code{"FINALE"} ou
+\code{"FICTIVE"}.}
 
-\item{col_widths}{Vecteur de caracteres. Largeurs des colonnes du tableau PDF.
-Ex : c("2cm", "3cm", "4cm"). Si NULL, largeurs automatiques.
-Doit avoir autant d'elements que de colonnes dans le data.frame de sortie.}
+\item{version}{Caract\u00e8re. Version de la liste g\u00e9n\u00e9r\u00e9e. Ex : \code{"v01"}.}
 
-\item{chemin}{Caractere. Chemin vers le repertoire de sortie.
-Si NULL, repertoire de travail courant.}
+\item{col_widths}{Vecteur de caract\u00e8res. Largeurs des colonnes du tableau PDF.
+Ex : \code{c("2cm", "3cm", "4cm")}. Si NULL, largeurs automatiques.
+Doit avoir autant d'\u00e9l\u00e9ments que de colonnes dans le data.frame de sortie.}
+
+\item{chemin}{Caract\u00e8re. Chemin vers le r\u00e9pertoire de sortie.
+Si NULL, r\u00e9pertoire de travail courant.}
 }
 \value{
-Invisible. Exporte les fichiers et affiche leur chemin.
+Le data.frame de la liste de randomisation (retour\u00e9 visiblement
+  pour inspection). Les fichiers sont export\u00e9s en parall\u00e8le.
 }
 \description{
-Genere la liste de randomisation selon le circuit defini dans
-init_essai(), puis exporte automatiquement deux fichiers :
-un fichier de donnees (.txt pour Ennov, .csv pour REDCap)
-un fichier PDF avec les libelles lisibles et une page de garde.
+G\u00e9n\u00e8re la liste de randomisation selon le circuit d\u00e9fini dans l'objet
+\code{essai} cr\u00e9\u00e9 par \code{init_essai()}, exporte automatiquement deux
+fichiers (donn\u00e9es + PDF), et retourne le data.frame g\u00e9n\u00e9r\u00e9 pour
+inspection visuelle.
 }
 \examples{
 \dontrun{
-# Sans largeurs personnalisees
-rand(seed = 42, statut = "FICTIVE", version = "V01")
+essai <- init_essai(
+  nom_etude = "ESSAI_ABC", circuit = "ennov", k = 2,
+  block_sizes = c(4), nb_block = c(10),
+  arm_label = c("Placebo", "Traitement"), arm_code = c(0, 1)
+)
 
-# Avec largeurs personnalisees
-rand(seed = 42, statut = "FICTIVE", version = "V01",
-     col_widths = c("1.5cm", "2cm", "4cm", "2cm", "4cm"))
+# Inspection du data.frame + export des fichiers
+df <- rand(essai, seed = 42, statut = "FICTIVE", version = "v01")
+head(df)
+
+# Deux essais en parall\u00e8le sans conflit
+essai_A <- init_essai("ESSAI_A", circuit = "ennov", ...)
+essai_B <- init_essai("ESSAI_B", circuit = "redcap", ...)
+df_A <- rand(essai_A, seed = 42, statut = "FICTIVE", version = "v01")
+df_B <- rand(essai_B, seed = 99, statut = "FICTIVE", version = "v01")
 }
 
 }

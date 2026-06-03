@@ -1,19 +1,19 @@
-##FONCTION INTERNE .make_garde
+###########################################################
+# FONCTION INTERNE .make_garde()
 
-.make_garde <- function(type = "randomisation") {
+.make_garde <- function(essai, type = "randomisation") {
 
-  # Récupération des variables
-  nom_etude     <- .trialdesign_env$nom_etude
-  id_etude      <- .trialdesign_env$id_etude
-  libelle_etude <- .trialdesign_env$libelle_etude
-  investigateur <- .trialdesign_env$investigateur
-  biostat       <- .trialdesign_env$biostatisticien
-  methodo       <- .trialdesign_env$methodologiste
-  indice_doc    <- .trialdesign_env$indice_document
+  nom_etude     <- essai$nom_etude
+  id_etude      <- essai$id_etude
+  libelle_etude <- essai$libelle_etude
+  investigateur <- essai$investigateur
+  biostat       <- essai$biostatisticien
+  methodo       <- essai$methodologiste
+  indice_doc    <- essai$indice_document
 
   if (type == "randomisation") {
     titre_doc <- "LISTE DE RANDOMISATION"
-    code_usmr <- .trialdesign_env$code_usmr
+    code_usmr <- essai$code_usmr
   } else {
     titre_doc <- "LISTE DE CORRESPONDANCE N\\textsuperscript{o} DE BO\\^{I}TE / TRAITEMENT"
     code_usmr <- "EN-USM-418"
@@ -29,7 +29,7 @@
 \\noindent
 \\begin{tabular}{|m{0.28\\textwidth}|m{0.48\\textwidth}|m{0.18\\textwidth}|}
 \\hline
-\\centering \\vspace{2pt} \\includegraphics[width=0.25\\textwidth]{", gsub('\\\\','/', logo), "} \\vspace{2pt} &
+\\centering \\vspace{2pt} \\includegraphics[width=0.25\\textwidth]{", gsub('\\\\', '/', logo), "} \\vspace{2pt} &
 \\centering \\textbf{Entit\u00e9 d'application : USMR} \\par \\textbf{Emetteur : USMR} &
 \\centering \\textbf{", code_usmr, "} \\tabularnewline \\hline
 & \\centering \\textbf{DOCUMENT D'ENREGISTREMENT} &
