@@ -7,7 +7,7 @@
 
   allocation <- c()
 
-  # Liste al\u00e9atoire des blocs avec leurs tailles
+  # Liste aléatoire des blocs avec leurs tailles
   m          <- sum(nb_block)
   block_list <- c()
   for (i in seq_along(block_sizes)) {
@@ -15,7 +15,7 @@
   }
   block_list <- sample(block_list)
 
-  # G\u00e9n\u00e9ration du contenu de chaque bloc
+  # Génération du contenu de chaque bloc
   for (j in seq_len(m)) {
     contenu    <- rep(1:k, times = ratio / sum(ratio) * block_list[j])
     bloc       <- sample(contenu)

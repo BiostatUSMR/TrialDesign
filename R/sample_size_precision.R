@@ -23,9 +23,9 @@
 #'
 #' @export
 #'
-#' @importFrom presize prec_prop prec_sens prec_spec
 #' @importFrom dplyr mutate select
 #' @importFrom purrr pmap map_dbl
+#' @importFrom presize prec_prop prec_sens prec_spec
 #'
 #' @examples
 #' \dontrun{
@@ -49,7 +49,7 @@ sample_size_precision <- function(
   check_prop <- function(x,name){
     if(!is.null(x)){
       if(any(x < 0 | x > 1, na.rm=TRUE)){
-        stop(paste(name,"doit être compris entre 0 et 1"))
+        stop(paste(name,"doit \u00eatre compris entre 0 et 1"))
       }
     }
   }
@@ -60,15 +60,15 @@ sample_size_precision <- function(
   check_prop(spec,"spec")
 
   if(!is.null(p) & (!is.null(sens) | !is.null(spec))){
-    stop("Les arguments 'p' et 'sens'/'spec' sont mutuellement exclusifs : spécifier soit une proportion simple ('p'), soit une sensibilité/spécificité ('sens', 'spec').")
+    stop("Les arguments 'p' et 'sens'/'spec' sont mutuellement exclusifs : sp\u00e9cifier soit une proportion simple ('p'), soit une sensibilit\u00e9/sp\u00e9cificit\u00e9 ('sens', 'spec').")
   }
 
   if((!is.null(sens) | !is.null(spec)) & is.null(prev)){
-    stop("Argument 'prev' requis lorsque 'sens' ou 'spec' est spécifié.")
+    stop("Argument 'prev' requis lorsque 'sens' ou 'spec' est sp\u00e9cifi\u00e9.")
   }
 
   if(any(missing_rate < 0 | missing_rate >= 1)){
-    stop("missing_rate doit être compris entre 0 et 1.")
+    stop("missing_rate doit \u00eatre compris entre 0 et 1.")
   }
 
   # Remplacement des NULL par NA

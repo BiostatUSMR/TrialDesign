@@ -1,29 +1,35 @@
 #' FONCTION corresp()
 #'
 #' @description
-#' G\u00e9n\u00e8re la liste de correspondance bo\u00eetes\u2013traitements selon le circuit
-#' d\u00e9fini dans l'objet \code{essai} cr\u00e9\u00e9 par \code{init_essai()}, exporte
-#' automatiquement deux fichiers (donn\u00e9es + PDF), et retourne le data.frame
-#' g\u00e9n\u00e9r\u00e9 pour inspection visuelle.
+#' Génère la liste de correspondance boîtes–traitements selon le circuit
+#' défini dans l'objet \code{essai} créé par \code{init_essai()}, exporte
+#' automatiquement trois fichiers (données + PDF + XLS trié par bras),
+#' et retourne le data.frame généré pour inspection visuelle.
 #'
-#' @param essai Liste. Objet cr\u00e9\u00e9 par \code{init_essai()}.
+#' @param essai Liste. Objet créé par \code{init_essai()}.
 #'   Exemple : \code{essai <- init_essai(...)}.
-#' @param mini Entier. Premier num\u00e9ro de bo\u00eete.
-#' @param maxi Entier. Dernier num\u00e9ro de bo\u00eete.
-#' @param seed Entier. Graine al\u00e9atoire pour la reproductibilit\u00e9.
-#' @param statut Caract\u00e8re. Statut de la liste g\u00e9n\u00e9r\u00e9e : \code{"FINALE"} ou
+#' @param mini Entier. Premier numéro de boîte.
+#' @param maxi Entier. Dernier numéro de boîte.
+#' @param seed Entier. Graine aléatoire pour la reproductibilité.
+#' @param statut Caractère. Statut de la liste générée : \code{"FINALE"} ou
 #'   \code{"FICTIVE"}.
-#' @param version Caract\u00e8re. Version de la liste g\u00e9n\u00e9r\u00e9e. Ex : \code{"v01"}.
-#' @param boi_label Caract\u00e8re. Libell\u00e9 personnalis\u00e9 pour les bo\u00eetes.
-#'   Si NULL, \code{"Bo\u00eete de traitement n\u00b0xxx"} est utilis\u00e9.
-#'   Utilis\u00e9 uniquement en circuit REDCap.
-#' @param col_widths Vecteur de caract\u00e8res. Largeurs des colonnes du tableau PDF.
+#' @param version Caractère. Version de la liste générée. Ex : \code{"v01"}.
+#' @param boi_label Caractère. Libellé personnalisé pour les boîtes.
+#'   Si NULL, \code{"Boîte de traitement n°xxx"} est utilisé.
+#'   Utilisé uniquement en circuit REDCap.
+#' @param col_widths Vecteur de caractères. Largeurs des colonnes du tableau PDF.
 #'   Ex : \code{c("2cm", "3cm", "4cm")}. Si NULL, largeurs automatiques.
-#' @param chemin Caract\u00e8re. Chemin vers le r\u00e9pertoire de sortie.
-#'   Si NULL, r\u00e9pertoire de travail courant.
+#' @param chemin Caractère. Chemin vers le répertoire de sortie.
+#'   Si NULL, répertoire de travail courant.
 #'
-#' @return Le data.frame de la liste de correspondance (retourn\u00e9 visiblement
-#'   pour inspection). Les fichiers sont export\u00e9s en parall\u00e8le.
+#' @return Le data.frame de la liste de correspondance (retourné visiblement
+#'   pour inspection). Les fichiers suivants sont exportés en parallèle :
+#'   \itemize{
+#'     \item Fichier de données (.txt pour Ennov, .csv pour REDCap)
+#'     \item Fichier PDF avec page de garde institutionnelle
+#'     \item Fichier XLS avec une feuille par bras de traitement,
+#'       boîtes triées par numéro croissant
+#'   }
 #'
 #' @examples
 #' \dontrun{
@@ -32,16 +38,13 @@
 #'   block_sizes = c(4), nb_block = c(10),
 #'   arm_label = c("Placebo", "Traitement"), arm_code = c(0, 1)
 #' )
-#'
-#' # Inspection du data.frame + export des fichiers
 #' df <- corresp(essai, mini = 1, maxi = 50, seed = 42,
 #'               statut = "FICTIVE", version = "v01")
 #' head(df)
-#'
-#' # Deux essais en parall\u00e8le sans conflit
-#' df_A <- corresp(essai_A, mini = 1, maxi = 100, seed = 42, ...)
-#' df_B <- corresp(essai_B, mini = 1, maxi = 100, seed = 42, ...)
 #' }
+#'
+#' @importFrom utils write.csv write.table
+#' @importFrom rmarkdown render
 #'
 #' @export
 
@@ -50,53 +53,54 @@ corresp <- function(essai, mini, maxi, seed, statut, version,
                     col_widths = NULL,
                     chemin     = NULL) {
 
-  # --- V\u00e9rification de l'objet essai ---
+  # --- Vérification de l'objet essai ---
   if (!is.list(essai) || is.null(essai$circuit)) {
     stop(
-      "'essai' doit \u00eatre un objet cr\u00e9\u00e9 par init_essai().\n",
+      "'essai' doit être un objet créé par init_essai().\n",
       "Exemple : essai <- init_essai(...) puis corresp(essai, mini = 1, maxi = 50, ...)"
     )
   }
 
   circuit   <- essai$circuit
   nom_etude <- essai$nom_etude
+  arm_label <- essai$arm_label
+  arm_code  <- essai$arm_code
 
-  # --- Valeur par d\u00e9faut ---
   if (is.null(chemin)) chemin <- getwd()
 
-  # --- V\u00e9rifications ---
+  # --- Vérifications ---
   if (!is.numeric(mini) || mini != round(mini) || mini <= 0)
-    stop("'mini' doit \u00eatre un entier strictement positif.")
+    stop("'mini' doit être un entier strictement positif.")
 
   if (!is.numeric(maxi) || maxi != round(maxi) || maxi <= 0)
-    stop("'maxi' doit \u00eatre un entier strictement positif.")
+    stop("'maxi' doit être un entier strictement positif.")
 
   if (maxi <= mini)
-    stop("'maxi' doit \u00eatre strictement sup\u00e9rieur \u00e0 'mini'.")
+    stop("'maxi' doit être strictement supérieur à 'mini'.")
 
   if (!is.numeric(seed) || seed != round(seed))
-    stop("'seed' doit \u00eatre un entier.")
+    stop("'seed' doit être un entier.")
 
   if (!statut %in% c("FINALE", "FICTIVE"))
-    stop("'statut' doit \u00eatre 'FINALE' ou 'FICTIVE'.")
+    stop("'statut' doit être 'FINALE' ou 'FICTIVE'.")
 
   if (!dir.exists(chemin))
-    stop("Le chemin sp\u00e9cifi\u00e9 n'existe pas.")
+    stop("Le chemin spécifié n'existe pas.")
 
   if (!is.null(boi_label) && !is.character(boi_label))
-    stop("'boi_label' doit \u00eatre une cha\u00eene de caract\u00e8res.")
+    stop("'boi_label' doit être une chaîne de caractères.")
 
   if (!is.null(col_widths) && !is.character(col_widths))
-    stop("'col_widths' doit \u00eatre un vecteur de caract\u00e8res. Ex : c('2cm', '3cm').")
+    stop("'col_widths' doit être un vecteur de caractères. Ex : c('2cm', '3cm').")
 
-  # --- G\u00e9n\u00e9ration selon le circuit ---
+  # --- Génération selon le circuit ---
   df <- if (circuit == "ennov") {
     .corresp_ennov(essai, mini, maxi, seed)
   } else {
     .corresp_redcap(essai, mini, maxi, seed, boi_label)
   }
 
-  message("\u2714 Liste de correspondance g\u00e9n\u00e9r\u00e9e \u2014 ", nrow(df), " bo\u00eetes.")
+  message("\u2714 Liste de correspondance générée \u2014 ", nrow(df), " boîtes.")
 
   # --- Nom de base des fichiers ---
   ext      <- if (circuit == "redcap") "csv" else "txt"
@@ -104,7 +108,7 @@ corresp <- function(essai, mini, maxi, seed, statut, version,
   nom_base <- paste0(nom_etude, " - Liste de correspondance ",
                      statut, " - ", version, " - ", date_str)
 
-  # --- Export donn\u00e9es ---
+  # --- Export données (TXT ou CSV) ---
   nom_data <- file.path(chemin, paste0(nom_base, ".", ext))
 
   if (circuit == "redcap") {
@@ -124,10 +128,14 @@ corresp <- function(essai, mini, maxi, seed, statut, version,
               type_doc   = "correspondance",
               col_widths = col_widths)
 
-  message("\u2714 Fichiers export\u00e9s :")
+  # --- Export XLS trié par bras de traitement ---
+  nom_xls <- file.path(chemin, paste0(nom_base, ".xlsx"))
+  .export_corresp_xls(df, nom_xls, arm_label, arm_code)
+
+  message("\u2714 Fichiers exportés :")
   message("  ", nom_data)
   message("  ", file.path(chemin, nom_pdf))
+  message("  ", nom_xls)
 
-  # --- Retour visible du data.frame pour inspection ---
   return(df)
 }

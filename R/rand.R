@@ -1,28 +1,28 @@
 #' FONCTION rand()
 #'
 #' @description
-#' G\u00e9n\u00e8re la liste de randomisation selon le circuit d\u00e9fini dans l'objet
-#' \code{essai} cr\u00e9\u00e9 par \code{init_essai()}, exporte automatiquement deux
-#' fichiers (donn\u00e9es + PDF), et retourne le data.frame g\u00e9n\u00e9r\u00e9 pour
+#' Génère la liste de randomisation selon le circuit défini dans l'objet
+#' \code{essai} créé par \code{init_essai()}, exporte automatiquement deux
+#' fichiers (données + PDF), et retourne le data.frame généré pour
 #' inspection visuelle.
 #'
-#' @param essai Liste. Objet cr\u00e9\u00e9 par \code{init_essai()}.
+#' @param essai Liste. Objet créé par \code{init_essai()}.
 #'   Exemple : \code{essai <- init_essai(...)}.
-#' @param seed Entier. Graine al\u00e9atoire pour la reproductibilit\u00e9.
-#' @param statut Caract\u00e8re. Statut de la liste g\u00e9n\u00e9r\u00e9e : \code{"FINALE"} ou
+#' @param seed Entier. Graine aléatoire pour la reproductibilité.
+#' @param statut Caractère. Statut de la liste générée : \code{"FINALE"} ou
 #'   \code{"FICTIVE"}.
-#' @param version Caract\u00e8re. Version de la liste g\u00e9n\u00e9r\u00e9e. Ex : \code{"v01"}.
-#' @param col_widths Vecteur de caract\u00e8res. Largeurs des colonnes du tableau PDF.
+#' @param version Caractère. Version de la liste générée. Ex : \code{"v01"}.
+#' @param col_widths Vecteur de caractères. Largeurs des colonnes du tableau PDF.
 #'   Ex : \code{c("2cm", "3cm", "4cm")}. Si NULL, largeurs automatiques.
-#'   Doit avoir autant d'\u00e9l\u00e9ments que de colonnes dans le data.frame de sortie.
-#' @param chemin Caract\u00e8re. Chemin vers le r\u00e9pertoire de sortie.
-#'   Si NULL, r\u00e9pertoire de travail courant.
+#'   Doit avoir autant d'éléments que de colonnes dans le data.frame de sortie.
+#' @param chemin Caractère. Chemin vers le répertoire de sortie.
+#'   Si NULL, répertoire de travail courant.
 #'
 #' @importFrom utils write.csv write.table
 #' @importFrom rmarkdown render
 #'
-#' @return Le data.frame de la liste de randomisation (retour\u00e9 visiblement
-#'   pour inspection). Les fichiers sont export\u00e9s en parall\u00e8le.
+#' @return Le data.frame de la liste de randomisation (retouré visiblement
+#'   pour inspection). Les fichiers sont exportés en parallèle.
 #'
 #' @examples
 #' \dontrun{
@@ -36,7 +36,7 @@
 #' df <- rand(essai, seed = 42, statut = "FICTIVE", version = "v01")
 #' head(df)
 #'
-#' # Deux essais en parall\u00e8le sans conflit
+#' # Deux essais en parallèle sans conflit
 #' essai_A <- init_essai("ESSAI_A", circuit = "ennov", ...)
 #' essai_B <- init_essai("ESSAI_B", circuit = "redcap", ...)
 #' df_A <- rand(essai_A, seed = 42, statut = "FICTIVE", version = "v01")
@@ -49,7 +49,7 @@ rand <- function(essai, seed, statut, version,
                  col_widths = NULL,
                  chemin     = NULL) {
 
-  # --- V\u00e9rification de l'objet essai ---
+  # --- Vérification de l'objet essai ---
   if (!is.list(essai) || is.null(essai$circuit)) {
     stop(
       "'essai' doit \u00eatre un objet cr\u00e9\u00e9 par init_essai().\n",
@@ -60,10 +60,10 @@ rand <- function(essai, seed, statut, version,
   circuit   <- essai$circuit
   nom_etude <- essai$nom_etude
 
-  # --- Valeur par d\u00e9faut ---
+  # --- Valeur par défaut ---
   if (is.null(chemin)) chemin <- getwd()
 
-  # --- V\u00e9rifications ---
+  # --- Vérifications ---
   if (!is.numeric(seed) || seed != round(seed))
     stop("'seed' doit \u00eatre un entier.")
 
@@ -76,7 +76,7 @@ rand <- function(essai, seed, statut, version,
   if (!is.null(col_widths) && !is.character(col_widths))
     stop("'col_widths' doit \u00eatre un vecteur de caract\u00e8res. Ex : c('2cm', '3cm').")
 
-  # --- G\u00e9n\u00e9ration du data.frame ---
+  # --- Génération du data.frame ---
   df <- if (circuit == "ennov") .rand_ennov(essai, seed) else .rand_redcap(essai, seed)
 
   message("\u2714 Liste de randomisation g\u00e9n\u00e9r\u00e9e \u2014 ", nrow(df), " sujets.")
@@ -87,7 +87,7 @@ rand <- function(essai, seed, statut, version,
   nom_base <- paste0(nom_etude, " - Liste de randomisation ",
                      statut, " - ", version, " - ", date_str)
 
-  # --- Export donn\u00e9es ---
+  # --- Export données ---
   nom_data <- file.path(chemin, paste0(nom_base, ".", ext))
 
   if (circuit == "redcap") {

@@ -17,39 +17,39 @@ corresp(
 )
 }
 \arguments{
-\item{essai}{Liste. Objet cr\u00e9\u00e9 par \code{init_essai()}.
+\item{essai}{Liste. Objet créé par \code{init_essai()}.
 Exemple : \code{essai <- init_essai(...)}.}
 
-\item{mini}{Entier. Premier num\u00e9ro de bo\u00eete.}
+\item{mini}{Entier. Premier numéro de boîte.}
 
-\item{maxi}{Entier. Dernier num\u00e9ro de bo\u00eete.}
+\item{maxi}{Entier. Dernier numéro de boîte.}
 
-\item{seed}{Entier. Graine al\u00e9atoire pour la reproductibilit\u00e9.}
+\item{seed}{Entier. Graine aléatoire pour la reproductibilité.}
 
-\item{statut}{Caract\u00e8re. Statut de la liste g\u00e9n\u00e9r\u00e9e : \code{"FINALE"} ou
+\item{statut}{Caractère. Statut de la liste générée : \code{"FINALE"} ou
 \code{"FICTIVE"}.}
 
-\item{version}{Caract\u00e8re. Version de la liste g\u00e9n\u00e9r\u00e9e. Ex : \code{"v01"}.}
+\item{version}{Caractère. Version de la liste générée. Ex : \code{"v01"}.}
 
-\item{boi_label}{Caract\u00e8re. Libell\u00e9 personnalis\u00e9 pour les bo\u00eetes.
-Si NULL, \code{"Bo\u00eete de traitement n\u00b0xxx"} est utilis\u00e9.
-Utilis\u00e9 uniquement en circuit REDCap.}
+\item{boi_label}{Caractère. Libellé personnalisé pour les boîtes.
+Si NULL, \code{"Boîte de traitement n°xxx"} est utilisé.
+Utilisé uniquement en circuit REDCap.}
 
-\item{col_widths}{Vecteur de caract\u00e8res. Largeurs des colonnes du tableau PDF.
+\item{col_widths}{Vecteur de caractères. Largeurs des colonnes du tableau PDF.
 Ex : \code{c("2cm", "3cm", "4cm")}. Si NULL, largeurs automatiques.}
 
-\item{chemin}{Caract\u00e8re. Chemin vers le r\u00e9pertoire de sortie.
-Si NULL, r\u00e9pertoire de travail courant.}
+\item{chemin}{Caractère. Chemin vers le répertoire de sortie.
+Si NULL, répertoire de travail courant.}
 }
 \value{
-Le data.frame de la liste de correspondance (retourn\u00e9 visiblement
-  pour inspection). Les fichiers sont export\u00e9s en parall\u00e8le.
+Le data.frame de la liste de correspondance (retourné visiblement
+  pour inspection). Les fichiers sont exportés en parallèle.
 }
 \description{
-G\u00e9n\u00e8re la liste de correspondance bo\u00eetes\u2013traitements selon le circuit
-d\u00e9fini dans l'objet \code{essai} cr\u00e9\u00e9 par \code{init_essai()}, exporte
-automatiquement deux fichiers (donn\u00e9es + PDF), et retourne le data.frame
-g\u00e9n\u00e9r\u00e9 pour inspection visuelle.
+Génère la liste de correspondance boîtes–traitements selon le circuit
+défini dans l'objet \code{essai} créé par \code{init_essai()}, exporte
+automatiquement deux fichiers (données + PDF), et retourne le data.frame
+généré pour inspection visuelle.
 }
 \examples{
 \dontrun{
@@ -64,7 +64,7 @@ df <- corresp(essai, mini = 1, maxi = 50, seed = 42,
               statut = "FICTIVE", version = "v01")
 head(df)
 
-# Deux essais en parall\u00e8le sans conflit
+# Deux essais en parallèle sans conflit
 df_A <- corresp(essai_A, mini = 1, maxi = 100, seed = 42, ...)
 df_B <- corresp(essai_B, mini = 1, maxi = 100, seed = 42, ...)
 }

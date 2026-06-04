@@ -17,9 +17,8 @@
 #'
 #' @importFrom dplyr mutate select
 #' @importFrom purrr pmap map_dbl
-#' @importFrom clinfun ph2single
 #' @importFrom stats pbinom
-#'
+#' @importFrom clinfun ph2single
 #'
 #' @return Un data.frame avec les colonnes : methode, p0, p1, alpha, power,
 #'   missing_prop, n_patient, n_ajuste, n_succes.
@@ -49,9 +48,9 @@ sample_size_phase2 <- function(
   method <- match.arg(method)
 
   # Vérifications
-  if(any(c(p0,p1) < 0 | c(p0,p1) > 1)) stop("p0 et p1 doivent être compris entre 0 et 1.")
-  if(any(p0 >= p1)) stop("p0 doit être strictement inférieur à p1.")
-  if(missing_rate < 0 | missing_rate >= 1) stop("missing_rate doit être compris entre 0 et 1.")
+  if(any(c(p0,p1) < 0 | c(p0,p1) > 1)) stop("p0 et p1 doivent \u00eatre compris entre 0 et 1.")
+  if(any(p0 >= p1)) stop("p0 doit \u00eatre strictement inf\u00e9rieur \u00e0 p1.")
+  if(missing_rate < 0 | missing_rate >= 1) stop("missing_rate doit \u00eatre compris entre 0 et 1.")
 
   params <- expand.grid(p0=p0, p1=p1, alpha=alpha, power=power, missing_prop=missing_rate)
 
@@ -78,7 +77,7 @@ sample_size_phase2 <- function(
           }
 
           if(is.null(solution)){
-            warning(paste("Aucune solution trouvée pour p0=",p0," p1=",p1," avec nmax=",nmax))
+            warning(paste("Aucune solution trouv\u00e9e pour p0=",p0," p1=",p1," avec nmax=",nmax))
             return(list(n_patient=NA_real_, n_succes=NA_real_))
           } else return(solution)
         }

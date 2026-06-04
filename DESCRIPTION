@@ -29,9 +29,10 @@ Imports:
     rmarkdown,
     stats,
     tidyr,
-    tinytex,
     utils,
-    WMWssp
+    WMWssp,
+    presize,
+    openxlsx
 Suggests:
     knitr,
     kableExtra

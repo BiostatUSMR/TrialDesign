@@ -25,57 +25,57 @@ init_essai(
 )
 }
 \arguments{
-\item{nom_etude}{Caract\u00e8re. Nom de l'\u00e9tude (utilis\u00e9 dans les noms de fichiers).}
+\item{nom_etude}{Caractère. Nom de l'étude (utilisé dans les noms de fichiers).}
 
-\item{circuit}{Caract\u00e8re. Circuit de randomisation : \code{"ennov"} ou \code{"redcap"}.}
+\item{circuit}{Caractère. Circuit de randomisation : \code{"ennov"} ou \code{"redcap"}.}
 
 \item{k}{Entier. Nombre de groupes de traitement (>= 2).}
 
-\item{block_sizes}{Vecteur num\u00e9rique. Tailles r\u00e9elles des blocs.}
+\item{block_sizes}{Vecteur numérique. Tailles réelles des blocs.}
 
-\item{nb_block}{Vecteur num\u00e9rique. Nombre de blocs souhait\u00e9s pour chaque taille.}
+\item{nb_block}{Vecteur numérique. Nombre de blocs souhaités pour chaque taille.}
 
-\item{ratio}{Vecteur num\u00e9rique de longueur k. Ratio d'allocation.
-Si NULL, un ratio \u00e9quilibr\u00e9 1:1:...:1 est utilis\u00e9.}
+\item{ratio}{Vecteur numérique de longueur k. Ratio d'allocation.
+Si NULL, un ratio équilibré 1:1:...:1 est utilisé.}
 
-\item{arm_label}{Vecteur de caract\u00e8res de longueur k. Libell\u00e9s des groupes.
-Si NULL, "Groupe1", "Groupe2"... sont utilis\u00e9s.}
+\item{arm_label}{Vecteur de caractères de longueur k. Libellés des groupes.
+Si NULL, "Groupe1", "Groupe2"... sont utilisés.}
 
-\item{arm_code}{Vecteur num\u00e9rique de longueur k. Codes des groupes.
-Si NULL, 1, 2, ..., k sont utilis\u00e9s.}
+\item{arm_code}{Vecteur numérique de longueur k. Codes des groupes.
+Si NULL, 1, 2, ..., k sont utilisés.}
 
-\item{strat_vars}{Liste optionnelle d\u00e9crivant les variables de stratification.
-Chaque \u00e9l\u00e9ment est une liste avec \code{codes} (vecteur num\u00e9rique) et
-\code{labels} (vecteur de caract\u00e8res).
+\item{strat_vars}{Liste optionnelle décrivant les variables de stratification.
+Chaque élément est une liste avec \code{codes} (vecteur numérique) et
+\code{labels} (vecteur de caractères).
 Exemple : \code{list(sexe = list(codes = c(1,2), labels = c("Homme","Femme")))}.}
 
-\item{id_etude}{Caract\u00e8re. Identifiant officiel de l'\u00e9tude. Ex : "CHUBX2024/01".
-Par d\u00e9faut NULL.}
+\item{id_etude}{Caractère. Identifiant officiel de l'étude. Ex : "CHUBX2024/01".
+Par défaut NULL.}
 
-\item{libelle_etude}{Caract\u00e8re. Libell\u00e9 complet de l'\u00e9tude. Par d\u00e9faut NULL.}
+\item{libelle_etude}{Caractère. Libellé complet de l'étude. Par défaut NULL.}
 
-\item{investigateur}{Caract\u00e8re. Nom de l'investigateur coordinateur.
-Par d\u00e9faut NULL.}
+\item{investigateur}{Caractère. Nom de l'investigateur coordinateur.
+Par défaut NULL.}
 
-\item{methodologiste}{Caract\u00e8re. Nom du m\u00e9thodologiste. Par d\u00e9faut NULL.}
+\item{methodologiste}{Caractère. Nom du méthodologiste. Par défaut NULL.}
 
-\item{biostatisticien}{Caract\u00e8re. Nom du biostatisticien. Par d\u00e9faut NULL.}
+\item{biostatisticien}{Caractère. Nom du biostatisticien. Par défaut NULL.}
 
 \item{confidentiel}{Logique. Si TRUE, affiche la mention CONFIDENTIEL sur
-la page de garde. Par d\u00e9faut FALSE.}
+la page de garde. Par défaut FALSE.}
 
-\item{code_usmr}{Caract\u00e8re. Code du document USMR. Par d\u00e9faut NULL.}
+\item{code_usmr}{Caractère. Code du document USMR. Par défaut NULL.}
 
-\item{indice_document}{Caract\u00e8re. Indice du document. Par d\u00e9faut NULL.}
+\item{indice_document}{Caractère. Indice du document. Par défaut NULL.}
 }
 \value{
-Une liste contenant tous les param\u00e8tres valid\u00e9s de l'essai.
-  Doit \u00eatre assign\u00e9e : \code{essai <- init_essai(...)}.
+Une liste contenant tous les paramètres validés de l'essai.
+  Doit être assignée : \code{essai <- init_essai(...)}.
 }
 \description{
-D\u00e9finit et valide les param\u00e8tres de l'essai clinique, puis les retourne
-sous forme d'un objet liste. Cet objet doit \u00eatre assign\u00e9 et pass\u00e9 en
-argument \u00e0 rand() et corresp().
+Définit et valide les paramètres de l'essai clinique, puis les retourne
+sous forme d'un objet liste. Cet objet doit être assigné et passé en
+argument à rand() et corresp().
 }
 \examples{
 \dontrun{

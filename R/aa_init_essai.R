@@ -1,39 +1,39 @@
 #' FONCTION init_essai()
 #'
 #' @description
-#' D\u00e9finit et valide les param\u00e8tres de l'essai clinique, puis les retourne
-#' sous forme d'un objet liste. Cet objet doit \u00eatre assign\u00e9 et pass\u00e9 en
-#' argument \u00e0 rand() et corresp().
+#' Définit et valide les paramètres de l'essai clinique, puis les retourne
+#' sous forme d'un objet liste. Cet objet doit être assigné et passé en
+#' argument à rand() et corresp().
 #'
-#' @param nom_etude Caract\u00e8re. Nom de l'\u00e9tude (utilis\u00e9 dans les noms de fichiers).
-#' @param circuit Caract\u00e8re. Circuit de randomisation : \code{"ennov"} ou \code{"redcap"}.
+#' @param nom_etude Caractère. Nom de l'étude (utilisé dans les noms de fichiers).
+#' @param circuit Caractère. Circuit de randomisation : \code{"ennov"} ou \code{"redcap"}.
 #' @param k Entier. Nombre de groupes de traitement (>= 2).
-#' @param block_sizes Vecteur num\u00e9rique. Tailles r\u00e9elles des blocs.
-#' @param nb_block Vecteur num\u00e9rique. Nombre de blocs souhait\u00e9s pour chaque taille.
-#' @param ratio Vecteur num\u00e9rique de longueur k. Ratio d'allocation.
-#'   Si NULL, un ratio \u00e9quilibr\u00e9 1:1:...:1 est utilis\u00e9.
-#' @param arm_label Vecteur de caract\u00e8res de longueur k. Libell\u00e9s des groupes.
-#'   Si NULL, "Groupe1", "Groupe2"... sont utilis\u00e9s.
-#' @param arm_code Vecteur num\u00e9rique de longueur k. Codes des groupes.
-#'   Si NULL, 1, 2, ..., k sont utilis\u00e9s.
-#' @param strat_vars Liste optionnelle d\u00e9crivant les variables de stratification.
-#'   Chaque \u00e9l\u00e9ment est une liste avec \code{codes} (vecteur num\u00e9rique) et
-#'   \code{labels} (vecteur de caract\u00e8res).
+#' @param block_sizes Vecteur numérique. Tailles réelles des blocs.
+#' @param nb_block Vecteur numérique. Nombre de blocs souhaités pour chaque taille.
+#' @param ratio Vecteur numérique de longueur k. Ratio d'allocation.
+#'   Si NULL, un ratio équilibré 1:1:...:1 est utilisé.
+#' @param arm_label Vecteur de caractères de longueur k. Libellés des groupes.
+#'   Si NULL, "Groupe1", "Groupe2"... sont utilisés.
+#' @param arm_code Vecteur numérique de longueur k. Codes des groupes.
+#'   Si NULL, 1, 2, ..., k sont utilisés.
+#' @param strat_vars Liste optionnelle décrivant les variables de stratification.
+#'   Chaque élément est une liste avec \code{codes} (vecteur numérique) et
+#'   \code{labels} (vecteur de caractères).
 #'   Exemple : \code{list(sexe = list(codes = c(1,2), labels = c("Homme","Femme")))}.
-#' @param id_etude Caract\u00e8re. Identifiant officiel de l'\u00e9tude. Ex : "CHUBX2024/01".
-#'   Par d\u00e9faut NULL.
-#' @param libelle_etude Caract\u00e8re. Libell\u00e9 complet de l'\u00e9tude. Par d\u00e9faut NULL.
-#' @param investigateur Caract\u00e8re. Nom de l'investigateur coordinateur.
-#'   Par d\u00e9faut NULL.
-#' @param methodologiste Caract\u00e8re. Nom du m\u00e9thodologiste. Par d\u00e9faut NULL.
-#' @param biostatisticien Caract\u00e8re. Nom du biostatisticien. Par d\u00e9faut NULL.
+#' @param id_etude Caractère. Identifiant officiel de l'étude. Ex : "CHUBX2024/01".
+#'   Par défaut NULL.
+#' @param libelle_etude Caractère. Libellé complet de l'étude. Par défaut NULL.
+#' @param investigateur Caractère. Nom de l'investigateur coordinateur.
+#'   Par défaut NULL.
+#' @param methodologiste Caractère. Nom du méthodologiste. Par défaut NULL.
+#' @param biostatisticien Caractère. Nom du biostatisticien. Par défaut NULL.
 #' @param confidentiel Logique. Si TRUE, affiche la mention CONFIDENTIEL sur
-#'   la page de garde. Par d\u00e9faut FALSE.
-#' @param code_usmr Caract\u00e8re. Code du document USMR. Par d\u00e9faut NULL.
-#' @param indice_document Caract\u00e8re. Indice du document. Par d\u00e9faut NULL.
+#'   la page de garde. Par défaut FALSE.
+#' @param code_usmr Caractère. Code du document USMR. Par défaut NULL.
+#' @param indice_document Caractère. Indice du document. Par défaut NULL.
 #'
-#' @return Une liste contenant tous les param\u00e8tres valid\u00e9s de l'essai.
-#'   Doit \u00eatre assign\u00e9e : \code{essai <- init_essai(...)}.
+#' @return Une liste contenant tous les paramètres validés de l'essai.
+#'   Doit être assignée : \code{essai <- init_essai(...)}.
 #'
 #' @examples
 #' \dontrun{
@@ -71,17 +71,17 @@ init_essai <- function(nom_etude,
                        code_usmr         = NULL,
                        indice_document   = NULL) {
 
-  # --- V\u00e9rification circuit ---
+  # --- Vérification circuit ---
   if (!circuit %in% c("ennov", "redcap")) {
     stop("'circuit' doit \u00eatre 'ennov' ou 'redcap'.")
   }
 
-  # --- Valeurs par d\u00e9faut ---
+  # --- Valeurs par défaut ---
   if (is.null(ratio))     ratio     <- rep(1, k)
   if (is.null(arm_label)) arm_label <- paste0("Groupe", 1:k)
   if (is.null(arm_code))  arm_code  <- 1:k
 
-  # --- V\u00e9rifications arguments randomisation ---
+  # --- Vérifications arguments randomisation ---
   if (!is.numeric(k) || k < 2 || k != round(k))
     stop("'k' doit \u00eatre un entier >= 2.")
 
@@ -119,7 +119,7 @@ init_essai <- function(nom_etude,
 
   # --- Construction de l'objet essai ---
   essai <- list(
-    # Param\u00e8tres randomisation
+    # Paramètres randomisation
     nom_etude   = nom_etude,
     circuit     = circuit,
     k           = k,
@@ -129,7 +129,7 @@ init_essai <- function(nom_etude,
     arm_label   = arm_label,
     arm_code    = arm_code,
     strat_vars  = strat_vars,
-    # Param\u00e8tres page de garde
+    # Paramètres page de garde
     id_etude        = id_etude,
     libelle_etude   = libelle_etude,
     investigateur   = investigateur,
