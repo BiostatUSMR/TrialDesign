@@ -1,5 +1,5 @@
 # ============================================================
-# FONCTION INTERNE — .export_corresp_xls()
+# FONCTION INTERNE  .export_corresp_xls()
 #
 # Génère un fichier Excel avec une feuille par bras de
 # traitement. Dans chaque feuille, les boîtes sont triées
