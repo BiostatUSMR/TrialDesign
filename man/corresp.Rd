@@ -43,13 +43,19 @@ Si NULL, répertoire de travail courant.}
 }
 \value{
 Le data.frame de la liste de correspondance (retourné visiblement
-  pour inspection). Les fichiers sont exportés en parallèle.
+  pour inspection). Les fichiers suivants sont exportés en parallèle :
+  \itemize{
+    \item Fichier de données (.txt pour Ennov, .csv pour REDCap)
+    \item Fichier PDF avec page de garde institutionnelle
+    \item Fichier XLS avec une feuille par bras de traitement,
+      boîtes triées par numéro croissant
+  }
 }
 \description{
 Génère la liste de correspondance boîtes–traitements selon le circuit
 défini dans l'objet \code{essai} créé par \code{init_essai()}, exporte
-automatiquement deux fichiers (données + PDF), et retourne le data.frame
-généré pour inspection visuelle.
+automatiquement trois fichiers (données + PDF + XLS trié par bras),
+et retourne le data.frame généré pour inspection visuelle.
 }
 \examples{
 \dontrun{
@@ -58,15 +64,9 @@ essai <- init_essai(
   block_sizes = c(4), nb_block = c(10),
   arm_label = c("Placebo", "Traitement"), arm_code = c(0, 1)
 )
-
-# Inspection du data.frame + export des fichiers
 df <- corresp(essai, mini = 1, maxi = 50, seed = 42,
               statut = "FICTIVE", version = "v01")
 head(df)
-
-# Deux essais en parallèle sans conflit
-df_A <- corresp(essai_A, mini = 1, maxi = 100, seed = 42, ...)
-df_B <- corresp(essai_B, mini = 1, maxi = 100, seed = 42, ...)
 }
 
 }

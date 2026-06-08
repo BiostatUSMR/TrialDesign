@@ -32,7 +32,8 @@ Imports:
     utils,
     WMWssp,
     presize,
-    openxlsx
+    openxlsx,
+    magrittr
 Suggests:
     knitr,
     kableExtra

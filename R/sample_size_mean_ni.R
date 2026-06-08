@@ -59,6 +59,7 @@
 #' pour permettre la validation dans \code{ss_cluster()}.
 #'
 #' @importFrom dplyr mutate filter select
+#' @importFrom magrittr %>%
 #' @importFrom purrr pmap map_dbl
 #' @importFrom pwrss power.t.student power.t.welch power.np.wilcoxon
 #'

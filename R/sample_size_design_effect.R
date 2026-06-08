@@ -1,15 +1,3 @@
-###########################################################
-# FONCTIONS INTERNES design_effect.R
-#
-# Calcul du Design Effect (DEFF) pour essais randomises en cluster.
-# Ces fonctions sont appelees par ss_cluster() et ne sont pas exportees.
-#
-# References :
-#   Donner A, Klar N (2000). Design and Analysis of Cluster Randomization Trials.
-#   Eldridge SM et al. (2006). Stat Med. 25(8):1292-310.
-#   Teerenstra S et al. (2012). Stat Med. 31(20):2169-78.
-#   Woertman W et al. (2013). J Clin Epidemiol. 66(7):752-8.
-
 
 ###########################################################
 # FONCTION INTERNE .m_eff()
