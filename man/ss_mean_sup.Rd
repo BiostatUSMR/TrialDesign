@@ -10,55 +10,48 @@ ss_mean_sup(
   sd = NULL,
   sd1 = NULL,
   sd2 = NULL,
+  seed = NULL,
+  thetaH0 = 0,
   power = 0.8,
   alpha = 0.05,
   kappa = 1,
-  missing_rate = 0,
+  missing_prop = 0,
   nsim = 10000,
-  alternative = "two.sided",
+  sided = 2,
   choice = c("student", "welch", "wilcoxon")
 )
 }
 \arguments{
-\item{mu1}{Numerique. Moyenne attendue dans le groupe 1 (traitement).
-Peut etre un vecteur pour explorer plusieurs scenarios.}
+\item{mu1}{Numerique. Moyenne attendue dans le groupe 1 (traitement). Peut etre un vecteur.}
 
-\item{mu2}{Numerique. Moyenne attendue dans le groupe 2 (controle).
-Peut etre un vecteur. Les combinaisons mu1 == mu2 sont automatiquement exclues.}
+\item{mu2}{Numerique. Moyenne attendue dans le groupe 2 (controle). Peut etre un vecteur. Les combinaisons mu1 == mu2 sont automatiquement exclues.}
 
-\item{sd}{Numerique. Ecart-type commun aux deux groupes.
-Requis pour le test de Student.}
+\item{sd}{Numerique. Ecart-type commun aux deux groupes. Requis pour le test de Student.}
 
-\item{sd1}{Numerique. Ecart-type du groupe 1.
-Requis pour les tests de Welch et Wilcoxon.}
+\item{sd1}{Numerique. Ecart-type du groupe 1. Requis pour les tests de Welch et Wilcoxon.}
 
-\item{sd2}{Numerique. Ecart-type du groupe 2.
-Requis pour les tests de Welch et Wilcoxon.}
+\item{sd2}{Numerique. Ecart-type du groupe 2. Requis pour les tests de Welch et Wilcoxon.}
 
-\item{power}{Numerique. Puissance souhaitee. Par defaut 0.80.
-Peut etre un vecteur.}
+\item{seed}{Entier. Graine utilisée pour les simulations du test de Wilcoxon. Par défaut NULL.}
 
-\item{alpha}{Numerique. Niveau de significativite. Par defaut 0.05.
-Peut etre un vecteur.}
+\item{thetaH0}{Numerique. Valeur sous l'hypothèse nulle. Par défaut 0. Ne peut pas etre un vecteur}
 
-\item{kappa}{Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres).}
+\item{power}{Numerique. Puissance souhaitee. Par defaut 0.80. Peut etre un vecteur.}
 
-\item{missing_rate}{Numerique. Taux de donnees manquantes. Par defaut 0.
-Peut etre un vecteur.}
+\item{alpha}{Numerique. Risque de premiere espece. Par defaut 0.05. Peut etre un vecteur.}
+
+\item{kappa}{Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres). Ne peut pas etre un vecteur. Un ratio > 1 indique plus de sujets dans le groupe 1.}
+
+\item{missing_prop}{Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur. Utilise pour calculer n1_pdv, n2_pdv et n_total_pdv.}
 
 \item{nsim}{Entier. Nombre de simulations pour le test de Wilcoxon. Par defaut 10000.}
 
-\item{alternative}{Caractere. Direction du test : \code{"two.sided"} ou \code{"one.sided"}.
-Par defaut \code{"two.sided"}.}
+\item{sided}{Numerique. Test unilatéral (1) ou bilatéral (2). Par défaut 2. Peut prendre la valeur 1 ou 2 uniquement.}
 
 \item{choice}{Caractere. Test statistique a utiliser :
 \itemize{
-  \item \code{"student"} : Test de Student, variances egales.
-    Si kappa = 1 : \code{stats::power.t.test()}.
-    Si kappa != 1 : \code{pwrss::power.t.student()}.
-  \item \code{"welch"} : Test de Welch, variances inegales.
-    Si kappa = 1 : \code{MKpower::power.welch.t.test()}.
-    Si kappa != 1 : \code{pwrss::power.t.welch()}.
+  \item \code{"student"} : Test de Student, variances egales. Utilise \code{rpact::getSampleSizeMeans()}.
+  \item \code{"welch"} : Test de Welch, variances inegales. Utilise \code{rpact::getSampleSizeMeans()}.
   \item \code{"wilcoxon"} : Test de Wilcoxon-MWW, non parametrique.
     Utilise \code{WMWssp::WMWssp_minimize()} (ne supporte pas kappa).
 }}
@@ -67,43 +60,26 @@ Par defaut \code{"two.sided"}.}
 Un data.frame avec une ligne par combinaison de parametres et les colonnes :
 \itemize{
   \item \code{test} : Methode utilisee.
-  \item \code{puissance} : Puissance cible.
+  \item \code{puissance} : Puissance.
   \item \code{mu1}, \code{mu2} : Moyennes.
-  \item \code{alpha} : Niveau de significativite.
+  \item \code{alpha} : Risque de 1ere espece.
   \item \code{kappa} : Ratio d'allocation n1/n2.
-  \item \code{prop_manquant} : Taux de manquants.
+  \item \code{missing_prop} : Proportion de donnees manquantes.
   \item \code{n1}, \code{n2} : Effectifs par groupe.
-  \item \code{n_total} : Effectif total brut.
-  \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe ajustes aux donnees manquantes.
-  \item \code{ntotal_pdv} : Effectif total ajuste aux donnees manquantes.
+  \item \code{n_total} : Effectif total.
+  \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe avec prise en compte des donnees manquantes.
+  \item \code{n_total_pdv} : Effectif total avec prise en compte des donnees manquantes.
 }
 Un attribut \code{ssdesignr_type = "mean_sup"} est attache au resultat
 pour permettre la validation dans \code{ss_cluster()}.
 }
 \description{
-Calcule la taille d'echantillon necessaire pour comparer deux moyennes
+Calcule le nombre de sujets necessaire pour comparer deux moyennes
 dans le cadre d'un essai de superiorite.
 }
 \examples{
 \dontrun{
 # Student equilibre
-ss_mean_sup(
-  mu1    = c(55, 60),
-  mu2    = 50,
-  sd     = 10,
-  power  = c(0.80, 0.90),
-  choice = "student"
-)
-
-# Welch desequilibre (kappa = 2)
-ss_mean_sup(
-  mu1    = c(55, 60),
-  mu2    = 50,
-  sd1    = 10,
-  sd2    = 15,
-  kappa  = 2,
-  choice = "welch"
-)
 }
 
 }

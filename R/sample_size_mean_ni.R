@@ -1,7 +1,7 @@
 #' FONCTION ss_mean_ni()
 #'
 #' @description
-#' Calcule la taille d'echantillon necessaire pour demontrer la non-inferiorite
+#' Calcule le nombre de sujets necessaire pour demontrer la non-inferiorite
 #' entre deux groupes sur un critere continu (deux moyennes).
 #'
 #' Hypotheses :
@@ -10,81 +10,66 @@
 #'   \item H1 : mu1 - mu2 >  -marge (non-inferiorite)
 #' }
 #'
-#' @param mu1 Numerique. Moyenne attendue dans le groupe 1 (traitement).
-#'   Peut etre un vecteur pour explorer plusieurs scenarios.
-#' @param mu2 Numerique. Moyenne attendue dans le groupe 2 (controle).
-#'   Peut etre un vecteur pour explorer plusieurs scenarios.
-#' @param sd Numerique. Ecart-type commun aux deux groupes.
-#'   Requis pour le test de Student.
-#' @param sd1 Numerique. Ecart-type du groupe 1.
-#'   Requis pour les tests de Welch et Wilcoxon.
-#' @param sd2 Numerique. Ecart-type du groupe 2.
-#'   Requis pour les tests de Welch et Wilcoxon.
-#' @param marge Numerique. Marge de non-inferiorite (valeur strictement positive).
-#'   Peut etre un vecteur pour explorer plusieurs marges.
-#' @param power Numerique. Puissance souhaitee. Par defaut 0.80.
-#'   Peut etre un vecteur pour explorer plusieurs niveaux de puissance.
-#' @param alpha Numerique. Niveau de significativite unilateral. Par defaut 0.025.
-#'   Peut etre un vecteur.
-#' @param kappa Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres).
-#'   Un ratio > 1 indique plus de sujets dans le groupe 1.
-#' @param missing_rate Numerique. Taux de donnees manquantes. Par defaut 0.
-#'   Peut etre un vecteur. Utilise pour calculer n1_pdv, n2_pdv et ntotal_pdv.
+#' @param mu1 Numerique. Moyenne attendue dans le groupe 1 (traitement). Peut etre un vecteur.
+#' @param mu2 Numerique. Moyenne attendue dans le groupe 2 (controle). Peut etre un vecteur.
+#' @param sd Numerique. Ecart-type commun aux deux groupes. Requis pour le test de Student.
+#' @param sd1 Numerique. Ecart-type du groupe 1. Requis pour le test de Welch.
+#' @param sd2 Numerique. Ecart-type du groupe 2. Requis pour le test de Welch.
+#' @param marge Numerique. Marge de non-infériorité (valeur strictement positive). Peut etre un vecteur.
+#' @param power Numerique. Puissance souhaitee. Par defaut 0.80. Peut etre un vecteur.
+#' @param alpha Numerique. Risque de premiere espece. Par defaut 0.025. Peut etre un vecteur.
+#' @param kappa Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres). Ne peut pas etre un vecteur. Un ratio > 1 indique plus de sujets dans le groupe 1.
+#' @param missing_prop Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur. Utilise pour calculer n1_pdv, n2_pdv et n_total_pdv.
+#' @param sided Numerique. Test unilatéral (1) ou bilatéral (2). Par défaut 1. Peut prendre la valeur 1 ou 2 uniquement.
 #' @param choice Caractere. Test statistique a utiliser :
 #' \itemize{
-#'   \item \code{"student"} : Test de Student, variances egales.
-#'     Utilise \code{pwrss::power.t.student()}.
-#'   \item \code{"welch"} : Test de Welch, variances inegales.
-#'     Utilise \code{pwrss::power.t.welch()}.
-#'   \item \code{"wilcoxon"} : Test de Wilcoxon-MWW, non parametrique.
-#'     Utilise \code{pwrss::power.np.wilcoxon()}.
+#'   \item \code{"student"} : Test de Student, variances egales. Utilise \code{rpact::getSampleSizeMeans()}.
+#'   \item \code{"welch"} : Test de Welch, variances inegales. Utilise \code{rpact::getSampleSizeMeans()}.
 #' }
 #'
 #' @return Un data.frame avec une ligne par combinaison de parametres et les colonnes :
 #' \itemize{
 #'   \item \code{test} : Methode utilisee.
-#'   \item \code{puissance} : Puissance cible.
+#'   \item \code{puissance} : Puissance.
 #'   \item \code{mu1}, \code{mu2} : Moyennes.
 #'   \item \code{marge} : Marge de non-inferiorite.
-#'   \item \code{alpha} : Niveau de significativite.
+#'   \item \code{alpha} : Risque de 1ere espece.
 #'   \item \code{kappa} : Ratio d'allocation n1/n2.
-#'   \item \code{prop_manquant} : Taux de manquants.
+#'   \item \code{missing_prop} : Proportion de donnees manquantes.
 #'   \item \code{n1}, \code{n2} : Effectifs par groupe.
-#'   \item \code{n_total} : Effectif total brut.
-#'   \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe ajustes aux donnees manquantes.
-#'   \item \code{ntotal_pdv} : Effectif total ajuste aux donnees manquantes.
+#'   \item \code{n_total} : Effectif total.
+#'   \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe avec prise en compte des donnees manquantes.
+#'   \item \code{n_total_pdv} : Effectif total avec prise en compte des donnees manquantes.
 #' }
-#' Les combinaisons infaisables (|delta| >= marge) sont silencieusement retirees.
 #' Un attribut \code{ssdesignr_type = "mean_ni"} est attache au resultat
 #' pour permettre la validation dans \code{ss_cluster()}.
 #'
 #' @importFrom dplyr mutate filter select
-#' @importFrom magrittr %>%
 #' @importFrom purrr pmap map_dbl
-#' @importFrom pwrss power.t.student power.t.welch power.np.wilcoxon
+#' @importFrom rpact getSampleSizeMeans
 #'
 #' @examples
 #' \dontrun{
-#' # Student equilibre — cas de reference
-#' ss_mean_ni(
-#'   mu1    = 10,
-#'   mu2    = 10,
-#'   sd     = 3,
-#'   marge  = c(0.5, 1.5),
-#'   power  = c(0.80, 0.90),
-#'   choice = "student"
-#' )
+#' # Student equilibre
+# ss_mean_ni(
+#   mu1    = 50,
+#   mu2    = 50,
+#   sd     = 10,
+#   marge  = c(1, 5, 10),
+#   power  = c(0.80, 0.90),
+#   choice = "student"
+# )
 #'
-#' # Welch desequilibre (kappa = 2)
-#' ss_mean_ni(
-#'   mu1    = 10,
-#'   mu2    = 10,
-#'   sd1    = 3,
-#'   sd2    = 5,
-#'   marge  = 0.5,
-#'   kappa  = 2,
-#'   choice = "welch"
-#' )
+#' # Welch desequilibre (kappa = 1/2)
+# ss_mean_ni(
+#   mu1    = 50,
+#   mu2    = 50,
+#   sd1    = 10,
+#   sd2    = 15,
+#   marge  = c(1, 5, 10),
+#   kappa  = 1/2,
+#   choice = "welch"
+# )
 #' }
 #'
 #' @export
@@ -99,33 +84,50 @@ ss_mean_ni <- function(
     power        = 0.80,
     alpha        = 0.025,
     kappa        = 1,
-    missing_rate = 0,
-    choice       = c("student", "welch", "wilcoxon")
+    missing_prop = 0,
+    sided        = 1,
+    choice       = c("student", "welch")
 ) {
 
   choice <- match.arg(choice)
 
   # --- Verifications generales ---
 
-  if (is.null(mu1) | is.null(mu2)) {
+  if (is.null(mu1) | is.null(mu2))
     stop("Les moyennes 'mu1' et 'mu2' doivent etre fournies.")
-  }
 
-  if (is.null(marge) | any(marge <= 0)) {
-    stop("La marge de non-inferiorite 'marge' doit etre fournie et strictement positive.")
-  }
+  if (!is.null(sd) && (!is.numeric(sd) || any(sd <= 0)))
+    stop("'sd' doit être numérique et strictement positif.")
 
-  if (any(alpha <= 0) | any(alpha >= 1)) {
-    stop("'alpha' doit etre compris entre 0 et 1.")
-  }
+  if (!is.null(sd1) && (!is.numeric(sd1) || any(sd1 <= 0)))
+    stop("'sd1' doit être numérique et strictement positif.")
 
-  if (any(power <= 0) | any(power >= 1)) {
+  if (!is.null(sd2) && (!is.numeric(sd2) || any(sd2 <= 0)))
+    stop("'sd2' doit être numérique et strictement positif.")
+
+  if (is.null(marge) | any(marge <= 0) | any(marge >= 1))
+    stop("La marge de non-inferiorite 'marge' doit etre fournie et strictement comprise entre 0 et 1.")
+
+  if (any(power <= 0) | any(power >= 1))
     stop("'power' doit etre compris entre 0 et 1.")
-  }
 
-  if (any(missing_rate < 0) | any(missing_rate >= 1)) {
-    stop("'missing_rate' doit etre compris entre 0 (inclus) et 1 (exclus).")
-  }
+  if (any(alpha <= 0) | any(alpha >= 1))
+    stop("'alpha' doit etre compris entre 0 et 1.")
+
+  if (any(alpha > 0.05))
+    warning("Une valeur de 'alpha' > 0.05 est inhabituelle pour un essai de non-inferiorite. Le choix usuel est un test unilateral avec alpha = 0.025).")
+
+  if (length(kappa) != 1)
+    stop("'kappa' ne peut contenir qu'une seule valeur.")
+
+  if (kappa <= 0)
+    stop("'kappa' doit etre strictement positif.")
+
+  if (any(missing_prop < 0) | any(missing_prop >= 1))
+    stop("'missing_prop' doit etre compris entre 0 (inclus) et 1 (exclus).")
+
+  if (length(sided) != 1 || !sided %in% c(1, 2))
+    stop("'sided' doit valoir 1 ou 2.")
 
   # --- Verifications specifiques au test ---
 
@@ -134,16 +136,12 @@ ss_mean_ni <- function(
       stop("'sd' doit etre fourni pour le test de Student.")
     }
   }
-
-  if (choice %in% c("welch", "wilcoxon")) {
+  if (choice == "welch") {
     if (is.null(sd1) | is.null(sd2)) {
-      stop("'sd1' et 'sd2' doivent etre fournis pour les tests de Welch et Wilcoxon.")
+      stop("'sd1' et 'sd2' doivent etre fournis pour le test de Welch.")
     }
   }
 
-  # --- Utilitaire interne ---
-
-  arrondir <- function(x) ceiling(as.numeric(x))
 
   # --- Grille de combinaisons de parametres ---
 
@@ -153,99 +151,112 @@ ss_mean_ni <- function(
     marge        = marge,
     power        = power,
     alpha        = alpha,
-    missing_prop = missing_rate
+    missing_prop = missing_prop
   )
 
   # --- Calculs par ligne ---
 
-  res <- params %>%
+  res <- params |>
     dplyr::mutate(
       tmp = purrr::pmap(
         list(mu1, mu2, marge, power, alpha),
         function(mu1, mu2, marge, power, alpha) {
 
-          delta <- mu1 - mu2
+          # Student : kappa = 1 ou kappa != 1  -> rpact::getSampleSizeMeans()
 
           if (choice == "student") {
-            tryCatch({
-              r <- pwrss::power.t.student(
-                d           = delta / sd,
-                margin      = -marge / sd,
-                power       = power,
-                alpha       = alpha,
-                alternative = "one.sided",
-                design      = "independent",
-                n.ratio     = kappa,
-                verbose     = FALSE
-              )
-              list(n1 = r$n[1], n2 = r$n[2])
-            }, error = function(e) {
-              list(n1 = NA_real_, n2 = NA_real_)
-            })
 
-          } else if (choice == "welch") {
-            sd_pool <- sqrt((sd1^2 + sd2^2) / 2)
-            tryCatch({
-              r <- pwrss::power.t.welch(
-                d           = delta / sd_pool,
-                margin      = -marge / sd_pool,
-                var.ratio   = sd1^2 / sd2^2,
-                n.ratio     = kappa,
-                power       = power,
-                alpha       = alpha,
-                alternative = "one.sided",
-                verbose     = FALSE
-              )
-              list(n1 = r$n[1], n2 = r$n[2])
-            }, error = function(e) {
-              list(n1 = NA_real_, n2 = NA_real_)
-            })
+            res_rpact <- getSampleSizeMeans(
+              thetaH0                = -marge,
+              alternative            = (mu1-mu2),
+              alpha                  = alpha,
+              beta                   = 1-power,
+              stDev                  = sd,
+              sided                  = sided,
+              allocationRatioPlanned = kappa)
 
-          } else if (choice == "wilcoxon") {
-            sd_pool <- sqrt((sd1^2 + sd2^2) / 2)
-            tryCatch({
-              r <- pwrss::power.np.wilcoxon(
-                d           = delta / sd_pool,
-                margin      = -marge / sd_pool,
-                power       = power,
-                alpha       = alpha,
-                alternative = "one.sided",
-                design      = "independent",
-                n.ratio     = kappa,
-                verbose     = FALSE
-              )
-              list(n1 = r$n[1], n2 = r$n[2])
-            }, error = function(e) {
-              list(n1 = NA_real_, n2 = NA_real_)
-            })
+            n <- ceiling(res_rpact$numberOfSubjects)
+            n2 <- ceiling(n / (1 + kappa))
+            n1 <- ceiling(kappa * n2)
 
-          } else {
-            list(n1 = NA_real_, n2 = NA_real_)
+            return(list(n1 = n1, n2 = n2))
           }
 
-        }
+          # Welch : kappa = 1 ou kappa != 1 -> rpact::getSampleSizeMeans()
+
+          if (choice == "welch") {
+            res_rpact <- getSampleSizeMeans(
+              thetaH0                = -marge,
+              alternative            = (mu1-mu2),
+              alpha                  = alpha,
+              beta                   = 1-power,
+              stDev                  = c(sd1, sd2),
+              sided                  = sided,
+              allocationRatioPlanned = kappa)
+
+            n <- ceiling(res_rpact$numberOfSubjects)
+            n2 <- ceiling(n / (1 + kappa))
+            n1 <- ceiling(kappa * n2)
+
+            return(list(n1 = n1, n2 = n2))
+            }
+          }
       )
-    ) %>%
+    ) |>
     dplyr::mutate(
-      n1            = arrondir(purrr::map_dbl(tmp, ~.x$n1)),
-      n2            = arrondir(purrr::map_dbl(tmp, ~.x$n2)),
+      n1            = ceiling(purrr::map_dbl(tmp, ~.x$n1)),
+      n2            = ceiling(purrr::map_dbl(tmp, ~.x$n2)),
       n_total       = n1 + n2,
       n1_pdv        = ceiling(n1 / (1 - missing_prop)),
       n2_pdv        = ceiling(n2 / (1 - missing_prop)),
-      ntotal_pdv    = n1_pdv + n2_pdv,
-      prop_manquant = missing_prop,
+      n_total_pdv    = n1_pdv + n2_pdv,
+      missing_prop = missing_prop,
       puissance     = power,
       test          = choice,
       kappa         = kappa
-    ) %>%
-    dplyr::select(
-      test, puissance, mu1, mu2, marge, alpha, kappa,
-      prop_manquant, n1, n2, n_total, n1_pdv, n2_pdv, ntotal_pdv
     )
 
-  res <- dplyr::filter(res, !is.na(n1))
+  # Création des labels et sélection des variables à retourner
+  if (choice == "student") {
+    res <- dplyr::mutate(res, sd = sd) |> dplyr::relocate(test, mu1, mu2, marge, sd, .before = puissance)
+    cols <- c("test", "mu1", "mu2", "marge", "sd", "puissance", "alpha", "kappa", "missing_prop",
+              "n1", "n2", "n_total", "n1_pdv", "n2_pdv", "n_total_pdv")
+  } else {
+    res <- dplyr::mutate(res, sd1 = sd1, sd2 = sd2) |> dplyr::relocate(test, mu1, mu2, marge, sd1, sd2, .before = puissance)
+    cols <- c("test", "mu1", "mu2", "marge", "sd1", "sd2", "puissance", "alpha", "kappa", "missing_prop",
+              "n1", "n2", "n_total", "n1_pdv", "n2_pdv", "n_total_pdv")
+  }
+
+  labels_common <- list(
+    test = "Test",
+    mu1 = "Moyenne 1",
+    mu2 = "Moyenne 2",
+    marge = "Marge NI",
+    alpha = "Alpha",
+    puissance = "Puissance",
+    kappa = "Ratio N1/N2",
+    n1 = "N1",
+    n2 = "N2",
+    n_total = "N",
+    missing_prop = "Proportion de données manquantes attendue",
+    n1_pdv = "N1 - PDV pris en compte",
+    n2_pdv = "N2 - PDV pris en compte",
+    n_total_pdv = "N total - PDV"
+  )
+
+  labels_student <- c(labels_common, list(sd = "Ecart-type commun"))
+  labels_welch <- c(labels_common, list(sd1 = "Ecart-type 1", sd2 = "Ecart-type 2"))
+  labels <-
+    if (choice == "student") {labels_student}
+    else {labels_welch}
+
+  res <- dplyr::select(res, dplyr::all_of(cols))
+  labels <- labels[names(labels) %in% names(res)]
+  res <- labelled::set_variable_labels(res, !!!labels)
 
   attr(res, "ssdesignr_type") <- "mean_ni"
-
   return(res)
 }
+
+
+

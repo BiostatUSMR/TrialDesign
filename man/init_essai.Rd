@@ -35,34 +35,27 @@ init_essai(
 
 \item{nb_block}{Vecteur numérique. Nombre de blocs souhaités pour chaque taille.}
 
-\item{ratio}{Vecteur numérique de longueur k. Ratio d'allocation.
-Si NULL, un ratio équilibré 1:1:...:1 est utilisé.}
+\item{ratio}{Vecteur numérique de longueur k. Ratio d'allocation. Si NULL, un ratio équilibré 1:1:...:1 est utilisé.}
 
-\item{arm_label}{Vecteur de caractères de longueur k. Libellés des groupes.
-Si NULL, "Groupe1", "Groupe2"... sont utilisés.}
+\item{arm_label}{Vecteur de caractères de longueur k. Libellés des groupes. Si NULL, "Groupe1", "Groupe2"... sont utilisés.}
 
-\item{arm_code}{Vecteur numérique de longueur k. Codes des groupes.
-Si NULL, 1, 2, ..., k sont utilisés.}
+\item{arm_code}{Vecteur numérique de longueur k. Codes des groupes. Si NULL, 1, 2, ..., k sont utilisés.}
 
 \item{strat_vars}{Liste optionnelle décrivant les variables de stratification.
-Chaque élément est une liste avec \code{codes} (vecteur numérique) et
-\code{labels} (vecteur de caractères).
+Chaque élément est une liste avec \code{codes} (vecteur numérique) et \code{labels} (vecteur de caractères).
 Exemple : \code{list(sexe = list(codes = c(1,2), labels = c("Homme","Femme")))}.}
 
-\item{id_etude}{Caractère. Identifiant officiel de l'étude. Ex : "CHUBX2024/01".
-Par défaut NULL.}
+\item{id_etude}{Caractère. Identifiant officiel de l'étude. Ex : "CHUBX2024/01". Par défaut NULL.}
 
 \item{libelle_etude}{Caractère. Libellé complet de l'étude. Par défaut NULL.}
 
-\item{investigateur}{Caractère. Nom de l'investigateur coordinateur.
-Par défaut NULL.}
+\item{investigateur}{Caractère. Nom de l'investigateur principal. Par défaut NULL.}
 
 \item{methodologiste}{Caractère. Nom du méthodologiste. Par défaut NULL.}
 
 \item{biostatisticien}{Caractère. Nom du biostatisticien. Par défaut NULL.}
 
-\item{confidentiel}{Logique. Si TRUE, affiche la mention CONFIDENTIEL sur
-la page de garde. Par défaut FALSE.}
+\item{confidentiel}{Logique. Si TRUE, affiche la mention CONFIDENTIEL sur la page de garde. Par défaut FALSE.}
 
 \item{code_usmr}{Caractère. Code du document USMR. Par défaut NULL.}
 

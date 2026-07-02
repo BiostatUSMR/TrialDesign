@@ -14,72 +14,60 @@ ss_mean_ni(
   power = 0.8,
   alpha = 0.025,
   kappa = 1,
-  missing_rate = 0,
-  choice = c("student", "welch", "wilcoxon")
+  missing_prop = 0,
+  sided = 1,
+  choice = c("student", "welch")
 )
 }
 \arguments{
-\item{mu1}{Numerique. Moyenne attendue dans le groupe 1 (traitement).
-Peut etre un vecteur pour explorer plusieurs scenarios.}
+\item{mu1}{Numerique. Moyenne attendue dans le groupe 1 (traitement). Peut etre un vecteur.}
 
-\item{mu2}{Numerique. Moyenne attendue dans le groupe 2 (controle).
-Peut etre un vecteur pour explorer plusieurs scenarios.}
+\item{mu2}{Numerique. Moyenne attendue dans le groupe 2 (controle). Peut etre un vecteur.}
 
-\item{sd}{Numerique. Ecart-type commun aux deux groupes.
-Requis pour le test de Student.}
+\item{sd}{Numerique. Ecart-type commun aux deux groupes. Requis pour le test de Student.}
 
-\item{sd1}{Numerique. Ecart-type du groupe 1.
-Requis pour les tests de Welch et Wilcoxon.}
+\item{sd1}{Numerique. Ecart-type du groupe 1. Requis pour le test de Welch.}
 
-\item{sd2}{Numerique. Ecart-type du groupe 2.
-Requis pour les tests de Welch et Wilcoxon.}
+\item{sd2}{Numerique. Ecart-type du groupe 2. Requis pour le test de Welch.}
 
-\item{marge}{Numerique. Marge de non-inferiorite (valeur strictement positive).
-Peut etre un vecteur pour explorer plusieurs marges.}
+\item{marge}{Numerique. Marge de non-infériorité (valeur strictement positive). Peut etre un vecteur.}
 
-\item{power}{Numerique. Puissance souhaitee. Par defaut 0.80.
-Peut etre un vecteur pour explorer plusieurs niveaux de puissance.}
+\item{power}{Numerique. Puissance souhaitee. Par defaut 0.80. Peut etre un vecteur.}
 
-\item{alpha}{Numerique. Niveau de significativite unilateral. Par defaut 0.025.
-Peut etre un vecteur.}
+\item{alpha}{Numerique. Risque de premiere espece. Par defaut 0.025. Peut etre un vecteur.}
 
-\item{kappa}{Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres).
-Un ratio > 1 indique plus de sujets dans le groupe 1.}
+\item{kappa}{Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres). Ne peut pas etre un vecteur. Un ratio > 1 indique plus de sujets dans le groupe 1.}
 
-\item{missing_rate}{Numerique. Taux de donnees manquantes. Par defaut 0.
-Peut etre un vecteur. Utilise pour calculer n1_pdv, n2_pdv et ntotal_pdv.}
+\item{missing_prop}{Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur. Utilise pour calculer n1_pdv, n2_pdv et n_total_pdv.}
+
+\item{sided}{Numerique. Test unilatéral (1) ou bilatéral (2). Par défaut 1. Peut prendre la valeur 1 ou 2 uniquement.}
 
 \item{choice}{Caractere. Test statistique a utiliser :
 \itemize{
-  \item \code{"student"} : Test de Student, variances egales.
-    Utilise \code{pwrss::power.t.student()}.
-  \item \code{"welch"} : Test de Welch, variances inegales.
-    Utilise \code{pwrss::power.t.welch()}.
-  \item \code{"wilcoxon"} : Test de Wilcoxon-MWW, non parametrique.
-    Utilise \code{pwrss::power.np.wilcoxon()}.
+  \item \code{"student"} : Test de Student, variances egales. Utilise \code{rpact::getSampleSizeMeans()}.
+  \item \code{"welch"} : Test de Welch, variances inegales. Utilise \code{rpact::getSampleSizeMeans()}.
 }}
 }
 \value{
 Un data.frame avec une ligne par combinaison de parametres et les colonnes :
 \itemize{
   \item \code{test} : Methode utilisee.
-  \item \code{puissance} : Puissance cible.
+  \item \code{puissance} : Puissance.
   \item \code{mu1}, \code{mu2} : Moyennes.
   \item \code{marge} : Marge de non-inferiorite.
-  \item \code{alpha} : Niveau de significativite.
+  \item \code{alpha} : Risque de 1ere espece.
   \item \code{kappa} : Ratio d'allocation n1/n2.
-  \item \code{prop_manquant} : Taux de manquants.
+  \item \code{missing_prop} : Proportion de donnees manquantes.
   \item \code{n1}, \code{n2} : Effectifs par groupe.
-  \item \code{n_total} : Effectif total brut.
-  \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe ajustes aux donnees manquantes.
-  \item \code{ntotal_pdv} : Effectif total ajuste aux donnees manquantes.
+  \item \code{n_total} : Effectif total.
+  \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe avec prise en compte des donnees manquantes.
+  \item \code{n_total_pdv} : Effectif total avec prise en compte des donnees manquantes.
 }
-Les combinaisons infaisables (|delta| >= marge) sont silencieusement retirees.
 Un attribut \code{ssdesignr_type = "mean_ni"} est attache au resultat
 pour permettre la validation dans \code{ss_cluster()}.
 }
 \description{
-Calcule la taille d'echantillon necessaire pour demontrer la non-inferiorite
+Calcule le nombre de sujets necessaire pour demontrer la non-inferiorite
 entre deux groupes sur un critere continu (deux moyennes).
 
 Hypotheses :
@@ -90,26 +78,9 @@ Hypotheses :
 }
 \examples{
 \dontrun{
-# Student equilibre — cas de reference
-ss_mean_ni(
-  mu1    = 10,
-  mu2    = 10,
-  sd     = 3,
-  marge  = c(0.5, 1.5),
-  power  = c(0.80, 0.90),
-  choice = "student"
-)
+# Student equilibre
 
-# Welch desequilibre (kappa = 2)
-ss_mean_ni(
-  mu1    = 10,
-  mu2    = 10,
-  sd1    = 3,
-  sd2    = 5,
-  marge  = 0.5,
-  kappa  = 2,
-  choice = "welch"
-)
+# Welch desequilibre (kappa = 1/2)
 }
 
 }

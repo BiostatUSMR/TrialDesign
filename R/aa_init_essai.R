@@ -10,25 +10,18 @@
 #' @param k Entier. Nombre de groupes de traitement (>= 2).
 #' @param block_sizes Vecteur numérique. Tailles réelles des blocs.
 #' @param nb_block Vecteur numérique. Nombre de blocs souhaités pour chaque taille.
-#' @param ratio Vecteur numérique de longueur k. Ratio d'allocation.
-#'   Si NULL, un ratio équilibré 1:1:...:1 est utilisé.
-#' @param arm_label Vecteur de caractères de longueur k. Libellés des groupes.
-#'   Si NULL, "Groupe1", "Groupe2"... sont utilisés.
-#' @param arm_code Vecteur numérique de longueur k. Codes des groupes.
-#'   Si NULL, 1, 2, ..., k sont utilisés.
+#' @param ratio Vecteur numérique de longueur k. Ratio d'allocation. Si NULL, un ratio équilibré 1:1:...:1 est utilisé.
+#' @param arm_label Vecteur de caractères de longueur k. Libellés des groupes. Si NULL, "Groupe1", "Groupe2"... sont utilisés.
+#' @param arm_code Vecteur numérique de longueur k. Codes des groupes. Si NULL, 1, 2, ..., k sont utilisés.
 #' @param strat_vars Liste optionnelle décrivant les variables de stratification.
-#'   Chaque élément est une liste avec \code{codes} (vecteur numérique) et
-#'   \code{labels} (vecteur de caractères).
+#'   Chaque élément est une liste avec \code{codes} (vecteur numérique) et \code{labels} (vecteur de caractères).
 #'   Exemple : \code{list(sexe = list(codes = c(1,2), labels = c("Homme","Femme")))}.
-#' @param id_etude Caractère. Identifiant officiel de l'étude. Ex : "CHUBX2024/01".
-#'   Par défaut NULL.
+#' @param id_etude Caractère. Identifiant officiel de l'étude. Ex : "CHUBX2024/01". Par défaut NULL.
 #' @param libelle_etude Caractère. Libellé complet de l'étude. Par défaut NULL.
-#' @param investigateur Caractère. Nom de l'investigateur coordinateur.
-#'   Par défaut NULL.
+#' @param investigateur Caractère. Nom de l'investigateur principal. Par défaut NULL.
 #' @param methodologiste Caractère. Nom du méthodologiste. Par défaut NULL.
 #' @param biostatisticien Caractère. Nom du biostatisticien. Par défaut NULL.
-#' @param confidentiel Logique. Si TRUE, affiche la mention CONFIDENTIEL sur
-#'   la page de garde. Par défaut FALSE.
+#' @param confidentiel Logique. Si TRUE, affiche la mention CONFIDENTIEL sur la page de garde. Par défaut FALSE.
 #' @param code_usmr Caractère. Code du document USMR. Par défaut NULL.
 #' @param indice_document Caractère. Indice du document. Par défaut NULL.
 #'

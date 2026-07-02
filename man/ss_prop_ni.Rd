@@ -11,54 +11,51 @@ ss_prop_ni(
   power = 0.8,
   alpha = 0.025,
   kappa = 1,
-  missing_rate = 0,
+  missing_prop = 0,
+  sided = 1,
   choice = "khi2"
 )
 }
 \arguments{
-\item{p1}{Numerique. Proportion attendue dans le groupe 1 (traitement), entre 0 et 1.
-Peut etre un vecteur pour explorer plusieurs scenarios.}
+\item{p1}{Numerique. Proportion attendue dans le groupe 1 (traitement), entre 0 et 1. Peut etre un vecteur.}
 
-\item{p2}{Numerique. Proportion attendue dans le groupe 2 (controle), entre 0 et 1.
-Peut etre un vecteur.}
+\item{p2}{Numerique. Proportion attendue dans le groupe 2 (controle), entre 0 et 1. Peut etre un vecteur.}
 
-\item{marge}{Numerique. Marge de non-inferiorite (valeur strictement positive).
-Peut etre un vecteur.}
+\item{marge}{Numerique. Marge de non-inferiorite (valeur strictement positive). Peut etre un vecteur.}
 
 \item{power}{Numerique. Puissance souhaitee. Par defaut 0.80. Peut etre un vecteur.}
 
-\item{alpha}{Numerique. Niveau de significativite unilateral. Par defaut 0.025.
-Peut etre un vecteur.}
+\item{alpha}{Numerique. Risque de 1ere espece. Par defaut 0.025. Peut etre un vecteur.}
 
 \item{kappa}{Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres).}
 
-\item{missing_rate}{Numerique. Taux de donnees manquantes. Par defaut 0.
-Peut etre un vecteur.}
+\item{missing_prop}{Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur.}
 
-\item{choice}{Caractere. Unique valeur acceptee : \code{"khi2"}.
-Conserve pour uniformite avec les autres fonctions du package.}
+\item{sided}{Numerique. Test unilatéral (1) ou bilatéral (2). Par défaut 1. Peut prendre la valeur 1 ou 2 uniquement.}
+
+\item{choice}{Caractere. Unique valeur acceptee : \code{"khi2"}. Conserve pour uniformite avec les autres fonctions du package.}
 }
 \value{
 Un data.frame avec une ligne par combinaison de parametres et les colonnes :
 \itemize{
   \item \code{test} : Methode utilisee (\code{"khi2"}).
-  \item \code{puissance} : Puissance cible.
+  \item \code{puissance} : Puissance.
   \item \code{p1}, \code{p2} : Proportions.
   \item \code{marge} : Marge de non-inferiorite.
-  \item \code{alpha} : Niveau de significativite.
+  \item \code{alpha} : Risque de 1ere espece.
   \item \code{kappa} : Ratio d'allocation n1/n2.
-  \item \code{prop_manquant} : Taux de manquants.
+  \item \code{prop_manquant} : Proportion de donnees manquantes.
   \item \code{n1}, \code{n2} : Effectifs par groupe.
-  \item \code{n_total} : Effectif total brut.
-  \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe ajustes aux donnees manquantes.
-  \item \code{ntotal_pdv} : Effectif total ajuste aux donnees manquantes.
+  \item \code{n_total} : Effectif total.
+  \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe avec prise en compte des donnees manquantes.
+  \item \code{n_total_pdv} : Effectif total avec prise en compte des donnees manquantes.
 }
 Les combinaisons infaisables (|delta| >= marge) sont silencieusement retirees.
 Un attribut \code{ssdesignr_type = "prop_ni"} est attache au resultat
 pour permettre la validation dans \code{ss_cluster()}.
 }
 \description{
-Calcule la taille d'echantillon necessaire pour demontrer la non-inferiorite
+Calcule le nombre de sujets necessaire pour demontrer la non-inferiorite
 entre deux groupes sur un critere binaire (deux proportions).
 
 Hypotheses :
@@ -68,27 +65,13 @@ Hypotheses :
 }
 }
 \note{
-Le test exact de Fisher n'est pas disponible en NI dans pwrss 1.0.0
-(\code{power.exact.twoprops} ne supporte pas le parametre \code{margin}).
-Seul le khi-2 est disponible via \code{pwrss::power.z.twoprops()}.
+Seul le test du Khi-2 est disponible en NI.
 }
 \examples{
 \dontrun{
-# Khi-2 equilibre — cas de reference
-ss_prop_ni(
-  p1     = 0.75,
-  p2     = 0.50,
-  marge  = c(0.5, 0.1),
-  power  = c(0.80, 0.90)
-)
+# Khi-2 equilibre
 
 # Khi-2 desequilibre (kappa = 2)
-ss_prop_ni(
-  p1     = c(0.75, 0.60),
-  p2     = c(0.50, 0.55),
-  marge  = c(0.1, 0.2),
-  kappa  = 2
-)
 }
 
 }
