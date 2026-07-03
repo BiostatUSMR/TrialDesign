@@ -32,9 +32,9 @@ ss_mean_sup(
 
 \item{sd2}{Numerique. Ecart-type du groupe 2. Requis pour les tests de Welch et Wilcoxon.}
 
-\item{seed}{Entier. Graine utilisée pour les simulations du test de Wilcoxon. Par défaut NULL.}
+\item{seed}{Entier. Graine utilisee pour les simulations du test de Wilcoxon. Par defaut NULL.}
 
-\item{thetaH0}{Numerique. Valeur sous l'hypothèse nulle. Par défaut 0. Ne peut pas etre un vecteur}
+\item{thetaH0}{Numerique. Valeur sous l'hypothese nulle. Par defaut 0. Ne peut pas etre un vecteur}
 
 \item{power}{Numerique. Puissance souhaitee. Par defaut 0.80. Peut etre un vecteur.}
 
@@ -46,7 +46,7 @@ ss_mean_sup(
 
 \item{nsim}{Entier. Nombre de simulations pour le test de Wilcoxon. Par defaut 10000.}
 
-\item{sided}{Numerique. Test unilatéral (1) ou bilatéral (2). Par défaut 2. Peut prendre la valeur 1 ou 2 uniquement.}
+\item{sided}{Numerique. Test unilateral (1) ou bilateral (2). Par defaut 2. Peut prendre la valeur 1 ou 2 uniquement.}
 
 \item{choice}{Caractere. Test statistique a utiliser :
 \itemize{

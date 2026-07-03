@@ -1,26 +1,32 @@
-
-
 #' FONCTION sample_size_phase2
 #'
 #' @description
-#' Calcule la taille d'échantillon nécessaire pour un essai de phase II à un bras
-#' selon les méthodes de A'Hern ou de Fleming, pour tester si la proportion de succès
-#' attendue est suffisamment élevée pour justifier un essai de phase III.
+#' Calcule le nombre de sujets necessaire pour un essai de phase II a un bras
+#' selon les methodes de A'Hern ou de Fleming, pour tester si la proportion de succes
+#' attendue est suffisamment elevee pour justifier un essai de phase III.
 #'
-#' @param p0 Proportion de succès sous l'hypothèse nulle (taux inacceptable)
-#' @param p1 Proportion de succès sous l'hypothèse alternative (taux attendu)
-#' @param alpha Niveau de signification (erreur de type I, défaut = 0.05)
-#' @param power Puissance souhaitée (1 - erreur de type II, défaut = 0.80)
-#' @param method Méthode de calcul ("ahern" ou "fleming")
-#' @param missing_rate Proportion attendue de données manquantes (défaut = 0)
-#' @param nmax Taille maximale testée pour A'Hern (défaut = 200)
+#' @param p0 Numerique. Proportion de succes sous l'hypothese nulle (taux inacceptable). Peut etre un vecteur.
+#' @param p1 Numerique. Proportion de succes sous l'hypothese alternative (taux attendu).  Peut etre un vecteur. Attention : un ecart p1 - p0 tres faible peut rendre le calcul
+#'   tres long (recherche exhaustive), en particulier pour method = "fleming".
+#' @param alpha Numerique. Risque de premiere espece. Par defaut = 0.05. Peut etre un vecteur
+#' @param power Numerique. Puissance. Par defaut 0.80. Peut etre un vecteur.
+#' @param method Caractere. Methode de calcul ("ahern" ou "fleming").
+#' \itemize{
+#'   \item \code{"ahern"} : Recherche exacte sur la loi binomiale (A'Hern, 2001).
+#'     Plus precise mais generalement des effectifs plus eleves. Recherche exhaustive
+#'     via \code{stats::pbinom()}.
+#'   \item \code{"fleming"} : Approximation normale de la loi binomiale (Fleming, 1982).
+#'     Calcul direct (formule fermee), effectifs generalement plus faibles que A'Hern,
+#'     mais approximation moins fiable pour les petits echantillons (< 50 sujets).
+#' }
+#' @param missing_prop Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur. Utilise pour calculer n1_pdv, n2_pdv et n_total_pdv.
+#' @param nmax Numerique. Taille maximale testee pour A'Hern. Par defaut = 200.
 #'
 #' @importFrom dplyr mutate select
 #' @importFrom purrr pmap map_dbl
-#' @importFrom stats pbinom
-#' @importFrom clinfun ph2single
+#' @importFrom stats pbinom qnorm
 #'
-#' @return Un data.frame avec les colonnes : methode, p0, p1, alpha, power,
+#' @return Un data.frame avec les colonnes : methode, p0, p1, alpha, puissance,
 #'   missing_prop, n_patient, n_ajuste, n_succes.
 #'
 #' @export
@@ -31,7 +37,7 @@
 #'   p0 = c(0.10,0.20),
 #'   p1 = c(0.30,0.40),
 #'   method = "ahern",
-#'   missing_rate = 0.1,
+#'   missing_prop = 0.1,
 #'   nmax = 50)
 #'   }
 #'
@@ -41,19 +47,41 @@ sample_size_phase2 <- function(
     alpha = 0.05,
     power = 0.80,
     method = c("ahern","fleming"),
-    missing_rate = 0,
+    missing_prop = 0,
     nmax=200
 ){
 
   method <- match.arg(method)
 
-  # Vérifications
-  if(any(c(p0,p1) < 0 | c(p0,p1) > 1)) stop("p0 et p1 doivent \u00eatre compris entre 0 et 1.")
-  if(any(p0 >= p1)) stop("p0 doit \u00eatre strictement inf\u00e9rieur \u00e0 p1.")
-  if(missing_rate < 0 | missing_rate >= 1) stop("missing_rate doit \u00eatre compris entre 0 et 1.")
+  # ------------------------------------
+  # Verifications generales
+  # ------------------------------------
+  if(any(c(p0,p1) < 0 | c(p0,p1) > 1))
+    stop("p0 et p1 doivent etre compris entre 0 et 1.")
 
-  params <- expand.grid(p0=p0, p1=p1, alpha=alpha, power=power, missing_prop=missing_rate)
+  if (any(alpha <= 0) | any(alpha >= 1))
+    stop("'alpha' doit etre compris entre 0 et 1.")
 
+  if (any(power <= 0) | any(power >= 1))
+    stop("'power' doit etre compris entre 0 et 1.")
+
+  if (any(missing_prop < 0) | any(missing_prop >= 1))
+    stop("'missing_prop' doit etre compris entre 0 (inclus) et 1 (exclus).")
+
+  if (!is.numeric(nmax) || length(nmax) != 1 || nmax < 10 || nmax != round(nmax))
+    stop("'nmax' doit etre un entier scalaire >= 10.")
+
+  # ------------------------------------
+  # Grille de parametres
+  # ------------------------------------
+  params <- expand.grid(p0=p0, p1=p1, alpha=alpha, power=power, missing_prop=missing_prop)
+
+  if (any(params$p0 >= params$p1))
+    stop("Toutes les combinaisons p0/p1 doivent verifier p0 < p1.")
+
+  # ------------------------------------
+  # Calcul
+  # ------------------------------------
   res <- dplyr::mutate(
     params,
     tmp = purrr::pmap(
@@ -84,8 +112,16 @@ sample_size_phase2 <- function(
 
         #-------- Fleming --------
         if(method=="fleming"){
-          res <- clinfun::ph2single(pu = p0, pa = p1, ep1 = alpha, ep2 = 1-power)
-          return(list(n_patient=res$n[1], n_succes=res$r[1]))
+          z_alpha <- stats::qnorm(1 - alpha)
+          z_beta  <- stats::qnorm(power)   # power = 1 - beta, donc z_{1-beta} = qnorm(power)
+
+          n_continu <- (z_alpha * sqrt(p0*(1-p0)) + z_beta * sqrt(p1*(1-p1)))^2 / (p1 - p0)^2
+          n_patient <- ceiling(n_continu)
+
+          r_continu <- n_patient * p0 + z_alpha * sqrt(n_patient * p0 * (1 - p0))
+          n_succes  <- round(r_continu) + 1   # rejet si X >= n_succes (X > r)
+
+          return(list(n_patient = n_patient, n_succes = n_succes))
         }
       }
     )
@@ -96,10 +132,31 @@ sample_size_phase2 <- function(
     n_patient = purrr::map_dbl(tmp, ~ .x$n_patient),
     n_succes  = purrr::map_dbl(tmp, ~ .x$n_succes),
     n_ajuste  = ceiling(n_patient/(1-missing_prop)),
+    puissance = power,
     methode   = method
   )
 
-  res <- dplyr::select(res,methode,p0,p1,alpha,power,missing_prop,n_patient,n_ajuste,n_succes)
+  res <- dplyr::select(res, methode, p0, p1, alpha, puissance, missing_prop, n_patient, n_ajuste, n_succes)
 
+  # ------------------------------------
+  # Labels
+  # ------------------------------------
+  labels <- list(
+    methode      = "Methode",
+    p0           = "p0 (H0)",
+    p1           = "p1 (H1)",
+    alpha        = "Alpha",
+    puissance    = "Puissance",
+    missing_prop = "% d.m",
+    n_patient    = "N patients",
+    n_ajuste     = "N - avec d.m",
+    n_succes     = "Seuil de succes (r)"
+  )
+  res <- labelled::set_variable_labels(res, !!!labels)
+
+  # ------------------------------------
+  # Enregistrement
+  # ------------------------------------
+  attr(res, "ssdesignr_type") <- "phase2"
   return(res)
 }

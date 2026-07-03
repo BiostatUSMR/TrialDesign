@@ -1,7 +1,7 @@
 ############################################################
 # FONCTION INTERNE .rename_pdf
 
-# Renommage des colonnes techniques en libellés lisibles pour le PDF
+# Renommage des colonnes techniques en libelles lisibles pour le PDF
 .rename_pdf <- function(df) {
   rename_map <- c(
     RDNUM     = "Num\u00e9ro de randomisation",

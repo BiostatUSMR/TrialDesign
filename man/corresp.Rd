@@ -17,45 +17,45 @@ corresp(
 )
 }
 \arguments{
-\item{essai}{Liste. Objet créé par \code{init_essai()}.
+\item{essai}{Liste. Objet cree par \code{init_essai()}.
 Exemple : \code{essai <- init_essai(...)}.}
 
-\item{mini}{Entier. Premier numéro de boîte.}
+\item{mini}{Entier. Premier numero de boite.}
 
-\item{maxi}{Entier. Dernier numéro de boîte.}
+\item{maxi}{Entier. Dernier numero de boite.}
 
-\item{seed}{Entier. Graine aléatoire pour la reproductibilité.}
+\item{seed}{Entier. Graine aleatoire pour la reproductibilite.}
 
-\item{statut}{Caractère. Statut de la liste générée : \code{"FINALE"} ou
+\item{statut}{Caractere. Statut de la liste generee : \code{"FINALE"} ou
 \code{"FICTIVE"}.}
 
-\item{version}{Caractère. Version de la liste générée. Ex : \code{"v01"}.}
+\item{version}{Caractere. Version de la liste generee. Ex : \code{"v01"}.}
 
-\item{boi_label}{Caractère. Libellé personnalisé pour les boîtes.
-Si NULL, \code{"Boîte de traitement n°xxx"} est utilisé.
-Utilisé uniquement en circuit REDCap.}
+\item{boi_label}{Caractere. Libelle personnalise pour les boites.
+Si NULL, \code{"Boite de traitement numero xxx"} est utilise.
+Utilise uniquement en circuit REDCap.}
 
-\item{col_widths}{Vecteur de caractères. Largeurs des colonnes du tableau PDF.
+\item{col_widths}{Vecteur de caracteres. Largeurs des colonnes du tableau PDF.
 Ex : \code{c("2cm", "3cm", "4cm")}. Si NULL, largeurs automatiques.}
 
-\item{chemin}{Caractère. Chemin vers le répertoire de sortie.
-Si NULL, répertoire de travail courant.}
+\item{chemin}{Caractere. Chemin vers le repertoire de sortie.
+Si NULL, repertoire de travail courant.}
 }
 \value{
-Le data.frame de la liste de correspondance (retourné visiblement
-  pour inspection). Les fichiers suivants sont exportés en parallèle :
+Le data.frame de la liste de correspondance (retourne visiblement
+  pour inspection). Les fichiers suivants sont exportes en parallele :
   \itemize{
-    \item Fichier de données (.txt pour Ennov, .csv pour REDCap)
+    \item Fichier de donnees (.txt pour Ennov, .csv pour REDCap)
     \item Fichier PDF avec page de garde institutionnelle
     \item Fichier XLS avec une feuille par bras de traitement,
-      boîtes triées par numéro croissant
+      boites triees par numero croissant
   }
 }
 \description{
-Génère la liste de correspondance boîtes–traitements selon le circuit
-défini dans l'objet \code{essai} créé par \code{init_essai()}, exporte
-automatiquement trois fichiers (données + PDF + XLS trié par bras),
-et retourne le data.frame généré pour inspection visuelle.
+Genere la liste de correspondance boites/traitements selon le circuit
+defini dans l'objet \code{essai} cree par \code{init_essai()}, exporte
+automatiquement trois fichiers (donnees + PDF + XLS trie par bras),
+et retourne le data.frame genere pour inspection visuelle.
 }
 \examples{
 \dontrun{

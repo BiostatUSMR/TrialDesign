@@ -13,7 +13,6 @@ ss_prop_sup(
   p01 = NULL,
   p10 = NULL,
   missing_prop = 0,
-  alternative = "two.sided",
   sided = 2,
   choice = c("khi2", "fisher", "mcnemar")
 )
@@ -35,9 +34,8 @@ ss_prop_sup(
 
 \item{missing_prop}{Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur.}
 
-\item{alternative}{Caractere. Direction du test : \code{"two.sided"}, \code{"less"} ou \code{"greater"}. Par defaut \code{"two.sided"}.}
-
-\item{sided}{Numerique. Test unilatéral (1) ou bilatéral (2). Par défaut 2. Peut prendre la valeur 1 ou 2 uniquement.}
+\item{sided}{Numerique. Test unilateral (1) ou bilateral (2). Par defaut 2. Peut prendre la valeur 1 ou 2 uniquement.
+Pour un test unilateral, la direction (superiorite/inferiorite de p1 par rapport a p2, ou de p10 par rapport a p01 pour McNemar) est deduite automatiquement du signe de la difference attendue.}
 
 \item{choice}{Caractere. Test statistique a utiliser :
 \itemize{

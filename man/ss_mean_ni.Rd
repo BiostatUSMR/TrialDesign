@@ -30,7 +30,7 @@ ss_mean_ni(
 
 \item{sd2}{Numerique. Ecart-type du groupe 2. Requis pour le test de Welch.}
 
-\item{marge}{Numerique. Marge de non-infériorité (valeur strictement positive). Peut etre un vecteur.}
+\item{marge}{Numerique. Marge de non-inferiorite (valeur strictement positive). Peut etre un vecteur.}
 
 \item{power}{Numerique. Puissance souhaitee. Par defaut 0.80. Peut etre un vecteur.}
 
@@ -40,7 +40,7 @@ ss_mean_ni(
 
 \item{missing_prop}{Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur. Utilise pour calculer n1_pdv, n2_pdv et n_total_pdv.}
 
-\item{sided}{Numerique. Test unilatéral (1) ou bilatéral (2). Par défaut 1. Peut prendre la valeur 1 ou 2 uniquement.}
+\item{sided}{Numerique. Test unilateral (1) ou bilateral (2). Par defaut 1. Peut prendre la valeur 1 ou 2 uniquement.}
 
 \item{choice}{Caractere. Test statistique a utiliser :
 \itemize{

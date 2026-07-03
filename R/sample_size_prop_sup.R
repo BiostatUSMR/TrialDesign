@@ -12,8 +12,8 @@
 #' @param p01 Numerique. Proportion de paires discordantes (groupe 2 positif, groupe 1 negatif). Requis pour McNemar uniquement.
 #' @param p10 Numerique. Proportion de paires discordantes (groupe 1 positif, groupe 2 negatif). Requis pour McNemar uniquement.
 #' @param missing_prop Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur.
-#' @param sided Numerique. Test unilatéral (1) ou bilatéral (2). Par défaut 2. Peut prendre la valeur 1 ou 2 uniquement.
-#' @param alternative Caractere. Direction du test : \code{"two.sided"}, \code{"less"} ou \code{"greater"}. Par defaut \code{"two.sided"}.
+#' @param sided Numerique. Test unilateral (1) ou bilateral (2). Par defaut 2. Peut prendre la valeur 1 ou 2 uniquement.
+#' Pour un test unilateral, la direction (superiorite/inferiorite de p1 par rapport a p2, ou de p10 par rapport a p01 pour McNemar) est deduite automatiquement du signe de la difference attendue.
 #' @param choice Caractere. Test statistique a utiliser :
 #' \itemize{
 #'   \item \code{"khi2"} : Khi-2 d'independance. Utilise \code{getSampleSizeRates()}.
@@ -85,14 +85,15 @@ ss_prop_sup <- function(
     p01          = NULL,
     p10          = NULL,
     missing_prop = 0,
-    alternative  = "two.sided",
     sided = 2,
     choice       = c("khi2", "fisher", "mcnemar")
 ) {
 
   choice <- match.arg(choice)
 
-  # --- Verifications generales ---
+  # ------------------------------------
+  # Verifications generales
+  # ------------------------------------
   if (any(power <= 0) | any(power >= 1))
     stop("'power' doit etre compris entre 0 et 1.")
 
@@ -112,8 +113,9 @@ ss_prop_sup <- function(
     stop("'sided' doit valoir 1 ou 2.")
 
 
-  # --- Verifications specifiques au test ---
-
+  # ------------------------------------
+  # Verifications specifiques au test
+  # ------------------------------------
   if (choice %in% c("khi2", "fisher")) {
     if (!is.null(p01) | !is.null(p10)) {
       warning("Vous avez specifie p01 et/ou p10 pour un test ", choice, ". ",
@@ -128,31 +130,33 @@ ss_prop_sup <- function(
     }
   }
 
-  # if (choice == "fisher" & kappa != 1) {
-  #   warning("'exact2x2::ss2x2' ne supporte pas le desequilibre (kappa != 1). ",
-  #           "Le calcul sera effectue pour des groupes equilibres (kappa = 1).")
-  # }
-
-  if (choice == "mcnemar") {
+if (choice == "mcnemar") {
     if (!is.null(p1) | !is.null(p2)) {
       warning("Vous avez specifie p1 et/ou p2 pour le test de McNemar. ",
               "Ces parametres ne sont utilises que pour les tests non-apparies. ",
               "Pour McNemar, utilisez p01 et p10.")
     }
-    if (is.null(p01) | is.null(p10)) {
+    if (is.null(p01) | is.null(p10))
       stop("Pour le test de McNemar, les proportions 'p01' et 'p10' doivent etre fournies.")
-    }
-    if (any(p01 + p10 > 1)) {
+
+    if (any(p01 <= 0) | any(p10 <= 0))
+      stop("'p01' et 'p10' doivent etre strictement positifs.")
+
+    if (any(p01 + p10 > 1))
       stop("La somme p01 + p10 ne peut pas depasser 1.")
-    }
   }
 
   # ===========================================================================
   # McNemar (traitement separe : pas de grille p1/p2, pas de n1/n2)
   # ===========================================================================
 
-  if (choice == "mcnemar") {
+    if (choice == "mcnemar") {
 
+      alt <- if (sided == 2) {"two.sided"} else if (p10 > p01) {"greater"} else {"less"}
+
+    # ------------------------------------
+    # Grille de parametres
+    # ------------------------------------
     params <- expand.grid(
       power         = power,
       alpha         = alpha,
@@ -161,6 +165,9 @@ ss_prop_sup <- function(
 
     n_total_values <- numeric(nrow(params))
 
+    # ------------------------------------
+    # Calcul
+    # ------------------------------------
     for (i in seq_len(nrow(params))) {
       current_power <- params$power[i]
       current_alpha <- params$alpha[i]
@@ -172,12 +179,14 @@ ss_prop_sup <- function(
           pc          = p01,
           npairs      = N,
           sig.level   = current_alpha,
-          alternative = alternative
+          alternative = alt
         )$power
-        cat("Power:", current_power, "Alpha:", current_alpha, "N:", N, "\n")
+        cat("\r", paste0("Recherche de N (power = ", current_power, ", alpha = ", current_alpha,") : essai N = ", N, "   "), sep = "")
+
         if (pw >= current_power) break
         N <- N + 1
       }
+      cat("\n")
       n_total_values[i] <- N
     }
 
@@ -194,17 +203,23 @@ ss_prop_sup <- function(
       ) |>
       dplyr::select(test, puissance, alpha, missing_prop, n_total, n_total_pdv)
 
+    # ------------------------------------
+    # Labels
+    # ------------------------------------
     labels <- list(
       test = "Test",
       puissance = "Puissance",
       alpha = "Alpha",
-      missing_prop = "Proportion de données manquantes attendue",
+      missing_prop = "% d.m",
       n_total = "Nombre de paires",
       n_total_pdv = "Nombre de paires - PDV pris en compte"
     )
 
     res <- labelled::set_variable_labels(res, !!!labels)
 
+    # ------------------------------------
+    # Enregistrement
+    # ------------------------------------
     attr(res, "ssdesignr_type") <- "prop_sup"
     return(res)
   }
@@ -213,6 +228,9 @@ ss_prop_sup <- function(
   # Khi-2 et Fisher
   # ===========================================================================
 
+  # ------------------------------------
+  # Grille de parametres
+  # ------------------------------------
   params <- expand.grid(
     p1           = p1,
     p2           = p2,
@@ -223,54 +241,49 @@ ss_prop_sup <- function(
   ) |>
     dplyr::filter(p1 != p2 | is.na(p1 != p2))
 
+  # ------------------------------------
+  # Calcul
+  # ------------------------------------
   res <- params |>
     dplyr::mutate(
       tmp = purrr::pmap(
         list(p1, p2, power, alpha),
         function(p1, p2, power, alpha) {
 
-          # Khi-2 : kappa = 1 ou kappa != 1 -> rpact::getSampleSizeRates()
-
           if (choice == "khi2") {
             res_rpact <- getSampleSizeRates(
-                pi1                    = p1,
-                pi2                    = p2,
-                sided                  = sided,
-                alpha                  = alpha,
-                beta                   = 1 - power,
-                allocationRatioPlanned = kappa
-              )
+              pi1                    = p1,
+              pi2                    = p2,
+              sided                  = sided,
+              alpha                  = alpha,
+              beta                   = 1 - power,
+              allocationRatioPlanned = kappa
+            )
+            n <- ceiling(res_rpact$numberOfSubjects)
+            n2 <- ceiling(n / (1 + kappa))
+            n1 <- ceiling(kappa * n2)
+            return(list(n1 = n1, n2 = n2))
+          }
 
-             n <- ceiling(res_rpact$numberOfSubjects)
-             n2 <- ceiling(n / (1 + kappa))
-             n1 <- ceiling(kappa * n2)
-
-             return(list(n1 = n1, n2 = n2))
-             }
-
-        # Fisher : kappa = 1 ou kappa != 1 -> exact2x2::ss2x2
-        if (choice == "fisher") {
-
-            # approx = TRUE pour eviter les temps de calcul excessifs
+          if (choice == "fisher") {
+            # ss2x2() n'accepte que "two.sided" / "one.sided" (pas "less"/"greater")
+            alt_fisher <- if (sided == 2) "two.sided" else "one.sided"
 
             res_exact2x2 <- exact2x2::ss2x2(
               p1          = p1,
               p0          = p2,
               power       = power,
               sig.level   = alpha,
-              alternative = alternative,
+              alternative = alt_fisher,
               n1.over.n0  = kappa,
               paired      = FALSE,
               approx      = TRUE
             )
-
             n2 <- ceiling(res_exact2x2$n0)
             n1 <- ceiling(kappa * n2)
-            # Pour garantir le ratio exact :
-            n2 <- ceiling(n1/kappa)
+            n2 <- ceiling(n1 / kappa)
             return(list(n1 = n1, n2 = n2))
           }
-
         }
       )
     ) |>
@@ -287,7 +300,9 @@ ss_prop_sup <- function(
       kappa         = kappa
     )
 
-  # Création des labels et sélection des variables à retourner
+  # ------------------------------------
+  # Labels
+  # ------------------------------------
   cols <- c("test", "p1", "p2", "puissance", "alpha", "kappa", "missing_prop",
               "n1", "n2", "n_total", "n1_pdv", "n2_pdv", "n_total_pdv")
   res <- dplyr::select(res, dplyr::all_of(cols))
@@ -301,15 +316,18 @@ ss_prop_sup <- function(
     n1 = "N1",
     n2 = "N2",
     n_total = "N",
-    missing_prop = "Proportion de données manquantes attendue",
-    n1_pdv = "N1 - PDV pris en compte",
-    n2_pdv = "N2 - PDV pris en compte",
-    n_total_pdv = "N total - PDV"
+    missing_prop = "% d.m",
+    n1_pdv = "N1 - avec d.m",
+    n2_pdv = "N2 - avec d.m",
+    n_total_pdv = "N total - avec d.m"
   )
 
   labels <- labels[names(labels) %in% names(res)]
   res <- labelled::set_variable_labels(res, !!!labels)
 
+  # ------------------------------------
+  # Enregistrement
+  # ------------------------------------
   attr(res, "ssdesignr_type") <- "prop_sup"
   return(res)
 }

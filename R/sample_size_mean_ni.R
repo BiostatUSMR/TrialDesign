@@ -15,12 +15,12 @@
 #' @param sd Numerique. Ecart-type commun aux deux groupes. Requis pour le test de Student.
 #' @param sd1 Numerique. Ecart-type du groupe 1. Requis pour le test de Welch.
 #' @param sd2 Numerique. Ecart-type du groupe 2. Requis pour le test de Welch.
-#' @param marge Numerique. Marge de non-infériorité (valeur strictement positive). Peut etre un vecteur.
+#' @param marge Numerique. Marge de non-inferiorite (valeur strictement positive). Peut etre un vecteur.
 #' @param power Numerique. Puissance souhaitee. Par defaut 0.80. Peut etre un vecteur.
 #' @param alpha Numerique. Risque de premiere espece. Par defaut 0.025. Peut etre un vecteur.
 #' @param kappa Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres). Ne peut pas etre un vecteur. Un ratio > 1 indique plus de sujets dans le groupe 1.
 #' @param missing_prop Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur. Utilise pour calculer n1_pdv, n2_pdv et n_total_pdv.
-#' @param sided Numerique. Test unilatéral (1) ou bilatéral (2). Par défaut 1. Peut prendre la valeur 1 ou 2 uniquement.
+#' @param sided Numerique. Test unilateral (1) ou bilateral (2). Par defaut 1. Peut prendre la valeur 1 ou 2 uniquement.
 #' @param choice Caractere. Test statistique a utiliser :
 #' \itemize{
 #'   \item \code{"student"} : Test de Student, variances egales. Utilise \code{rpact::getSampleSizeMeans()}.
@@ -91,22 +91,23 @@ ss_mean_ni <- function(
 
   choice <- match.arg(choice)
 
-  # --- Verifications generales ---
-
+  # ------------------------------------
+  # Verifications generales
+  # ------------------------------------
   if (is.null(mu1) | is.null(mu2))
     stop("Les moyennes 'mu1' et 'mu2' doivent etre fournies.")
 
   if (!is.null(sd) && (!is.numeric(sd) || any(sd <= 0)))
-    stop("'sd' doit être numérique et strictement positif.")
+    stop("'sd' doit etre numerique et strictement positif.")
 
   if (!is.null(sd1) && (!is.numeric(sd1) || any(sd1 <= 0)))
-    stop("'sd1' doit être numérique et strictement positif.")
+    stop("'sd1' doit etre numerique et strictement positif.")
 
   if (!is.null(sd2) && (!is.numeric(sd2) || any(sd2 <= 0)))
-    stop("'sd2' doit être numérique et strictement positif.")
+    stop("'sd2' doit etre numerique et strictement positif.")
 
-  if (is.null(marge) | any(marge <= 0) | any(marge >= 1))
-    stop("La marge de non-inferiorite 'marge' doit etre fournie et strictement comprise entre 0 et 1.")
+  if (is.null(marge) | any(marge <= 0))
+    stop("La marge de non-inferiorite 'marge' doit etre fournie et strictement positive.")
 
   if (any(power <= 0) | any(power >= 1))
     stop("'power' doit etre compris entre 0 et 1.")
@@ -129,8 +130,9 @@ ss_mean_ni <- function(
   if (length(sided) != 1 || !sided %in% c(1, 2))
     stop("'sided' doit valoir 1 ou 2.")
 
-  # --- Verifications specifiques au test ---
-
+  # ------------------------------------
+  # Verifications specifiques au test
+  # ------------------------------------
   if (choice == "student") {
     if (is.null(sd)) {
       stop("'sd' doit etre fourni pour le test de Student.")
@@ -142,9 +144,9 @@ ss_mean_ni <- function(
     }
   }
 
-
-  # --- Grille de combinaisons de parametres ---
-
+  # ------------------------------------
+  # Grille de parametres
+  # ------------------------------------
   params <- expand.grid(
     mu1          = mu1,
     mu2          = mu2,
@@ -154,8 +156,9 @@ ss_mean_ni <- function(
     missing_prop = missing_prop
   )
 
-  # --- Calculs par ligne ---
-
+  # ------------------------------------
+  # Calcul
+  # ------------------------------------
   res <- params |>
     dplyr::mutate(
       tmp = purrr::pmap(
@@ -216,7 +219,9 @@ ss_mean_ni <- function(
       kappa         = kappa
     )
 
-  # Création des labels et sélection des variables à retourner
+  # ------------------------------------
+  # Labels
+  # ------------------------------------
   if (choice == "student") {
     res <- dplyr::mutate(res, sd = sd) |> dplyr::relocate(test, mu1, mu2, marge, sd, .before = puissance)
     cols <- c("test", "mu1", "mu2", "marge", "sd", "puissance", "alpha", "kappa", "missing_prop",
@@ -238,10 +243,10 @@ ss_mean_ni <- function(
     n1 = "N1",
     n2 = "N2",
     n_total = "N",
-    missing_prop = "Proportion de données manquantes attendue",
-    n1_pdv = "N1 - PDV pris en compte",
-    n2_pdv = "N2 - PDV pris en compte",
-    n_total_pdv = "N total - PDV"
+    missing_prop = "% d.m",
+    n1_pdv = "N1 - avec d.m",
+    n2_pdv = "N2 - avec d.m",
+    n_total_pdv = "N total - avec d.m"
   )
 
   labels_student <- c(labels_common, list(sd = "Ecart-type commun"))
@@ -254,6 +259,9 @@ ss_mean_ni <- function(
   labels <- labels[names(labels) %in% names(res)]
   res <- labelled::set_variable_labels(res, !!!labels)
 
+  # ------------------------------------
+  # Enregistrement
+  # ------------------------------------
   attr(res, "ssdesignr_type") <- "mean_ni"
   return(res)
 }

@@ -10,58 +10,52 @@ ss_report(
   nom_etude = NULL,
   investigateur = NULL,
   methodologiste = NULL,
-  biostatisticien = NULL
+  biostatisticien = NULL,
+  font = "Arial",
+  size = 11,
+  col_widths = NULL,
+  min_width = 1,
+  unit = c("cm", "in"),
+  margin = 1.5
 )
 }
 \arguments{
-\item{result}{Objet retourné par
-\code{ss_mean_sup()},
-\code{ss_mean_ni()},
-\code{ss_prop_sup()} ou
-\code{ss_prop_ni()}.}
+\item{result}{data.frame retourne par ss_mean_sup(), ss_mean_ni(),
+ss_prop_sup() ou ss_prop_ni().}
 
-\item{file}{Caractère. Nom du fichier Word à créer. Par défaut \code{"sample_size_report.docx"}.}
+\item{file}{Caractere. Nom du fichier Word (sans chemin). Par defaut "sample_size_report.docx".}
 
-\item{investigateur}{Caractère. Nom de l'investigateur principal. Par défaut NULL.}
+\item{nom_etude}{Caractere. Nom de l'etude.}
 
-\item{methodologiste}{Caractère. Nom du méthodologiste. Par défaut NULL.}
+\item{investigateur}{Caractere. Nom de l'investigateur.}
 
-\item{biostatisticien}{Caractère. Nom du biostatisticien. Par défaut NULL.}
+\item{methodologiste}{Caractere. Nom du methodologiste.}
 
-\item{libelle_etude}{Caractère. Libelle complet de l'étude. Par défaut NULL.}
+\item{biostatisticien}{Caractere. Nom du biostatisticien.}
+
+\item{font}{Caractere. Police. Par defaut "Arial".}
+
+\item{size}{Caractere. Taille de police. Par defaut 11.}
+
+\item{col_widths}{Numerique. Vecteur donnant la largeur de colonnes du tableau de resultats (nom de colonne = largeur). Exprime dans l'unite definie par \code{unit}. Par defaut NULL.}
+
+\item{min_width}{Numerique. Largeur minimale appliquee a chaque colonne. Exprime dans l'unite definie par \code{unit}. Par defaut 1 (cm).}
+
+\item{unit}{Caractere. Unite utilisee pour \code{col_widths} et \code{min_width} : \code{"cm"} (par defaut) ou \code{"in"} (pouces).}
+
+\item{margin}{Numerique. Marge de page (haut, bas, gauche, droite) appliquee au document. Exprimee dans l'unite definie par \code{unit}. Par defaut 1.5 (cm).}
 }
 \value{
-Crée un document Word et retourne (invisiblement) le chemin du fichier.
+Chemin du fichier genere (invisiblement).
 }
 \description{
 Genere un rapport Word (.docx) contenant le resultat d'un calcul
-du nombre de sujets necessaire realise avec les fonctions du package.
+du nombre de sujets necessaires realise avec les fonctions du package.
 
-Le document comporte :
+Le document contient :
 \itemize{
   \item un titre ;
-  \item les informations générales de l'étude ;
-  \item le tableau des résultats.
+  \item les informations generales de l'etude ;
+  \item le tableau des resultats.
 }
-}
-\examples{
-\dontrun{
-
-res <- ss_mean_sup(
-  mu1 = 55,
-  mu2 = 50,
-  sd = 10
-)
-
-ss_report(
-  result = res,
-  file = "Calcul_effectif.docx",
-  nom_etude = "ESSAI ABC",
-  investigateur = "Pr A",
-  methodologiste = "Dr B",
-  biostatisticien = "C D"
-)
-
-}
-
 }

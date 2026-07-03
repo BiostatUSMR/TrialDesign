@@ -7,31 +7,31 @@
 rand(essai, seed, statut, version, col_widths = NULL, chemin = NULL)
 }
 \arguments{
-\item{essai}{Liste. Objet créé par \code{init_essai()}.
+\item{essai}{Liste. Objet cree par \code{init_essai()}.
 Exemple : \code{essai <- init_essai(...)}.}
 
-\item{seed}{Entier. Graine aléatoire pour la reproductibilité.}
+\item{seed}{Entier. Graine aleatoire pour la reproductibilite.}
 
-\item{statut}{Caractère. Statut de la liste générée : \code{"FINALE"} ou
+\item{statut}{Caractere. Statut de la liste generee : \code{"FINALE"} ou
 \code{"FICTIVE"}.}
 
-\item{version}{Caractère. Version de la liste générée. Ex : \code{"v01"}.}
+\item{version}{Caractere. Version de la liste generee. Ex : \code{"v01"}.}
 
-\item{col_widths}{Vecteur de caractères. Largeurs des colonnes du tableau PDF.
+\item{col_widths}{Vecteur de caracteres. Largeurs des colonnes du tableau PDF.
 Ex : \code{c("2cm", "3cm", "4cm")}. Si NULL, largeurs automatiques.
-Doit avoir autant d'éléments que de colonnes dans le data.frame de sortie.}
+Doit avoir autant d'elements que de colonnes dans le data.frame de sortie.}
 
-\item{chemin}{Caractère. Chemin vers le répertoire de sortie.
-Si NULL, répertoire de travail courant.}
+\item{chemin}{Caractere. Chemin vers le repertoire de sortie.
+Si NULL, repertoire de travail courant.}
 }
 \value{
-Le data.frame de la liste de randomisation (retouré visiblement
-  pour inspection). Les fichiers sont exportés en parallèle.
+Le data.frame de la liste de randomisation (retoure visiblement
+  pour inspection). Les fichiers sont exportes en parallele.
 }
 \description{
-Génère la liste de randomisation selon le circuit défini dans l'objet
-\code{essai} créé par \code{init_essai()}, exporte automatiquement deux
-fichiers (données + PDF), et retourne le data.frame généré pour
+Genere la liste de randomisation selon le circuit defini dans l'objet
+\code{essai} cree par \code{init_essai()}, exporte automatiquement deux
+fichiers (donnees + PDF), et retourne le data.frame genere pour
 inspection visuelle.
 }
 \examples{
@@ -46,7 +46,7 @@ essai <- init_essai(
 df <- rand(essai, seed = 42, statut = "FICTIVE", version = "v01")
 head(df)
 
-# Deux essais en parallèle sans conflit
+# Deux essais en parallele sans conflit
 essai_A <- init_essai("ESSAI_A", circuit = "ennov", ...)
 essai_B <- init_essai("ESSAI_B", circuit = "redcap", ...)
 df_A <- rand(essai_A, seed = 42, statut = "FICTIVE", version = "v01")

@@ -31,7 +31,7 @@ ss_prop_ni(
 
 \item{missing_prop}{Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur.}
 
-\item{sided}{Numerique. Test unilatéral (1) ou bilatéral (2). Par défaut 1. Peut prendre la valeur 1 ou 2 uniquement.}
+\item{sided}{Numerique. Test unilateral (1) ou bilateral (2). Par defaut 1. Peut prendre la valeur 1 ou 2 uniquement.}
 
 \item{choice}{Caractere. Unique valeur acceptee : \code{"khi2"}. Conserve pour uniformite avec les autres fonctions du package.}
 }
@@ -44,7 +44,7 @@ Un data.frame avec une ligne par combinaison de parametres et les colonnes :
   \item \code{marge} : Marge de non-inferiorite.
   \item \code{alpha} : Risque de 1ere espece.
   \item \code{kappa} : Ratio d'allocation n1/n2.
-  \item \code{prop_manquant} : Proportion de donnees manquantes.
+  \item \code{missing_prop} : Proportion de donnees manquantes.
   \item \code{n1}, \code{n2} : Effectifs par groupe.
   \item \code{n_total} : Effectif total.
   \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe avec prise en compte des donnees manquantes.

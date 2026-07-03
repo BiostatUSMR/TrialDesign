@@ -1,17 +1,17 @@
 # ============================================================
 # FONCTION INTERNE  .export_corresp_xls()
 #
-# Génère un fichier Excel avec une feuille par bras de
-# traitement. Dans chaque feuille, les boîtes sont triées
-# par numéro croissant.
+# Genere un fichier Excel avec une feuille par bras de
+# traitement. Dans chaque feuille, les boites sont triees
+# par numero croissant.
 # ============================================================
 
 .export_corresp_xls <- function(df, nom_xls, arm_label, arm_code) {
 
   if (!requireNamespace("openxlsx", quietly = TRUE)) {
     warning(
-      "Le package 'openxlsx' n'est pas installé. ",
-      "Le fichier XLS n'a pas été généré. ",
+      "Le package 'openxlsx' n'est pas installe. ",
+      "Le fichier XLS n'a pas ete genere. ",
       "Installez-le avec : install.packages('openxlsx')"
     )
     return(invisible(NULL))
@@ -19,7 +19,7 @@
 
   wb <- openxlsx::createWorkbook()
 
-  # Style en-tête : fond bleu USMR, texte blanc, gras
+  # Style en-tete : fond bleu USMR, texte blanc, gras
   style_header <- openxlsx::createStyle(
     fontColour     = "#FFFFFF",
     fgFill         = "#1F3864",
@@ -41,14 +41,14 @@
     halign = "CENTER"
   )
 
-  # Une feuille par bras, triée par numéro de boîte croissant
+  # Une feuille par bras, triee par numero de boite croissant
   for (i in seq_along(arm_label)) {
 
     df_bras <- df[df$RDGRP == arm_code[i], ]
     df_bras <- df_bras[order(df_bras$RDBOI), ]
     row.names(df_bras) <- NULL
 
-    # Nom de la feuille — limité à 31 caractères (contrainte Excel)
+    # Nom de la feuille : limite a 31 caracteres (contrainte Excel)
     nom_feuille <- substr(arm_label[i], 1, 31)
 
     openxlsx::addWorksheet(wb, sheetName = nom_feuille)

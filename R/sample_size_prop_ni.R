@@ -19,7 +19,7 @@
 #' @param alpha Numerique. Risque de 1ere espece. Par defaut 0.025. Peut etre un vecteur.
 #' @param kappa Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres).
 #' @param missing_prop Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur.
-#' @param sided Numerique. Test unilatéral (1) ou bilatéral (2). Par défaut 1. Peut prendre la valeur 1 ou 2 uniquement.
+#' @param sided Numerique. Test unilateral (1) ou bilateral (2). Par defaut 1. Peut prendre la valeur 1 ou 2 uniquement.
 #' @param choice Caractere. Unique valeur acceptee : \code{"khi2"}. Conserve pour uniformite avec les autres fonctions du package.
 #'
 #' @return Un data.frame avec une ligne par combinaison de parametres et les colonnes :
@@ -30,7 +30,7 @@
 #'   \item \code{marge} : Marge de non-inferiorite.
 #'   \item \code{alpha} : Risque de 1ere espece.
 #'   \item \code{kappa} : Ratio d'allocation n1/n2.
-#'   \item \code{prop_manquant} : Proportion de donnees manquantes.
+#'   \item \code{missing_prop} : Proportion de donnees manquantes.
 #'   \item \code{n1}, \code{n2} : Effectifs par groupe.
 #'   \item \code{n_total} : Effectif total.
 #'   \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe avec prise en compte des donnees manquantes.
@@ -81,8 +81,9 @@ ss_prop_ni <- function(
 
   choice <- match.arg(choice, choices = "khi2")
 
-  # --- Verifications generales ---
-
+  # ------------------------------------
+  # Verifications generales
+  # ------------------------------------
   if (is.null(p1) | is.null(p2))
     stop("Les proportions 'p1' et 'p2' doivent etre fournies.")
 
@@ -113,9 +114,10 @@ ss_prop_ni <- function(
   if (length(sided) != 1 || !sided %in% c(1, 2))
     stop("'sided' doit valoir 1 ou 2.")
 
-  # --- Grille de combinaisons de parametres ---
-
-  params <- expand.grid(
+  # ------------------------------------
+  # Grille de parametres
+  # ------------------------------------
+    params <- expand.grid(
     p1           = p1,
     p2           = p2,
     marge        = marge,
@@ -124,8 +126,9 @@ ss_prop_ni <- function(
     missing_prop = missing_prop
   )
 
-  # --- Calculs par ligne ---
-
+  # ------------------------------------
+  # Calculs
+  # ------------------------------------
   res <- params |>
     dplyr::mutate(
       tmp = purrr::pmap(
@@ -167,8 +170,10 @@ ss_prop_ni <- function(
       kappa         = kappa
     )
 
-    # Création des labels et sélection des variables à retourner
-    cols <- c("test", "p1", "p2", "marge", "puissance", "alpha", "kappa", "missing_prop",
+  # ------------------------------------
+  # Labels
+  # ------------------------------------
+  cols <- c("test", "p1", "p2", "marge", "puissance", "alpha", "kappa", "missing_prop",
               "n1", "n2", "n_total", "n1_pdv", "n2_pdv", "n_total_pdv")
     res <- dplyr::select(res, dplyr::all_of(cols))
     labels <- list(
@@ -182,15 +187,18 @@ ss_prop_ni <- function(
       n1 = "N1",
       n2 = "N2",
       n_total = "N",
-      missing_prop = "Proportion de données manquantes attendue",
-      n1_pdv = "N1 - PDV pris en compte",
-      n2_pdv = "N2 - PDV pris en compte",
-      n_total_pdv = "N total - PDV"
+      missing_prop = "% d.m",
+      n1_pdv = "N1 - avec d.m",
+      n2_pdv = "N2 - avec d.m",
+      n_total_pdv = "N total - avec d.m"
     )
 
     labels <- labels[names(labels) %in% names(res)]
     res <- labelled::set_variable_labels(res, !!!labels)
 
+  # ------------------------------------
+  # Enregistrement
+  # ------------------------------------
   attr(res, "ssdesignr_type") <- "prop_ni"
   return(res)
 }

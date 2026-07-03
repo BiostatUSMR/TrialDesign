@@ -25,50 +25,50 @@ init_essai(
 )
 }
 \arguments{
-\item{nom_etude}{Caractère. Nom de l'étude (utilisé dans les noms de fichiers).}
+\item{nom_etude}{Caractere. Nom de l'etude (utilise dans les noms de fichiers).}
 
-\item{circuit}{Caractère. Circuit de randomisation : \code{"ennov"} ou \code{"redcap"}.}
+\item{circuit}{Caractere. Circuit de randomisation : \code{"ennov"} ou \code{"redcap"}.}
 
 \item{k}{Entier. Nombre de groupes de traitement (>= 2).}
 
-\item{block_sizes}{Vecteur numérique. Tailles réelles des blocs.}
+\item{block_sizes}{Vecteur numerique. Tailles reelles des blocs.}
 
-\item{nb_block}{Vecteur numérique. Nombre de blocs souhaités pour chaque taille.}
+\item{nb_block}{Vecteur numerique. Nombre de blocs souhaites pour chaque taille.}
 
-\item{ratio}{Vecteur numérique de longueur k. Ratio d'allocation. Si NULL, un ratio équilibré 1:1:...:1 est utilisé.}
+\item{ratio}{Vecteur numerique de longueur k. Ratio d'allocation. Si NULL, un ratio equilibre 1:1:...:1 est utilise.}
 
-\item{arm_label}{Vecteur de caractères de longueur k. Libellés des groupes. Si NULL, "Groupe1", "Groupe2"... sont utilisés.}
+\item{arm_label}{Vecteur de caracteres de longueur k. Libelles des groupes. Si NULL, "Groupe1", "Groupe2"... sont utilises.}
 
-\item{arm_code}{Vecteur numérique de longueur k. Codes des groupes. Si NULL, 1, 2, ..., k sont utilisés.}
+\item{arm_code}{Vecteur numerique de longueur k. Codes des groupes. Si NULL, 1, 2, ..., k sont utilises.}
 
-\item{strat_vars}{Liste optionnelle décrivant les variables de stratification.
-Chaque élément est une liste avec \code{codes} (vecteur numérique) et \code{labels} (vecteur de caractères).
+\item{strat_vars}{Liste optionnelle decrivant les variables de stratification.
+Chaque element est une liste avec \code{codes} (vecteur numerique) et \code{labels} (vecteur de caracteres).
 Exemple : \code{list(sexe = list(codes = c(1,2), labels = c("Homme","Femme")))}.}
 
-\item{id_etude}{Caractère. Identifiant officiel de l'étude. Ex : "CHUBX2024/01". Par défaut NULL.}
+\item{id_etude}{Caractere. Identifiant officiel de l'etude. Ex : "CHUBX2024/01". Par defaut NULL.}
 
-\item{libelle_etude}{Caractère. Libellé complet de l'étude. Par défaut NULL.}
+\item{libelle_etude}{Caractere. Libelle complet de l'etude. Par defaut NULL.}
 
-\item{investigateur}{Caractère. Nom de l'investigateur principal. Par défaut NULL.}
+\item{investigateur}{Caractere. Nom de l'investigateur principal. Par defaut NULL.}
 
-\item{methodologiste}{Caractère. Nom du méthodologiste. Par défaut NULL.}
+\item{methodologiste}{Caractere. Nom du methodologiste. Par defaut NULL.}
 
-\item{biostatisticien}{Caractère. Nom du biostatisticien. Par défaut NULL.}
+\item{biostatisticien}{Caractere. Nom du biostatisticien. Par defaut NULL.}
 
-\item{confidentiel}{Logique. Si TRUE, affiche la mention CONFIDENTIEL sur la page de garde. Par défaut FALSE.}
+\item{confidentiel}{Logique. Si TRUE, affiche la mention CONFIDENTIEL sur la page de garde. Par defaut FALSE.}
 
-\item{code_usmr}{Caractère. Code du document USMR. Par défaut NULL.}
+\item{code_usmr}{Caractere. Code du document USMR. Par defaut NULL.}
 
-\item{indice_document}{Caractère. Indice du document. Par défaut NULL.}
+\item{indice_document}{Caractere. Indice du document. Par defaut NULL.}
 }
 \value{
-Une liste contenant tous les paramètres validés de l'essai.
-  Doit être assignée : \code{essai <- init_essai(...)}.
+Une liste contenant tous les parametres valides de l'essai.
+  Doit etre assignee : \code{essai <- init_essai(...)}.
 }
 \description{
-Définit et valide les paramètres de l'essai clinique, puis les retourne
-sous forme d'un objet liste. Cet objet doit être assigné et passé en
-argument à rand() et corresp().
+Definit et valide les parametres de l'essai clinique, puis les retourne
+sous forme d'un objet liste. Cet objet doit etre assigne et passe en
+argument a rand() et corresp().
 }
 \examples{
 \dontrun{

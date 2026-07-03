@@ -1,21 +1,19 @@
 #' FONCTION sample_size_precision
 #'
 #'@description
-#'Calcule la taille d'échantillon nécessaire pour estimer avec une précision donnée :
+#'Calcule le nombre de sujets necessaire pour estimer avec une precision donnee :
 #'- une proportion
-#'- une sensibilité,
-#'- une spécificité,
-#' - ou simultanément la sensibilité et la spécificité d'un test diagnostique.
+#'- une sensibilite,
+#'- une specificite,
+#' - ou simultanement la sensibilite et la specificite d'un test diagnostique.
 #'
-#'
-#'
-#' @param p proportion à estimer (numérique entre 0 et 1)
-#' @param prev prévalence de la maladie dans la population étudiée
-#' @param sens sensibilité attendue du test diagnostique (entre 0 et 1)
-#' @param spec spécificité attendue du test diagnostique (entre 0 et 1)
-#' @param precision demi-largeur souhaitée de l’intervalle de confiance
-#' @param conf.level niveau de confiance de l’intervalle de confiance
-#' @param missing_rate proportion attendue de données manquantes
+#' @param p Numerique. Proportion a estimer (entre 0 et 1). Peut etre vecteur.
+#' @param prev Numerique. Prevalence de la maladie dans la population etudiee. Peut etre vecteur.
+#' @param sens Numerique. Sensibilite attendue du test diagnostique (entre 0 et 1). Peut etre vecteur.
+#' @param spec Numerique. Specificite attendue du test diagnostique (entre 0 et 1). Peut etre vecteur.
+#' @param precision Numerique. Demi-largeur souhaitee de l intervalle de confiance. Peut etre vecteur.
+#' @param conf.level Numerique. Niveau de confiance de l intervalle de confiance. Peut etre vecteur.
+#' @param missing_prop Numerique. Proportion attendue de donnees manquantes. Peut etre vecteur. Par defaut 0.
 #'
 #' @return Un data.frame dont les colonnes dependent du mode de calcul :
 #'   proportion (n_prop, n_prop_ajuste), sensibilite (n_sens, n_sens_ajuste),
@@ -30,7 +28,7 @@
 #' @examples
 #' \dontrun{
 #' sample_size_precision(p=c(0.10,0.15,0.20,0.25,0.30,0.35,0.40),
-#' missing_rate =c(0.1,0.2))
+#' missing_prop =c(0.1,0.2))
 #' }
 
 sample_size_precision <- function(
@@ -40,12 +38,12 @@ sample_size_precision <- function(
     spec = NULL,
     precision = 0.05,
     conf.level = 0.95,
-    missing_rate = 0
+    missing_prop = 0
 ){
 
-  #--------------------------
-  # Vérifications des paramètres
-  #--------------------------
+  # ------------------------------------
+  # Verifications generales
+  # ------------------------------------
   check_prop <- function(x,name){
     if(!is.null(x)){
       if(any(x < 0 | x > 1, na.rm=TRUE)){
@@ -59,17 +57,26 @@ sample_size_precision <- function(
   check_prop(sens,"sens")
   check_prop(spec,"spec")
 
-  if(!is.null(p) & (!is.null(sens) | !is.null(spec))){
+  if(!is.null(p) & (!is.null(sens) | !is.null(spec)))
     stop("Les arguments 'p' et 'sens'/'spec' sont mutuellement exclusifs : sp\u00e9cifier soit une proportion simple ('p'), soit une sensibilit\u00e9/sp\u00e9cificit\u00e9 ('sens', 'spec').")
-  }
 
-  if((!is.null(sens) | !is.null(spec)) & is.null(prev)){
+  if (is.null(p) & is.null(sens) & is.null(spec))
+    stop("Vous devez fournir au moins un des arguments 'p', 'sens' ou 'spec'.")
+
+  if (!is.null(p) & !is.null(prev))
+    warning("'prev' est ignore lorsque 'p' est specifie (utilise uniquement pour 'sens'/'spec').")
+
+  if((!is.null(sens) | !is.null(spec)) & is.null(prev))
     stop("Argument 'prev' requis lorsque 'sens' ou 'spec' est sp\u00e9cifi\u00e9.")
-  }
 
-  if(any(missing_rate < 0 | missing_rate >= 1)){
-    stop("missing_rate doit \u00eatre compris entre 0 et 1.")
-  }
+  if (any(precision <= 0 | precision >= 0.5))
+    stop("'precision' doit etre strictement positive et inferieure a 0.5 (demi-largeur d'un intervalle borne entre 0 et 1).")
+
+  if (any(conf.level <= 0 | conf.level >= 1))
+    stop("'conf.level' doit etre compris entre 0 et 1.")
+
+  if(any(missing_prop < 0 | missing_prop >= 1))
+    stop("missing_prop doit \u00eatre compris entre 0 et 1.")
 
   # Remplacement des NULL par NA
   if(is.null(p)) p <- NA
@@ -77,9 +84,9 @@ sample_size_precision <- function(
   if(is.null(sens)) sens <- NA
   if(is.null(spec)) spec <- NA
 
-  #--------------------------
-  # Expansion grid
-  #--------------------------
+  # ------------------------------------
+  # Grille de parametres
+  # ------------------------------------
   params <- expand.grid(
     p = p,
     prev = prev,
@@ -87,7 +94,7 @@ sample_size_precision <- function(
     spec = spec,
     precision = precision,
     conf.level = conf.level,
-    missing_prop = missing_rate
+    missing_prop = missing_prop
   )
 
   #--------------------------
@@ -99,7 +106,7 @@ sample_size_precision <- function(
       list(p, prev, sens, spec, precision, conf.level),
       function(p, prev, sens, spec, precision, conf.level){
 
-        # Sensibilité + Specificité
+        # Sensibilite + Specificite
         if(!is.na(sens) & !is.na(spec) & !is.na(prev)){
           n_sens <- presize::prec_sens(
             sens = sens,
@@ -120,7 +127,7 @@ sample_size_precision <- function(
           return(list(n_sens=ceiling(n_sens), n_spec=ceiling(n_spec)))
         }
 
-        # Sensibilté seule
+        # Sensibilte seule
         else if(!is.na(sens) & is.na(spec) & !is.na(prev)){
           n <- presize::prec_sens(
             sens = sens,
@@ -132,7 +139,7 @@ sample_size_precision <- function(
           return(list(n_sens=ceiling(n)))
         }
 
-        # Specificité seule
+        # Specificite seule
         else if(is.na(sens) & !is.na(spec) & !is.na(prev)){
           n <- presize::prec_spec(
             spec = spec,
@@ -175,19 +182,47 @@ sample_size_precision <- function(
   )
 
   #--------------------------
-  # Filtrage dynamique des colonnes
+  # Labels
   #--------------------------
+  labels_communs <- list(
+    precision     = "Precision (demi-largeur IC)",
+    conf.level    = "Niveau de confiance",
+    missing_prop  = "% d.m",
+    prev          = "Prevalence"
+  )
+
   if(!all(is.na(res$p))){
-    res <- dplyr::select(res, p,precision,conf.level,missing_prop,n_prop,n_prop_ajuste)
+    res <- dplyr::select(res, p, precision, conf.level, missing_prop, n_prop, n_prop_ajuste)
+    labs <- c(labels_communs, list(p = "Proportion", n_prop = "N", n_prop_ajuste = "N - avec d.m"))
+    type_res <- "precision_prop"
+
   } else if(!all(is.na(res$sens)) & all(is.na(res$spec))){
-    res <- dplyr::select(res, sens,prev,precision,conf.level,missing_prop,n_sens,n_sens_ajuste)
+    res <- dplyr::select(res, sens, prev, precision, conf.level, missing_prop, n_sens, n_sens_ajuste)
+    labs <- c(labels_communs, list(sens = "Sensibilite", n_sens = "N", n_sens_ajuste = "N - avec d.m"))
+    type_res <- "precision_sens"
+
   } else if(all(is.na(res$sens)) & !all(is.na(res$spec))){
-    res <- dplyr::select(res, spec,prev,precision,conf.level,missing_prop,n_spec,n_spec_ajuste)
+    res <- dplyr::select(res, spec, prev, precision, conf.level, missing_prop, n_spec, n_spec_ajuste)
+    labs <- c(labels_communs, list(spec = "Specificite", n_spec = "N", n_spec_ajuste = "N - avec d.m"))
+    type_res <- "precision_spec"
+
   } else if(!all(is.na(res$sens)) & !all(is.na(res$spec))){
-    res <- dplyr::select(res, sens,spec,prev,precision,conf.level,missing_prop,
-                         n_sens,n_sens_ajuste,n_spec,n_spec_ajuste)
+    res <- dplyr::select(res, sens, spec, prev, precision, conf.level, missing_prop,
+                         n_sens, n_sens_ajuste, n_spec, n_spec_ajuste)
+    labs <- c(labels_communs, list(
+      sens = "Sensibilite", n_sens = "N (sens.)", n_sens_ajuste = "N - avec d.m (sens.)",
+      spec = "Specificite", n_spec = "N (spec.)", n_spec_ajuste = "N - avec d.m (spec.)"
+    ))
+    type_res <- "precision_sens_spec"
   }
 
+  labs <- labs[names(labs) %in% names(res)]
+  res <- labelled::set_variable_labels(res, !!!labs)
+
+  # ------------------------------------
+  # Enregistrement
+  # ------------------------------------
+  attr(res, "ssdesignr_type") <- type_res
   return(res)
 }
 

@@ -8,7 +8,7 @@
 
   df_pdf <- .rename_pdf(df)
 
-  # Désactivation des packages auto kableExtra
+  # Desactivation des packages auto kableExtra
   options(kableExtra.latex.load_packages = FALSE)
 
   # Construction kable

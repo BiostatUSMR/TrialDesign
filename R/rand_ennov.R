@@ -18,7 +18,7 @@
     df <- .rando_bloc(n, k, seed, block_sizes, nb_block, ratio, arm_label, arm_code)
 
   } else {
-    # Générer toutes les combinaisons de strates
+    # Generer toutes les combinaisons de strates
     grilles <- expand.grid(
       lapply(strat_vars, function(v) seq_along(v$codes)),
       stringsAsFactors = FALSE
@@ -26,7 +26,7 @@
 
     for (r in seq_len(nrow(grilles))) {
 
-      # Code concaténé
+      # Code concatene
       codes_r <- sapply(seq_along(strat_vars), function(s) {
         nom_var <- names(strat_vars)[s]
         idx     <- grilles[r, s]
@@ -34,7 +34,7 @@
       })
       strat_code_r <- as.integer(paste(codes_r, collapse = ""))
 
-      # Libellé concaténé
+      # Libelle concatene
       labels_r <- sapply(seq_along(strat_vars), function(s) {
         nom_var <- names(strat_vars)[s]
         idx     <- grilles[r, s]

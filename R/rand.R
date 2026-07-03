@@ -1,28 +1,28 @@
 #' FONCTION rand()
 #'
 #' @description
-#' Génère la liste de randomisation selon le circuit défini dans l'objet
-#' \code{essai} créé par \code{init_essai()}, exporte automatiquement deux
-#' fichiers (données + PDF), et retourne le data.frame généré pour
+#' Genere la liste de randomisation selon le circuit defini dans l'objet
+#' \code{essai} cree par \code{init_essai()}, exporte automatiquement deux
+#' fichiers (donnees + PDF), et retourne le data.frame genere pour
 #' inspection visuelle.
 #'
-#' @param essai Liste. Objet créé par \code{init_essai()}.
+#' @param essai Liste. Objet cree par \code{init_essai()}.
 #'   Exemple : \code{essai <- init_essai(...)}.
-#' @param seed Entier. Graine aléatoire pour la reproductibilité.
-#' @param statut Caractère. Statut de la liste générée : \code{"FINALE"} ou
+#' @param seed Entier. Graine aleatoire pour la reproductibilite.
+#' @param statut Caractere. Statut de la liste generee : \code{"FINALE"} ou
 #'   \code{"FICTIVE"}.
-#' @param version Caractère. Version de la liste générée. Ex : \code{"v01"}.
-#' @param col_widths Vecteur de caractères. Largeurs des colonnes du tableau PDF.
+#' @param version Caractere. Version de la liste generee. Ex : \code{"v01"}.
+#' @param col_widths Vecteur de caracteres. Largeurs des colonnes du tableau PDF.
 #'   Ex : \code{c("2cm", "3cm", "4cm")}. Si NULL, largeurs automatiques.
-#'   Doit avoir autant d'éléments que de colonnes dans le data.frame de sortie.
-#' @param chemin Caractère. Chemin vers le répertoire de sortie.
-#'   Si NULL, répertoire de travail courant.
+#'   Doit avoir autant d'elements que de colonnes dans le data.frame de sortie.
+#' @param chemin Caractere. Chemin vers le repertoire de sortie.
+#'   Si NULL, repertoire de travail courant.
 #'
 #' @importFrom utils write.csv write.table
 #' @importFrom rmarkdown render
 #'
-#' @return Le data.frame de la liste de randomisation (retouré visiblement
-#'   pour inspection). Les fichiers sont exportés en parallèle.
+#' @return Le data.frame de la liste de randomisation (retoure visiblement
+#'   pour inspection). Les fichiers sont exportes en parallele.
 #'
 #' @examples
 #' \dontrun{
@@ -36,7 +36,7 @@
 #' df <- rand(essai, seed = 42, statut = "FICTIVE", version = "v01")
 #' head(df)
 #'
-#' # Deux essais en parallèle sans conflit
+#' # Deux essais en parallele sans conflit
 #' essai_A <- init_essai("ESSAI_A", circuit = "ennov", ...)
 #' essai_B <- init_essai("ESSAI_B", circuit = "redcap", ...)
 #' df_A <- rand(essai_A, seed = 42, statut = "FICTIVE", version = "v01")
@@ -49,7 +49,7 @@ rand <- function(essai, seed, statut, version,
                  col_widths = NULL,
                  chemin     = NULL) {
 
-  # --- Vérification de l'objet essai ---
+  # --- Verification de l'objet essai ---
   if (!is.list(essai) || is.null(essai$circuit)) {
     stop(
       "'essai' doit \u00eatre un objet cr\u00e9\u00e9 par init_essai().\n",
@@ -60,10 +60,10 @@ rand <- function(essai, seed, statut, version,
   circuit   <- essai$circuit
   nom_etude <- essai$nom_etude
 
-  # --- Valeur par défaut ---
+  # --- Valeur par defaut ---
   if (is.null(chemin)) chemin <- getwd()
 
-  # --- Vérifications ---
+  # --- Verifications ---
   if (!is.numeric(seed) || seed != round(seed))
     stop("'seed' doit \u00eatre un entier.")
 
@@ -76,7 +76,7 @@ rand <- function(essai, seed, statut, version,
   if (!is.null(col_widths) && !is.character(col_widths))
     stop("'col_widths' doit \u00eatre un vecteur de caract\u00e8res. Ex : c('2cm', '3cm').")
 
-  # --- Génération du data.frame ---
+  # --- Generation du data.frame ---
   df <- if (circuit == "ennov") .rand_ennov(essai, seed) else .rand_redcap(essai, seed)
 
   message("\u2714 Liste de randomisation g\u00e9n\u00e9r\u00e9e \u2014 ", nrow(df), " sujets.")
@@ -87,7 +87,7 @@ rand <- function(essai, seed, statut, version,
   nom_base <- paste0(nom_etude, " - Liste de randomisation ",
                      statut, " - ", version, " - ", date_str)
 
-  # --- Export données ---
+  # --- Export donnees ---
   nom_data <- file.path(chemin, paste0(nom_base, ".", ext))
 
   if (circuit == "redcap") {
