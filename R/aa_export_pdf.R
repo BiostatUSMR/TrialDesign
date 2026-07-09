@@ -4,6 +4,7 @@
 .export_pdf <- function(essai, df, nom_pdf, chemin,
                         page_garde = TRUE,
                         type_doc   = "randomisation",
+                        version_doc = NULL,
                         col_widths = NULL) {
 
   df_pdf <- .rename_pdf(df)
@@ -14,7 +15,7 @@
   # Construction kable
   if (!is.null(col_widths)) {
     if (length(col_widths) != ncol(df_pdf)) {
-      stop("'col_widths' doit avoir autant d'\u00e9l\u00e9ments que de colonnes dans le data.frame.")
+      stop("'col_widths' doit avoir autant d'elements que de colonnes dans le data.frame.")
     }
     widths_str <- paste0('c("', paste(col_widths, collapse = '","'), '")')
     kable_code <- paste0(
@@ -23,7 +24,9 @@
       "align = 'c', ",
       "row.names = FALSE, ",
       "booktabs = TRUE, ",
-      "longtable = TRUE) %>%\n",
+      "longtable = TRUE, ",
+      "linesep = '', ",
+      "escape = FALSE) %>%\n",
       "kableExtra::column_spec(seq_len(ncol(df_pdf)), width = ",
       widths_str,
       ")"
@@ -36,7 +39,9 @@
       "align = 'c', ",
       "row.names = FALSE, ",
       "booktabs = TRUE, ",
-      "longtable = TRUE)"
+      "longtable = TRUE, ",
+      "linesep = '', ",
+      "escape = FALSE)"
     )
     lib_code <- "library(knitr)"
   }
@@ -54,6 +59,9 @@
     "  - \\usepackage{tabularx}",
     "  - \\usepackage{booktabs}",
     "  - \\usepackage{longtable}",
+    "  - \\usepackage{fancyhdr}",
+    "  - \\usepackage{lastpage}",
+    "  - \\usepackage{multirow}",
     "  - \\usepackage[T1]{fontenc}",
     "  - \\usepackage[scaled]{helvet}",
     "  - \\renewcommand{\\familydefault}{\\sfdefault}",
@@ -63,16 +71,35 @@
   )
 
   if (page_garde) {
+
     contenu <- c(
       contenu,
       .make_garde(essai, type = type_doc),
+
       "\\newpage",
+
+      "\\pagestyle{fancy}",
+      "\\fancyhf{}",
+
+      "\\renewcommand{\\headrulewidth}{0pt}",
+      "\\renewcommand{\\footrulewidth}{0pt}",
+
+      paste0("\\fancyhead[L]{\\small ", .escape_latex(essai$nom_etude),"}"),
+      paste0("\\fancyhead[R]{\\small Version ", .escape_latex(version_doc), " du ", format(Sys.Date(), "%d/%m/%Y"), "}"),
+
+      paste0("\\fancyfoot[L]{\\small ",
+        if(type_doc == "randomisation") "Liste de randomisation" else "Liste de correspondance",
+        " - CONFIDENTIEL - ", .escape_latex(essai$biostatisticien),"}"),
+
+      "\\fancyfoot[R]{\\small Page \\thepage/\\pageref{LastPage}}",
+
       ""
     )
   }
 
   contenu <- c(
     contenu,
+    "\\centering",
     "```{r echo=FALSE, message=FALSE, warning=FALSE}",
     lib_code,
     kable_code,
@@ -82,11 +109,22 @@
 
   writeLines(contenu, rmd_temp)
 
+  # Premiere passe : genere le PDF + garde les fichiers intermediaires (.tex, .aux)
   rmarkdown::render(
     input       = rmd_temp,
     output_file = nom_pdf,
     output_dir  = chemin,
-    quiet       = TRUE
+    quiet       = TRUE,
+    clean       = FALSE
+  )
+
+  # Seconde passe : relit le .aux genere, resout \pageref correctement
+  rmarkdown::render(
+    input       = rmd_temp,
+    output_file = nom_pdf,
+    output_dir  = chemin,
+    quiet       = TRUE,
+    clean       = TRUE
   )
 
   file.remove(rmd_temp)

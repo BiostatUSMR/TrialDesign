@@ -23,9 +23,9 @@
   }
 
   data.frame(
-    RDNUM     = 1:n,
-    RDGRP     = arm_code[allocation],
-    RDGRP_LIB = arm_label[allocation],
+    rdnum     = 1:n,
+    rdgrp     = arm_code[allocation],
+    rdgrp_lib = arm_label[allocation],
     stringsAsFactors = FALSE
   )
 }

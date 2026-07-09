@@ -22,8 +22,7 @@
 #' @param methodologiste Caractere. Nom du methodologiste. Par defaut NULL.
 #' @param biostatisticien Caractere. Nom du biostatisticien. Par defaut NULL.
 #' @param confidentiel Logique. Si TRUE, affiche la mention CONFIDENTIEL sur la page de garde. Par defaut FALSE.
-#' @param code_usmr Caractere. Code du document USMR. Par defaut NULL.
-#' @param indice_document Caractere. Indice du document. Par defaut NULL.
+#' @param indice_document Caractere. Indice du document. Par defaut 02.
 #'
 #' @return Une liste contenant tous les parametres valides de l'essai.
 #'   Doit etre assignee : \code{essai <- init_essai(...)}.
@@ -61,12 +60,16 @@ init_essai <- function(nom_etude,
                        methodologiste    = NULL,
                        biostatisticien   = NULL,
                        confidentiel      = FALSE,
-                       code_usmr         = NULL,
-                       indice_document   = NULL) {
+                       indice_document   = "02") {
 
   # --- Verification circuit ---
   if (!circuit %in% c("ennov", "redcap")) {
-    stop("'circuit' doit \u00eatre 'ennov' ou 'redcap'.")
+    stop("'circuit' doit etre 'ennov' ou 'redcap'.")
+  }
+
+  if (circuit == "ennov" && is.null(strat_vars)) {
+    stop("Une variable de stratification est obligatoire pour le circuit 'ennov'. ",
+         "Fournissez 'strat_vars' (ex : strat_vars = list(centre = list(codes = c(1,2), labels = c(\"Centre 1\",\"Centre 2\")))).")
   }
 
   # --- Valeurs par defaut ---
@@ -76,7 +79,7 @@ init_essai <- function(nom_etude,
 
   # --- Verifications arguments randomisation ---
   if (!is.numeric(k) || k < 2 || k != round(k))
-    stop("'k' doit \u00eatre un entier >= 2.")
+    stop("'k' doit etre un entier >= 2.")
 
   if (!is.numeric(block_sizes) || any(block_sizes <= 0))
     stop("'block_sizes' doit contenir des entiers strictement positifs.")
@@ -85,28 +88,30 @@ init_essai <- function(nom_etude,
     stop("'nb_block' doit contenir des entiers strictement positifs.")
 
   if (length(block_sizes) != length(nb_block))
-    stop("'block_sizes' et 'nb_block' doivent avoir la m\u00eame longueur.")
+    stop("'block_sizes' et 'nb_block' doivent avoir la meme longueur.")
 
   if (any(block_sizes %% sum(ratio) != 0))
-    stop("Chaque taille de bloc doit \u00eatre divisible par sum(ratio) = ", sum(ratio), ".")
+    stop("Chaque taille de bloc doit etre divisible par sum(ratio) = ", sum(ratio), ".")
 
   if (length(ratio) != k)
-    stop("'ratio' doit \u00eatre un vecteur de longueur k.")
+    stop("'ratio' doit etre un vecteur de longueur k.")
 
   if (length(arm_label) != k)
-    stop("'arm_label' doit avoir exactement k \u00e9l\u00e9ments.")
+    stop("'arm_label' doit avoir exactement k elements.")
 
   if (!is.numeric(arm_code) || length(arm_code) != k)
-    stop("'arm_code' doit \u00eatre un vecteur num\u00e9rique de longueur k.")
+    stop("'arm_code' doit etre un vecteur numerique de longueur k.")
 
   if (!is.null(strat_vars)) {
     if (!is.list(strat_vars))
-      stop("'strat_vars' doit \u00eatre une liste.")
+      stop("'strat_vars' doit etre une liste.")
     for (var in names(strat_vars)) {
       if (!all(c("codes", "labels") %in% names(strat_vars[[var]])))
         stop("La variable '", var, "' doit contenir 'codes' et 'labels'.")
       if (length(strat_vars[[var]]$codes) != length(strat_vars[[var]]$labels))
-        stop("'codes' et 'labels' de '", var, "' doivent avoir la m\u00eame longueur.")
+        stop("'codes' et 'labels' de '", var, "' doivent avoir la meme longueur.")
+      if (any(duplicated(strat_vars[[var]]$codes)))
+        stop("Les 'codes' de '", var, "' doivent etre uniques (doublon detecte).")
     }
   }
 
@@ -129,12 +134,11 @@ init_essai <- function(nom_etude,
     methodologiste  = methodologiste,
     biostatisticien = biostatisticien,
     confidentiel    = confidentiel,
-    code_usmr       = code_usmr,
     indice_document = indice_document
   )
 
   # --- Message de confirmation ---
-  message("\u2714 Essai initialis\u00e9 : ", nom_etude)
+  message("\u2714 Essai initialise : ", nom_etude)
   message("  Circuit      : ", circuit)
   message("  N/strate     : ", sum(block_sizes * nb_block))
   if (!is.null(strat_vars)) {

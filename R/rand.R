@@ -52,7 +52,7 @@ rand <- function(essai, seed, statut, version,
   # --- Verification de l'objet essai ---
   if (!is.list(essai) || is.null(essai$circuit)) {
     stop(
-      "'essai' doit \u00eatre un objet cr\u00e9\u00e9 par init_essai().\n",
+      "'essai' doit etre un objet cree par init_essai().\n",
       "Exemple : essai <- init_essai(...) puis rand(essai, seed = 42, ...)"
     )
   }
@@ -65,21 +65,21 @@ rand <- function(essai, seed, statut, version,
 
   # --- Verifications ---
   if (!is.numeric(seed) || seed != round(seed))
-    stop("'seed' doit \u00eatre un entier.")
+    stop("'seed' doit etre un entier.")
 
   if (!statut %in% c("FINALE", "FICTIVE"))
-    stop("'statut' doit \u00eatre 'FINALE' ou 'FICTIVE'.")
+    stop("'statut' doit etre 'FINALE' ou 'FICTIVE'.")
 
   if (!dir.exists(chemin))
-    stop("Le chemin sp\u00e9cifi\u00e9 n'existe pas.")
+    stop("Le chemin specifie n'existe pas.")
 
   if (!is.null(col_widths) && !is.character(col_widths))
-    stop("'col_widths' doit \u00eatre un vecteur de caract\u00e8res. Ex : c('2cm', '3cm').")
+    stop("'col_widths' doit etre un vecteur de caracteres Ex : c('2cm', '3cm').")
 
   # --- Generation du data.frame ---
   df <- if (circuit == "ennov") .rand_ennov(essai, seed) else .rand_redcap(essai, seed)
 
-  message("\u2714 Liste de randomisation g\u00e9n\u00e9r\u00e9e \u2014 ", nrow(df), " sujets.")
+  message("\u2714 Liste de randomisation generee ", nrow(df), " sujets.")
 
   # --- Nom de base des fichiers ---
   ext      <- if (circuit == "redcap") "csv" else "txt"
@@ -91,10 +91,13 @@ rand <- function(essai, seed, statut, version,
   nom_data <- file.path(chemin, paste0(nom_base, ".", ext))
 
   if (circuit == "redcap") {
-    write.csv(df, file = nom_data, row.names = FALSE)
+    cols_rdstr <- grep("^rdstr[0-9]*$", names(df), value = TRUE)
+    df_csv     <- df[, c("rdnum", "rdgrp", cols_rdstr), drop = FALSE]
+    names(df_csv) <- c("redcap_randomization_number", "rdgrp", tolower(cols_rdstr))
+    write.csv(df_csv, file = nom_data, row.names = FALSE, quote = FALSE)
   } else {
-    cols_rdstr <- grep("^RDSTR\\d*$", names(df), value = TRUE)
-    df_txt     <- df[, c(cols_rdstr, "RDNUM", "RDGRP"), drop = FALSE]
+    cols_rdstr <- grep("^rdstr\\d*$", names(df), value = TRUE)
+    df_txt     <- df[, c("rdnum", "rdgrp", cols_rdstr), drop = FALSE]
     write.table(df_txt, file = nom_data, row.names = FALSE,
                 col.names = FALSE, sep = ";")
   }
@@ -103,12 +106,14 @@ rand <- function(essai, seed, statut, version,
   nom_pdf <- paste0(nom_base, ".pdf")
   .export_pdf(essai, df, nom_pdf, chemin,
               type_doc   = "randomisation",
+              version_doc = version,
               col_widths = col_widths)
 
-  message("\u2714 Fichiers export\u00e9s :")
+  message("\u2714 Fichiers exportes :")
   message("  ", nom_data)
   message("  ", file.path(chemin, nom_pdf))
 
-  # --- Retour visible du data.frame pour inspection ---
-  return(df)
+  # --- Stockage du dataframe dans l'environnement ---
+  assign("df_randomisation", df, envir = parent.frame())
+  invisible(df)
 }

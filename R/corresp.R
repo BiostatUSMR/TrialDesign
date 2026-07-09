@@ -3,7 +3,7 @@
 #' @description
 #' Genere la liste de correspondance boites/traitements selon le circuit
 #' defini dans l'objet \code{essai} cree par \code{init_essai()}, exporte
-#' automatiquement trois fichiers (donnees + PDF + XLS trie par bras),
+#' automatiquement trois fichiers (donnees + PDF + XLS pour le circuit ENNOV),
 #' et retourne le data.frame genere pour inspection visuelle.
 #'
 #' @param essai Liste. Objet cree par \code{init_essai()}.
@@ -27,8 +27,7 @@
 #'   \itemize{
 #'     \item Fichier de donnees (.txt pour Ennov, .csv pour REDCap)
 #'     \item Fichier PDF avec page de garde institutionnelle
-#'     \item Fichier XLS avec une feuille par bras de traitement,
-#'       boites triees par numero croissant
+#'     \item Fichier XLS (pour ENNOV uniquement)
 #'   }
 #'
 #' @examples
@@ -112,10 +111,21 @@ corresp <- function(essai, mini, maxi, seed, statut, version,
   nom_data <- file.path(chemin, paste0(nom_base, ".", ext))
 
   if (circuit == "redcap") {
-    write.csv(df[, c("RDBOI", "RDBOI_LIB")],
-              file = nom_data, row.names = FALSE)
+    df_csv <- df[, c("rdboi", "rdboi_lib")]
+    names(df_csv) <- c("rdboi", "rdboi_lib")
+
+    # BOM UTF-8 ecrit en mode binaire (writeChar sur connexion texte n'est
+    # pas fiable pour ecrire une sequence d'octets precise comme le BOM)
+    con_bin <- file(nom_data, open = "wb")
+    writeBin(as.raw(c(0xEF, 0xBB, 0xBF)), con_bin)
+    close(con_bin)
+
+    # Contenu CSV ajoute ensuite, via une connexion texte en UTF-8
+    con_txt <- file(nom_data, open = "a", encoding = "UTF-8")
+    write.csv(df_csv, file = con_txt, row.names = FALSE, quote = FALSE)
+    close(con_txt)
   } else {
-    write.table(df[, c("RDBOI", "RDGRP")],
+    write.table(df[, c("rdboi", "rdgrp")],
                 file      = nom_data,
                 row.names = FALSE,
                 col.names = FALSE,
@@ -126,16 +136,22 @@ corresp <- function(essai, mini, maxi, seed, statut, version,
   nom_pdf <- paste0(nom_base, ".pdf")
   .export_pdf(essai, df, nom_pdf, chemin,
               type_doc   = "correspondance",
+              version_doc = version,
               col_widths = col_widths)
 
-  # --- Export XLS trie par bras de traitement ---
-  nom_xls <- file.path(chemin, paste0(nom_base, ".xlsx"))
-  .export_corresp_xls(df, nom_xls, arm_label, arm_code)
+  # --- Export XLS (ENNOV uniquement) ---
+  nom_xls <- NULL
+  if (circuit == "ennov") {
+    nom_xls <- file.path(chemin, paste0(nom_base, ".xlsx"))
+    .export_corresp_xls(df, nom_xls, arm_label, arm_code)
+  }
 
   message("\u2714 Fichiers exportes :")
   message("  ", nom_data)
   message("  ", file.path(chemin, nom_pdf))
-  message("  ", nom_xls)
+  if (!is.null(nom_xls)) message("  ", nom_xls)
 
-  return(df)
+  # --- Stockage du dataframe dans l'environnement ---
+  assign("df_correspondance", df, envir = parent.frame())
+  invisible(df)
 }
