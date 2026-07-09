@@ -47,14 +47,13 @@ Le data.frame de la liste de correspondance (retourne visiblement
   \itemize{
     \item Fichier de donnees (.txt pour Ennov, .csv pour REDCap)
     \item Fichier PDF avec page de garde institutionnelle
-    \item Fichier XLS avec une feuille par bras de traitement,
-      boites triees par numero croissant
+    \item Fichier XLS (pour ENNOV uniquement)
   }
 }
 \description{
 Genere la liste de correspondance boites/traitements selon le circuit
 defini dans l'objet \code{essai} cree par \code{init_essai()}, exporte
-automatiquement trois fichiers (donnees + PDF + XLS trie par bras),
+automatiquement trois fichiers (donnees + PDF + XLS pour le circuit ENNOV),
 et retourne le data.frame genere pour inspection visuelle.
 }
 \examples{

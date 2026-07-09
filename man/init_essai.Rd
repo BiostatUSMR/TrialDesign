@@ -20,8 +20,7 @@ init_essai(
   methodologiste = NULL,
   biostatisticien = NULL,
   confidentiel = FALSE,
-  code_usmr = NULL,
-  indice_document = NULL
+  indice_document = "02"
 )
 }
 \arguments{
@@ -57,9 +56,7 @@ Exemple : \code{list(sexe = list(codes = c(1,2), labels = c("Homme","Femme")))}.
 
 \item{confidentiel}{Logique. Si TRUE, affiche la mention CONFIDENTIEL sur la page de garde. Par defaut FALSE.}
 
-\item{code_usmr}{Caractere. Code du document USMR. Par defaut NULL.}
-
-\item{indice_document}{Caractere. Indice du document. Par defaut NULL.}
+\item{indice_document}{Caractere. Indice du document. Par defaut 02.}
 }
 \value{
 Une liste contenant tous les parametres valides de l'essai.
