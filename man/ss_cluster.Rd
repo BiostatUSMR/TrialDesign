@@ -14,32 +14,23 @@ ss_cluster(
 )
 }
 \arguments{
-\item{n_ind}{Data.frame. Objet retourne par \code{ss_mean_ni()},
-\code{ss_mean_sup()}, \code{ss_prop_ni()} ou \code{ss_prop_sup()}.
-La fonction verifie la presence de l'attribut \code{ssdesignr_type}.}
+\item{n_ind}{Data.frame. Objet retourne par \code{ss_mean_ni()}, \code{ss_mean_sup()}, \code{ss_prop_ni()} ou \code{ss_prop_sup()}. La fonction verifie la presence de l'attribut \code{ssdesignr_type}.}
 
 \item{schema}{Caractere. Schema de cluster :
 \itemize{
-  \item \code{"crt"} : CRT parallele simple.
-    DEFF = 1 + (m_eff - 1) * icc.
-  \item \code{"baseline"} : CRT parallele avec periode baseline.
-    DEFF selon Teerenstra et al. (2012).
-  \item \code{"sw"} : Stepped-Wedge CRT.
-    DEFF selon Woertman et al. (2013). Requiert \code{k_steps}.
+  \item \code{"crt"} : CRT parallele simple. DEFF = 1 + (m_eff - 1) * icc.
+  \item \code{"baseline"} : CRT parallele avec periode baseline. DEFF selon Teerenstra et al. (2012).
+  \item \code{"sw"} : Stepped-Wedge CRT. DEFF selon Woertman et al. (2013). Requiert \code{k_steps}.
 }}
 
-\item{m}{Numerique. Taille de cluster par periode (fixe ou moyenne si cv > 0).
-Peut etre un vecteur.}
+\item{m}{Numerique. Taille de cluster par periode (fixe ou moyenne si cv > 0). Peut etre un vecteur.}
 
-\item{icc}{Numerique. Intra-cluster correlation coefficient, entre 0 et 1.
-Peut etre un vecteur.}
+\item{icc}{Numerique. Intra-cluster correlation coefficient, entre 0 et 1. Peut etre un vecteur.}
 
-\item{cv}{Numerique. Coefficient de variation des tailles de cluster.
-Par defaut 0 (tailles fixes). Peut etre un vecteur.
+\item{cv}{Numerique. Coefficient de variation des tailles de cluster. Par defaut 0 (tailles fixes). Peut etre un vecteur.
 Si cv > 0 : m_eff = m * (1 + cv^2) selon Eldridge et al. (2006).}
 
-\item{k_steps}{Entier. Nombre de steps du stepped-wedge (>= 2).
-Requis uniquement si \code{schema = "sw"}. Peut etre un vecteur.}
+\item{k_steps}{Entier. Nombre de steps du stepped-wedge (>= 2). Requis uniquement si \code{schema = "sw"}. Peut etre un vecteur.}
 }
 \value{
 Le data.frame \code{n_ind} enrichi des colonnes :
@@ -49,12 +40,12 @@ Le data.frame \code{n_ind} enrichi des colonnes :
   \item \code{cv} : CV des tailles de cluster.
   \item \code{m_eff} : Taille effective = m * (1 + cv^2).
   \item \code{icc} : ICC.
-  \item \code{k_steps} : Nombre de steps (NA si non SW).
+  \item \code{k_steps} : Nombre de steps. Colonne presente uniquement si \code{schema = "sw"}.
   \item \code{deff} : Design Effect calcule.
   \item \code{n_total} : Effectif total sous randomisation individuelle (brut).
-  \item \code{ntotal_pdv} : Effectif total individuel ajuste aux manquants.
+  \item \code{n_total_pdv} : Effectif total individuel avec prise en compte des donnees manquantes.
   \item \code{n_cluster} : Effectif total clusterise brut (= n_total * DEFF).
-  \item \code{n_cluster_pdv} : Effectif total clusterise ajuste (= ntotal_pdv * DEFF).
+  \item \code{n_cluster_pdv} : Effectif total clusterise avec prise en compte des donnees manquantes (= n_total_pdv * DEFF).
   \item \code{k_par_bras} : Nombre de clusters par bras.
   \item \code{k_total} : Nombre total de clusters.
 }

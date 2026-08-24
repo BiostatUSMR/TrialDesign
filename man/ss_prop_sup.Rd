@@ -12,95 +12,65 @@ ss_prop_sup(
   kappa = 1,
   p01 = NULL,
   p10 = NULL,
-  missing_rate = 0,
-  alternative = "two.sided",
+  missing_prop = 0,
+  sided = 2,
   choice = c("khi2", "fisher", "mcnemar")
 )
 }
 \arguments{
-\item{p1}{Numerique. Proportion attendue dans le groupe 1 (traitement), entre 0 et 1.
-Peut etre un vecteur. Non utilise pour McNemar.}
+\item{p1}{Numerique. Proportion attendue dans le groupe 1 (traitement), entre 0 et 1. Peut etre un vecteur. Non utilise pour McNemar.}
 
-\item{p2}{Numerique. Proportion attendue dans le groupe 2 (controle), entre 0 et 1.
-Peut etre un vecteur. Non utilise pour McNemar.}
+\item{p2}{Numerique. Proportion attendue dans le groupe 2 (controle), entre 0 et 1. Peut etre un vecteur. Non utilise pour McNemar.}
 
 \item{power}{Numerique. Puissance souhaitee. Par defaut 0.80. Peut etre un vecteur.}
 
-\item{alpha}{Numerique. Niveau de significativite. Par defaut 0.05. Peut etre un vecteur.}
+\item{alpha}{Numerique. Risque de 1ere espece. Par defaut 0.05. Peut etre un vecteur.}
 
-\item{kappa}{Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres).
-Non applicable pour Fisher (equilibre uniquement) et McNemar (test apparie).}
+\item{kappa}{Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres). Non applicable pour McNemar (test apparie).}
 
-\item{p01}{Numerique. Proportion de paires discordantes (groupe 2 positif, groupe 1 negatif).
-Requis pour McNemar uniquement.}
+\item{p01}{Numerique. Proportion de paires discordantes (groupe 2 positif, groupe 1 negatif). Requis pour McNemar uniquement.}
 
-\item{p10}{Numerique. Proportion de paires discordantes (groupe 1 positif, groupe 2 negatif).
-Requis pour McNemar uniquement.}
+\item{p10}{Numerique. Proportion de paires discordantes (groupe 1 positif, groupe 2 negatif). Requis pour McNemar uniquement.}
 
-\item{missing_rate}{Numerique. Taux de donnees manquantes. Par defaut 0.
-Peut etre un vecteur.}
+\item{missing_prop}{Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur.}
 
-\item{alternative}{Caractere. Direction du test : \code{"two.sided"}, \code{"less"}
-ou \code{"greater"}. Par defaut \code{"two.sided"}.}
+\item{sided}{Numerique. Test unilateral (1) ou bilateral (2). Par defaut 2. Peut prendre la valeur 1 ou 2 uniquement.
+Pour un test unilateral, la direction (superiorite/inferiorite de p1 par rapport a p2, ou de p10 par rapport a p01 pour McNemar) est deduite automatiquement du signe de la difference attendue.}
 
 \item{choice}{Caractere. Test statistique a utiliser :
 \itemize{
-  \item \code{"khi2"} : Khi-2 d'independance.
-    Si kappa = 1 : \code{stats::power.prop.test()}.
-    Si kappa != 1 : \code{pwrss::power.z.twoprops()} avec n.ratio = kappa.
-  \item \code{"fisher"} : Test exact de Fisher, groupes equilibres uniquement.
-    Utilise \code{exact2x2::ss2x2()} avec \code{approx = TRUE}.
-  \item \code{"mcnemar"} : Test de McNemar, donnees appariees.
-    Utilise \code{exact2x2::powerPaired2x2()} par recherche iterative.
-    Requiert \code{p01} et \code{p10}. kappa sans objet.
+  \item \code{"khi2"} : Khi-2 d'independance. Utilise \code{getSampleSizeRates()}.
+  \item \code{"fisher"} : Test exact de Fisher. Utilise \code{exact2x2::ss2x2()} avec \code{approx = TRUE}.
+  \item \code{"mcnemar"} : Test de McNemar, donnees appariees. Utilise \code{exact2x2::powerPaired2x2()} par recherche iterative.  Requiert \code{p01} et \code{p10}. kappa sans objet.
 }}
 }
 \value{
 Un data.frame avec une ligne par combinaison de parametres et les colonnes :
 \itemize{
   \item \code{test} : Methode utilisee.
-  \item \code{puissance} : Puissance cible.
+  \item \code{puissance} : Puissance.
   \item \code{p1}, \code{p2} : Proportions (absent pour McNemar).
-  \item \code{alpha} : Niveau de significativite.
+  \item \code{alpha} : Risque de 1ere espece.
   \item \code{kappa} : Ratio d'allocation n1/n2 (absent pour McNemar).
-  \item \code{prop_manquant} : Taux de manquants.
+  \item \code{missing_prop} : Proportion de donnees manquantes.
   \item \code{n1}, \code{n2} : Effectifs par groupe (absent pour McNemar).
-  \item \code{n_total} : Effectif total brut.
-  \item \code{n1_pdv}, \code{n2_pdv} : Effectifs ajustes aux manquants (absent pour McNemar).
-  \item \code{ntotal_pdv} : Effectif total ajuste aux donnees manquantes.
+  \item \code{n_total} : Effectif total.
+  \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe avec prise en compte des donnees manquantes (absent pour McNemar).
+  \item \code{n_total_pdv} : Effectif total avec prise en compte des donnees manquantes.
 }
 Un attribut \code{ssdesignr_type = "prop_sup"} est attache au resultat
 pour permettre la validation dans \code{ss_cluster()}.
 }
 \description{
-Calcule la taille d'echantillon necessaire pour comparer deux proportions
+Calcule le nombre de sujets necessaire pour comparer deux proportions
 dans le cadre d'un essai de superiorite.
 }
 \examples{
 \dontrun{
 # Khi-2 equilibre
-ss_prop_sup(
-  p1     = c(0.25, 0.30),
-  p2     = c(0.40, 0.50),
-  power  = c(0.80, 0.90),
-  choice = "khi2"
-)
-
-# Fisher
-ss_prop_sup(
-  p1     = c(0.25, 0.30),
-  p2     = c(0.40, 0.50),
-  power  = 0.80,
-  choice = "fisher"
-)
+# Fisher desequilibre
 
 # McNemar
-ss_prop_sup(
-  p01    = 0.20,
-  p10    = 0.40,
-  power  = c(0.80, 0.90),
-  choice = "mcnemar"
-)
 }
 
 }

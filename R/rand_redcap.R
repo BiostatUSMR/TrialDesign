@@ -26,8 +26,8 @@
       for (s in seq_along(strat_vars)) {
         nom_var                        <- names(strat_vars)[s]
         idx                            <- grilles[r, s]
-        dfi[[paste0("RDSTR",     s)]] <- strat_vars[[nom_var]]$codes[idx]
-        dfi[[paste0("RDSTR_LIB", s)]] <- strat_vars[[nom_var]]$labels[idx]
+        dfi[[paste0("rdstr",     s)]] <- strat_vars[[nom_var]]$codes[idx]
+        dfi[[paste0("rdstr_lib", s)]] <- strat_vars[[nom_var]]$labels[idx]
       }
 
       df <- rbind(df, dfi)

@@ -9,12 +9,22 @@
 
   set.seed(seed)
   boites     <- sample(mini:maxi)
-  allocation <- sample(seq_len(k), size = length(boites), replace = TRUE)
+
+  # Nombre de boites par bras
+  n_par_bras <- rep(floor(length(boites) / k), k)
+  # Gestion du reste éventuel
+  reste <- length(boites) %% k
+  if (reste > 0) {n_par_bras[seq_len(reste)] <- n_par_bras[seq_len(reste)] + 1}
+  allocation <- rep(seq_len(k), times = n_par_bras)
+
+  # Mélange aléatoire reproductible
+  allocation <- sample(allocation)
+
 
   data.frame(
-    RDBOI     = boites,
-    RDGRP     = arm_code[allocation],
-    RDGRP_LIB = arm_label[allocation],
+    rdboi     = boites,
+    rdgrp     = arm_code[allocation],
+    rdgrp_lib = arm_label[allocation],
     stringsAsFactors = FALSE
   )
 }

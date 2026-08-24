@@ -11,23 +11,23 @@ sample_size_precision(
   spec = NULL,
   precision = 0.05,
   conf.level = 0.95,
-  missing_rate = 0
+  missing_prop = 0
 )
 }
 \arguments{
-\item{p}{proportion à estimer (numérique entre 0 et 1)}
+\item{p}{Numerique. Proportion a estimer (entre 0 et 1). Peut etre vecteur.}
 
-\item{prev}{prévalence de la maladie dans la population étudiée}
+\item{prev}{Numerique. Prevalence de la maladie dans la population etudiee. Peut etre vecteur.}
 
-\item{sens}{sensibilité attendue du test diagnostique (entre 0 et 1)}
+\item{sens}{Numerique. Sensibilite attendue du test diagnostique (entre 0 et 1). Peut etre vecteur.}
 
-\item{spec}{spécificité attendue du test diagnostique (entre 0 et 1)}
+\item{spec}{Numerique. Specificite attendue du test diagnostique (entre 0 et 1). Peut etre vecteur.}
 
-\item{precision}{demi-largeur souhaitée de l’intervalle de confiance}
+\item{precision}{Numerique. Demi-largeur souhaitee de l intervalle de confiance. Peut etre vecteur.}
 
-\item{conf.level}{niveau de confiance de l’intervalle de confiance}
+\item{conf.level}{Numerique. Niveau de confiance de l intervalle de confiance. Peut etre vecteur.}
 
-\item{missing_rate}{proportion attendue de données manquantes}
+\item{missing_prop}{Numerique. Proportion attendue de donnees manquantes. Peut etre vecteur. Par defaut 0.}
 }
 \value{
 Un data.frame dont les colonnes dependent du mode de calcul :
@@ -35,15 +35,15 @@ Un data.frame dont les colonnes dependent du mode de calcul :
   specificite (n_spec, n_spec_ajuste), ou les deux simultanement.
 }
 \description{
-Calcule la taille d'échantillon nécessaire pour estimer avec une précision donnée :
+Calcule le nombre de sujets necessaire pour estimer avec une precision donnee :
 - une proportion
-- une sensibilité,
-- une spécificité,
-- ou simultanément la sensibilité et la spécificité d'un test diagnostique.
+- une sensibilite,
+- une specificite,
+- ou simultanement la sensibilite et la specificite d'un test diagnostique.
 }
 \examples{
 \dontrun{
 sample_size_precision(p=c(0.10,0.15,0.20,0.25,0.30,0.35,0.40),
-missing_rate =c(0.1,0.2))
+missing_prop =c(0.1,0.2))
 }
 }

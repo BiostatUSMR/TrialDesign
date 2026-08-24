@@ -10,33 +10,42 @@ sample_size_phase2(
   alpha = 0.05,
   power = 0.8,
   method = c("ahern", "fleming"),
-  missing_rate = 0,
+  missing_prop = 0,
   nmax = 200
 )
 }
 \arguments{
-\item{p0}{Proportion de succès sous l'hypothèse nulle (taux inacceptable)}
+\item{p0}{Numerique. Proportion de succes sous l'hypothese nulle (taux inacceptable). Peut etre un vecteur.}
 
-\item{p1}{Proportion de succès sous l'hypothèse alternative (taux attendu)}
+\item{p1}{Numerique. Proportion de succes sous l'hypothese alternative (taux attendu).  Peut etre un vecteur. Attention : un ecart p1 - p0 tres faible peut rendre le calcul
+tres long (recherche exhaustive), en particulier pour method = "fleming".}
 
-\item{alpha}{Niveau de signification (erreur de type I, défaut = 0.05)}
+\item{alpha}{Numerique. Risque de premiere espece. Par defaut = 0.05. Peut etre un vecteur}
 
-\item{power}{Puissance souhaitée (1 - erreur de type II, défaut = 0.80)}
+\item{power}{Numerique. Puissance. Par defaut 0.80. Peut etre un vecteur.}
 
-\item{method}{Méthode de calcul ("ahern" ou "fleming")}
+\item{method}{Caractere. Methode de calcul ("ahern" ou "fleming").
+\itemize{
+  \item \code{"ahern"} : Recherche exacte sur la loi binomiale (A'Hern, 2001).
+    Plus precise mais generalement des effectifs plus eleves. Recherche exhaustive
+    via \code{stats::pbinom()}.
+  \item \code{"fleming"} : Approximation normale de la loi binomiale (Fleming, 1982).
+    Calcul direct (formule fermee), effectifs generalement plus faibles que A'Hern,
+    mais approximation moins fiable pour les petits echantillons (< 50 sujets).
+}}
 
-\item{missing_rate}{Proportion attendue de données manquantes (défaut = 0)}
+\item{missing_prop}{Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur. Utilise pour calculer n1_pdv, n2_pdv et n_total_pdv.}
 
-\item{nmax}{Taille maximale testée pour A'Hern (défaut = 200)}
+\item{nmax}{Numerique. Taille maximale testee pour A'Hern. Par defaut = 200.}
 }
 \value{
-Un data.frame avec les colonnes : methode, p0, p1, alpha, power,
+Un data.frame avec les colonnes : methode, p0, p1, alpha, puissance,
   missing_prop, n_patient, n_ajuste, n_succes.
 }
 \description{
-Calcule la taille d'échantillon nécessaire pour un essai de phase II à un bras
-selon les méthodes de A'Hern ou de Fleming, pour tester si la proportion de succès
-attendue est suffisamment élevée pour justifier un essai de phase III.
+Calcule le nombre de sujets necessaire pour un essai de phase II a un bras
+selon les methodes de A'Hern ou de Fleming, pour tester si la proportion de succes
+attendue est suffisamment elevee pour justifier un essai de phase III.
 }
 \examples{
  \dontrun{
@@ -44,7 +53,7 @@ sample_size_phase2(
   p0 = c(0.10,0.20),
   p1 = c(0.30,0.40),
   method = "ahern",
-  missing_rate = 0.1,
+  missing_prop = 0.1,
   nmax = 50)
   }
 

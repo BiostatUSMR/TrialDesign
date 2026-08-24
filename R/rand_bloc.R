@@ -7,7 +7,7 @@
 
   allocation <- c()
 
-  # Liste aléatoire des blocs avec leurs tailles
+  # Liste aleatoire des blocs avec leurs tailles
   m          <- sum(nb_block)
   block_list <- c()
   for (i in seq_along(block_sizes)) {
@@ -15,7 +15,7 @@
   }
   block_list <- sample(block_list)
 
-  # Génération du contenu de chaque bloc
+  # Generation du contenu de chaque bloc
   for (j in seq_len(m)) {
     contenu    <- rep(1:k, times = ratio / sum(ratio) * block_list[j])
     bloc       <- sample(contenu)
@@ -23,9 +23,9 @@
   }
 
   data.frame(
-    RDNUM     = 1:n,
-    RDGRP     = arm_code[allocation],
-    RDGRP_LIB = arm_label[allocation],
+    rdnum     = 1:n,
+    rdgrp     = arm_code[allocation],
+    rdgrp_lib = arm_label[allocation],
     stringsAsFactors = FALSE
   )
 }
