@@ -1,45 +1,48 @@
-#' FONCTION ss_cluster()
+#' Calculate sample size for a cluster randomized trial
 #'
 #' @description
-#' Applique un Design Effect (DEFF) au resultat d'un appel prealable a
-#' \code{ss_mean_ni()}, \code{ss_mean_sup()}, \code{ss_prop_ni()} ou
-#' \code{ss_prop_sup()} pour obtenir les effectifs et le nombre de clusters
-#' necessaires dans un essai randomise en cluster (CRT).
+#' Applies a design effect (DEFF) to the result of a previous call to
+#' \code{\link{ss_mean_ni}}, \code{\link{ss_mean_sup}},\code{\link{ss_prop_ni}},
+#' or \code{\link{ss_prop_sup}} to calculate the required sample size and number
+#' of clusters for a cluster randomized trial (CRT).
 #'
-#' Workflow typique :
+#' Typical Workflow:
 #' \preformatted{
 #' res <- ss_mean_ni(mu1 = 10, mu2 = 10, sd = 3, marge = 0.5, choice = "student")
 #' ss_cluster(n_ind = res, schema = "crt", m = 25, icc = 0.05)
 #' }
 #'
-#' @param n_ind Data.frame. Objet retourne par \code{ss_mean_ni()}, \code{ss_mean_sup()}, \code{ss_prop_ni()} ou \code{ss_prop_sup()}. La fonction verifie la presence de l'attribut \code{ssdesignr_type}.
-#' @param schema Caractere. Schema de cluster :
+#' @param n_ind Data frame. Result returned by \code{\link{ss_mean_ni}},
+#' \code{\link{ss_mean_sup}}, \code{\link{ss_prop_ni}}, or \code{\link{ss_prop_sup}}.
+#' The function checks for the presence of the \code{ssdesignr_type} attribute.
+#' @param schema Character string. Cluster trial design:
 #' \itemize{
-#'   \item \code{"crt"} : CRT parallele simple. DEFF = 1 + (m_eff - 1) * icc.
-#'   \item \code{"baseline"} : CRT parallele avec periode baseline. DEFF selon Teerenstra et al. (2012).
-#'   \item \code{"sw"} : Stepped-Wedge CRT. DEFF selon Woertman et al. (2013). Requiert \code{k_steps}.
+#'   \item \code{"crt"}: Standard parallel CRT. The design effect is
+#' calculated as \code{DEFF = 1 + (m_eff - 1) * icc}.
+#'   \item \code{"baseline"}: Parallel CRT with a baseline period. The design effect is calculated according to Teerenstra et al. (2012).
+#'   \item \code{"sw"}: Stepped-wedge CRT. The design effect is calculated according to Woertman et al. (2013). Requires \code{k_steps}.
 #' }
-#' @param m Numerique. Taille de cluster par periode (fixe ou moyenne si cv > 0). Peut etre un vecteur.
-#' @param icc Numerique. Intra-cluster correlation coefficient, entre 0 et 1. Peut etre un vecteur.
-#' @param cv Numerique. Coefficient de variation des tailles de cluster. Par defaut 0 (tailles fixes). Peut etre un vecteur.
-#'   Si cv > 0 : m_eff = m * (1 + cv^2) selon Eldridge et al. (2006).
-#' @param k_steps Entier. Nombre de steps du stepped-wedge (>= 2). Requis uniquement si \code{schema = "sw"}. Peut etre un vecteur.
+#' @param m Numeric vector. Cluster size per period. Can be fixed or represent the mean cluster size when \code{cv > 0}.
+#' @param icc Numeric vector. Intra-cluster correlation coefficient, ranging from 0 to 1.
+#' @param cv Numeric vector. Coefficient of variation of cluster sizes. Defaults to \code{0}, corresponding to equal cluster sizes. When
+#' \code{cv > 0}, the effective cluster size is calculated as \code{m * (1 + cv^2)}, according to Eldridge et al. (2006).
+#' @param k_steps Integer vector. Number of steps in the stepped-wedge design. Must be greater than or equal to 2. Required only when \code{schema = "sw"}.
 #'
-#' @return Le data.frame \code{n_ind} enrichi des colonnes :
+#' @return The input data frame \code{n_ind}, enriched with the following columns:
 #' \itemize{
-#'   \item \code{schema} : Schema de cluster utilise.
-#'   \item \code{m} : Taille de cluster (ou moyenne).
-#'   \item \code{cv} : CV des tailles de cluster.
-#'   \item \code{m_eff} : Taille effective = m * (1 + cv^2).
-#'   \item \code{icc} : ICC.
-#'   \item \code{k_steps} : Nombre de steps. Colonne presente uniquement si \code{schema = "sw"}.
-#'   \item \code{deff} : Design Effect calcule.
-#'   \item \code{n_total} : Effectif total sous randomisation individuelle (brut).
-#'   \item \code{n_total_pdv} : Effectif total individuel avec prise en compte des donnees manquantes.
-#'   \item \code{n_cluster} : Effectif total clusterise brut (= n_total * DEFF).
-#'   \item \code{n_cluster_pdv} : Effectif total clusterise avec prise en compte des donnees manquantes (= n_total_pdv * DEFF).
-#'   \item \code{k_par_bras} : Nombre de clusters par bras.
-#'   \item \code{k_total} : Nombre total de clusters.
+#'   \item \code{schema}: Cluster trial design.
+#'   \item \code{m}: Cluster size, or mean cluster size when cluster sizes vary.
+#'   \item \code{cv}: Coefficient of variation of cluster sizes.
+#'   \item \code{m_eff}: Effective cluster size, calculated as \code{m * (1 + cv^2)}.
+#'   \item \code{icc}: Intra-cluster correlation coefficient.
+#'   \item \code{k_steps}: Number of steps. This column is only present for stepped-wedge designs.
+#'   \item \code{deff}: Calculated design effect.
+#'   \item \code{n_total}: Total sample size required under individual randomization, before adjustment for missing data.
+#'   \item \code{n_total_pdv}: Total sample size required under individual randomization, after adjustment for missing data.
+#'   \item \code{n_cluster}: Total sample size after adjustment for clustering, before adjustment for missing data.
+#'   \item \code{n_cluster_pdv}: Total sample size after adjustment for clustering and missing data.
+#'   \item \code{k_par_bras}: Required number of clusters per treatment arm.
+#'   \item \code{k_total}: Required total number of clusters.
 #' }
 #'
 #' @importFrom dplyr mutate select any_of all_of
@@ -60,7 +63,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' # CRT simple, NI continu
+#' # Standard CRT with a continuous non-inferiority endpoint
 #' res <- ss_mean_ni(
 #'   mu1    = 10,
 #'   mu2    = 10,
@@ -76,7 +79,7 @@
 #'   icc    = c(0.01, 0.05, 0.10)
 #' )
 #'
-#' # Stepped-Wedge, superiorite binaire
+#' # Stepped-wedge CRT with a binary superiority endpoint
 #' res <- ss_prop_sup(
 #'   p1     = 0.30,
 #'   p2     = 0.20,

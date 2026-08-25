@@ -1,33 +1,32 @@
-#' FONCTION corresp()
+#' Generate a treatment correspondence list
 #'
 #' @description
-#' Genere la liste de correspondance boites/traitements selon le circuit
-#' defini dans l'objet \code{essai} cree par \code{init_essai()}, exporte
-#' automatiquement trois fichiers (donnees + PDF + XLS pour le circuit ENNOV),
-#' et retourne le data.frame genere pour inspection visuelle.
+#' Generates a treatment allocation list: treatment box numbers/treatment
+#' assignments, according to the randomization system defined in the
+#' \code{essai} object created with \code{\link{init_essai}}. The generated
+#' list is automatically exported in the appropriate formats, depending on
+#' the selected system, and is also returned as a data frame for inspection.
 #'
-#' @param essai Liste. Objet cree par \code{init_essai()}.
-#'   Exemple : \code{essai <- init_essai(...)}.
-#' @param mini Entier. Premier numero de boite.
-#' @param maxi Entier. Dernier numero de boite.
-#' @param seed Entier. Graine aleatoire pour la reproductibilite.
-#' @param statut Caractere. Statut de la liste generee : \code{"FINALE"} ou
-#'   \code{"FICTIVE"}.
-#' @param version Caractere. Version de la liste generee. Ex : \code{"v01"}.
-#' @param boi_label Caractere. Libelle personnalise pour les boites.
-#'   Si NULL, \code{"Boite de traitement numero xxx"} est utilise.
-#'   Utilise uniquement en circuit REDCap.
-#' @param col_widths Vecteur de caracteres. Largeurs des colonnes du tableau PDF.
-#'   Ex : \code{c("2cm", "3cm", "4cm")}. Si NULL, largeurs automatiques.
-#' @param chemin Caractere. Chemin vers le repertoire de sortie.
-#'   Si NULL, repertoire de travail courant.
+#' @param essai Liste. Trial object created with \code{\link{init_essai}}.
+#'   For example: \code{essai <- init_essai(...)}.
+#' @param mini Integer. First treatment box number.
+#' @param maxi Integer. Last treatment box number.
+#' @param seed Integer. Random seed used to ensure reproducibility.
+#' @param statut Character string. Status of the generated list: \code{"FINALE"} or \code{"FICTIVE"}.
+#' @param version Character string. Version of the generated list. For example, \code{"v01"}.
+#' @param boi_label Character string. Custom label for treatment boxes.
+#'   If \code{NULL}, \code{"Boite de traitement numero xxx"} is used.
+#'   Only used with the REDCap system.
+#' @param col_widths Character vector. Widths of the columns in the generated PDF table.
+#'   For example, \code{c("2cm", "3cm", "4cm")}. If \code{NULL}, column widths are automatically determined.
+#' @param chemin Character string. Path to the output directory. If \code{NULL}, the current working directory is used.
 #'
-#' @return Le data.frame de la liste de correspondance (retourne visiblement
-#'   pour inspection). Les fichiers suivants sont exportes en parallele :
+#' @return A data frame containing the generated treatment allocation list.
+#' The list is also exported to files:
 #'   \itemize{
-#'     \item Fichier de donnees (.txt pour Ennov, .csv pour REDCap)
-#'     \item Fichier PDF avec page de garde institutionnelle
-#'     \item Fichier XLS (pour ENNOV uniquement)
+#'     \item A data file (\code{.txt} for Ennov or \code{.csv} for REDCap).
+#'     \item A PDF document including an institutional cover page.
+#'     \item An Excel file for the Ennov system only.
 #'   }
 #'
 #' @examples

@@ -1,31 +1,38 @@
-#' FONCTION ss_report()
+#' Generate a Word report for a sample size calculation
 #'
 #' @description
-#' Genere un rapport Word (.docx) contenant le resultat d'un calcul
-#' du nombre de sujets necessaires realise avec les fonctions du package.
+#' Generates a Word (\code{.docx}) report containing the results of a sample
+#' size calculation performed using the sample size functions provided by the
+#' package.
 #'
-#' Le document contient :
+#' The report includes:
 #' \itemize{
-#'   \item un titre ;
-#'   \item les informations generales de l'etude ;
-#'   \item le tableau des resultats.
+#'   \item a title;
+#'   \item general study information;
+#'   \item a table summarizing the sample size calculation results.
 #' }
 #'
-#' @param result data.frame retourne par ss_mean_sup(), ss_mean_ni(),
-#' ss_prop_sup() ou ss_prop_ni().
-#' @param file Caractere. Nom du fichier Word (sans chemin). Par defaut "sample_size_report.docx".
-#' @param nom_etude Caractere. Nom de l'etude.
-#' @param investigateur Caractere. Nom de l'investigateur.
-#' @param methodologiste Caractere. Nom du methodologiste.
-#' @param biostatisticien Caractere. Nom du biostatisticien.
-#' @param font Caractere. Police. Par defaut "Arial".
-#' @param size Caractere. Taille de police. Par defaut 11.
-#' @param col_widths Numerique. Vecteur donnant la largeur de colonnes du tableau de resultats (nom de colonne = largeur). Exprime dans l'unite definie par \code{unit}. Par defaut NULL.
-#' @param min_width Numerique. Largeur minimale appliquee a chaque colonne. Exprime dans l'unite definie par \code{unit}. Par defaut 1 (cm).
-#' @param unit Caractere. Unite utilisee pour \code{col_widths} et \code{min_width} : \code{"cm"} (par defaut) ou \code{"in"} (pouces).
-#' @param margin Numerique. Marge de page (haut, bas, gauche, droite) appliquee au document. Exprimee dans l'unite definie par \code{unit}. Par defaut 1.5 (cm).
+#' @param result A data frame returned by one of the sample size calculation
+#' functions, such as \code{ss_mean_sup()}, \code{ss_mean_ni()}, \code{ss_prop_sup()}, or \code{ss_prop_ni()}.
+#' @param file Character string. Name of the output Word file. Defaults to \code{"sample_size_report.docx"}.
+#' @param nom_etude Character string. Study name.
+#' @param investigateur Character string. Name of the principal investigator.
+#' @param methodologiste Character string. Name of the methodologist.
+#' @param biostatisticien Character string. Name of the biostatistician.
+#' @param font Character string. Font family used in the report. Defaults to \code{"Arial"}.
+#' @param size Numeric. Font size used in the report. Defaults to \code{11}.
+#' @param col_widths Numeric vector specifying the widths of the columns in the
+#' results table. Column names must correspond to the names of the columns in
+#' \code{result}, and values specify their widths in the unit defined by \code{unit}. Defaults to \code{NULL}.
+#' @param min_width Numeric. Minimum width applied to each column. Expressed in the
+#' unit defined by \code{unit}. Defaults to \code{1}.
+#' @param unit Character string. Unit used for \code{col_widths}, \code{min_width},
+#' and \code{margin}. Either \code{"cm"} (the default) or \code{"in"}.
+#' @param margin Numeric. Page margin applied to the document. Can be a single value
+#' applied to all margins or a numeric vector specifying the top, bottom, left, and
+#' right margins. Expressed in the unit defined by \code{unit}. Defaults to \code{1.5}.
 #'
-#' @return Chemin du fichier genere (invisiblement).
+#' @return The path to the generated Word file, returned invisibly.
 #'
 #' @importFrom officer read_docx body_add_par body_add_fpar fpar ftext fp_text
 #' @importFrom flextable flextable theme_booktabs autofit fontsize font

@@ -1,41 +1,53 @@
-#' FONCTION ss_prop_sup()
+#' Calculate sample size for a superiority trial with a binary endpoint
 #'
 #' @description
-#' Calcule le nombre de sujets necessaire pour comparer deux proportions
-#' dans le cadre d'un essai de superiorite.
+#' Calculates the required sample size to compare two treatment groups for a
+#' binary endpoint in the context of a superiority trial.
 #'
-#' @param p1 Numerique. Proportion attendue dans le groupe 1 (traitement), entre 0 et 1. Peut etre un vecteur. Non utilise pour McNemar.
-#' @param p2 Numerique. Proportion attendue dans le groupe 2 (controle), entre 0 et 1. Peut etre un vecteur. Non utilise pour McNemar.
-#' @param power Numerique. Puissance souhaitee. Par defaut 0.80. Peut etre un vecteur.
-#' @param alpha Numerique. Risque de 1ere espece. Par defaut 0.05. Peut etre un vecteur.
-#' @param kappa Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres). Non applicable pour McNemar (test apparie).
-#' @param p01 Numerique. Proportion de paires discordantes (groupe 2 positif, groupe 1 negatif). Requis pour McNemar uniquement.
-#' @param p10 Numerique. Proportion de paires discordantes (groupe 1 positif, groupe 2 negatif). Requis pour McNemar uniquement.
-#' @param missing_prop Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur.
-#' @param sided Numerique. Test unilateral (1) ou bilateral (2). Par defaut 2. Peut prendre la valeur 1 ou 2 uniquement.
-#' Pour un test unilateral, la direction (superiorite/inferiorite de p1 par rapport a p2, ou de p10 par rapport a p01 pour McNemar) est deduite automatiquement du signe de la difference attendue.
-#' @param choice Caractere. Test statistique a utiliser :
+#' @param p1 Numeric vector. Expected proportion in group 1 (treatment group),
+#' ranging from 0 to 1. Not used when \code{choice = "mcnemar"}.
+#' @param p2 Numeric vector. Expected proportion in group 2 (control group),
+#' ranging from 0 to 1. Not used when \code{choice = "mcnemar"}.
+#' @param power Numeric vector. Desired statistical power. Defaults to \code{0.80}.
+#' @param alpha Numeric vector. Type I error rate. Defaults to \code{0.05}.
+#' @param kappa Numeric. Allocation ratio \code{n1 / n2}. Defaults to
+#' \code{1}, corresponding to equal group sizes. Not applicable when
+#' \code{choice = "mcnemar"}, as the data are paired.
+#' @param p01 Numeric vector. Proportion of discordant pairs for which group 2
+#' is positive and group 1 is negative. Required only when \code{choice = "mcnemar"}.
+#' @param p10 Numeric vector. Proportion of discordant pairs for which group 1
+#' is positive and group 2 is negative. Required only when \code{choice = "mcnemar"}.
+#' @param missing_prop Numeric vector. Proportion of missing data. Defaults to \code{0}.
+#' @param sided Integer. Number of sides of the test: \code{1} for a one-sided
+#' test or \code{2} for a two-sided test. Defaults to \code{2}. For a
+#' one-sided test, the direction of the alternative hypothesis is
+#' automatically determined from the sign of the expected difference
+#' (\code{p1 - p2}, or \code{p10 - p01} for McNemar's test).
+#' @param choice Character string. Statistical test used for the sample size calculation:
 #' \itemize{
-#'   \item \code{"khi2"} : Khi-2 d'independance. Utilise \code{getSampleSizeRates()}.
-#'   \item \code{"fisher"} : Test exact de Fisher. Utilise \code{exact2x2::ss2x2()} avec \code{approx = TRUE}.
-#'   \item \code{"mcnemar"} : Test de McNemar, donnees appariees. Utilise \code{exact2x2::powerPaired2x2()} par recherche iterative.  Requiert \code{p01} et \code{p10}. kappa sans objet.
+#' \item \code{"khi2"}: Chi-squared test of independence.
+#' \item \code{"fisher"}: Fisher's exact test, using an approximation for the sample size calculation.
+#' \item \code{"mcnemar"}: McNemar's test for paired binary data.
+#'  Requires \code{p01} and \code{p10}. The allocation ratio
+#' \code{kappa} is not applicable.
 #' }
 #'
-#' @return Un data.frame avec une ligne par combinaison de parametres et les colonnes :
+#' @return A data frame with one row for each combination of input parameters. The
+#' returned columns depend on the selected statistical method:
 #' \itemize{
-#'   \item \code{test} : Methode utilisee.
-#'   \item \code{puissance} : Puissance.
-#'   \item \code{p1}, \code{p2} : Proportions (absent pour McNemar).
-#'   \item \code{alpha} : Risque de 1ere espece.
-#'   \item \code{kappa} : Ratio d'allocation n1/n2 (absent pour McNemar).
-#'   \item \code{missing_prop} : Proportion de donnees manquantes.
-#'   \item \code{n1}, \code{n2} : Effectifs par groupe (absent pour McNemar).
-#'   \item \code{n_total} : Effectif total.
-#'   \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe avec prise en compte des donnees manquantes (absent pour McNemar).
-#'   \item \code{n_total_pdv} : Effectif total avec prise en compte des donnees manquantes.
+#' \item \code{test}: Statistical method used.
+#' \item \code{p1}, \code{p2}: Expected proportions in groups 1 and 2. Not returned for McNemar's test.
+#' \item \code{alpha}: Type I error rate.
+#' \item \code{kappa}: Allocation ratio \code{n1 / n2}. Not returned for McNemar's test.
+#' \item \code{puissance}: Desired statistical power.
+#' \item \code{missing_prop}: Proportion of missing data.
+#' \item \code{n1}, \code{n2}: Required sample sizes in groups 1 and 2. Not returned for McNemar's test.
+#' \item \code{n_total}: Total required sample size.
+#' \item \code{n1_pdv}, \code{n2_pdv}: Required sample sizes after adjustment for missing data. Not returned for McNemar's test.
+#' \item \code{n_total_pdv}: Total required sample size after adjustment for missing data.
 #' }
-#' Un attribut \code{ssdesignr_type = "prop_sup"} est attache au resultat
-#' pour permettre la validation dans \code{ss_cluster()}.
+#' The result is assigned the attribute \code{ssdesignr_type = "prop_sup"},
+#' which allows its validation when passed to \code{\link{ss_cluster}}.
 #'
 #' @importFrom dplyr mutate filter select
 #' @importFrom purrr pmap map_dbl
@@ -44,7 +56,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Khi-2 equilibre
+#' # Chi-squared test with equal group sizes
 # ss_prop_sup(
 #   p1           = c(0.20, 0.30),
 #   p2           = 0.70,
@@ -55,7 +67,7 @@
 #   sided        = 2
 # )
 #
-#' # Fisher desequilibre
+#' # Fisher's exact test with unequal group sizes
 # ss_prop_sup(
 #   p1           = 0.20,
 #   p2           = 0.70,
@@ -65,7 +77,7 @@
 #   sided        = 2
 # )
 #'
-#' # McNemar
+#' # McNemar's test for paired data
 # ss_prop_sup(
 #   p01    = 0.10,
 #   p10    = 0.20,

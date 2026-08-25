@@ -14,10 +14,10 @@
   libelle_etude_txt <- if (is.null(libelle_etude) || libelle_etude == "") "\\mbox{}" else libelle_etude
   if (type == "randomisation") {
     titre_doc <- "LISTE DE RANDOMISATION"
-    code_usmr <- "EN-USM-417"
+    code_doc <- "EN-USM-417"
   } else {
     titre_doc <- "LISTE DE CORRESPONDANCE N\\textsuperscript{o} DE BO\\^{I}TE / TRAITEMENT"
-    code_usmr <- "EN-USM-418"
+    code_doc <- "EN-USM-418"
   }
   logo <- system.file("LogoCHUBdx.jpg", package = "trialdesign")
   paste0(
@@ -29,7 +29,7 @@
 \\hline
 \\centering \\vspace{2pt} \\includegraphics[width=0.25\\textwidth]{", gsub('\\\\', '/', logo), "} \\vspace{2pt} &
 \\centering \\textbf{Entit\u00e9 d'application : USMR} \\par \\textbf{Emetteur : USMR} &
-\\centering \\textbf{", code_usmr, "} \\tabularnewline \\hline
+\\centering \\textbf{", code_doc, "} \\tabularnewline \\hline
 \\multicolumn{2}{|c|}{\\centering \\textbf{DOCUMENT D'ENREGISTREMENT}} &
 Ind : ", indice_doc, " \\par Page : 1 / \\pageref{enddocument} \\tabularnewline \\hline
 \\multicolumn{3}{|c|}{\\rule{0pt}{3ex} \\large \\textbf{", titre_doc, "} \\rule[-1.5ex]{0pt}{0pt}} \\\\ \\hline

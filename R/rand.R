@@ -1,28 +1,26 @@
-#' FONCTION rand()
+#' Generate a randomization list
 #'
 #' @description
-#' Genere la liste de randomisation selon le circuit defini dans l'objet
-#' \code{essai} cree par \code{init_essai()}, exporte automatiquement deux
-#' fichiers (donnees + PDF), et retourne le data.frame genere pour
-#' inspection visuelle.
+#' Generates a randomization list according to the randomization system defined in the
+#' \code{essai} object created with \code{\link{init_essai}}. The
+#' generated list is automatically exported as a data file and a PDF document
+#' and is also returned as a data frame for inspection.
 #'
-#' @param essai Liste. Objet cree par \code{init_essai()}.
-#'   Exemple : \code{essai <- init_essai(...)}.
-#' @param seed Entier. Graine aleatoire pour la reproductibilite.
-#' @param statut Caractere. Statut de la liste generee : \code{"FINALE"} ou
-#'   \code{"FICTIVE"}.
-#' @param version Caractere. Version de la liste generee. Ex : \code{"v01"}.
-#' @param col_widths Vecteur de caracteres. Largeurs des colonnes du tableau PDF.
-#'   Ex : \code{c("2cm", "3cm", "4cm")}. Si NULL, largeurs automatiques.
-#'   Doit avoir autant d'elements que de colonnes dans le data.frame de sortie.
-#' @param chemin Caractere. Chemin vers le repertoire de sortie.
-#'   Si NULL, repertoire de travail courant.
+#' @param essai List. Trial object created with \code{\link{init_essai}}.
+#'   For example: \code{essai <- init_essai(...)}.
+#' @param seed Integer. Random seed used to ensure reproducibility.
+#' @param statut Character string. Status of the generated list: \code{"FINALE"} or \code{"FICTIVE"}
+#' @param version Character string. Version of the generated list. For example, \code{"v01"}.
+#' @param col_widths Character vector. Widths of the columns in the generated PDF table.
+#'   For example, \code{c("2cm", "3cm", "4cm")}. If \code{NULL}, column widths are
+#'   automatically determined. The vector must contain one element for each column of the generated data frame.
+#' @param chemin Character string. Path to the output directory. If \code{NULL}, the current working directory is used.
 #'
 #' @importFrom utils write.csv write.table
 #' @importFrom rmarkdown render
 #'
-#' @return Le data.frame de la liste de randomisation (retoure visiblement
-#'   pour inspection). Les fichiers sont exportes en parallele.
+#' @return A data frame containing the generated randomization list. The list is also
+#' exported as a data file and a PDF document.
 #'
 #' @examples
 #' \dontrun{
@@ -32,11 +30,11 @@
 #'   arm_label = c("Placebo", "Traitement"), arm_code = c(0, 1)
 #' )
 #'
-#' # Inspection du data.frame + export des fichiers
+#' # Inspect the generated data frame and export the files
 #' df <- rand(essai, seed = 42, statut = "FICTIVE", version = "v01")
 #' head(df)
 #'
-#' # Deux essais en parallele sans conflit
+#' # Run two independent trials in parallel without conflicts
 #' essai_A <- init_essai("ESSAI_A", circuit = "ennov", ...)
 #' essai_B <- init_essai("ESSAI_B", circuit = "redcap", ...)
 #' df_A <- rand(essai_A, seed = 42, statut = "FICTIVE", version = "v01")

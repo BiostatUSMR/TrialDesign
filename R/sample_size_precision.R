@@ -1,24 +1,33 @@
-#' FONCTION sample_size_precision
+#' Calculate sample size for precision-based estimation
 #'
 #'@description
-#'Calcule le nombre de sujets necessaire pour estimer avec une precision donnee :
-#'- une proportion
-#'- une sensibilite,
-#'- une specificite,
-#' - ou simultanement la sensibilite et la specificite d'un test diagnostique.
+#'Calculates the required sample size to estimate, with a specified level of precision:
+#' \itemize{
+#' \item a proportion;
+#' \item the sensitivity of a diagnostic test;
+#' \item the specificity of a diagnostic test; or
+#' \item both sensitivity and specificity simultaneously.
+#' }
+#' @param p Numeric vector. Expected proportion to be estimated, ranging from 0 to 1.
+#' @param prev Numeric vector. Expected disease prevalence in the study population.
+#' @param sens Numeric vector. Expected sensitivity of the diagnostic test, ranging from 0 to 1.
+#' @param spec Numeric vector. Expected specificity of the diagnostic test, ranging from 0 to 1.
+#' @param precision Numeric vector. Desired half-width of the confidence interval.
+#' @param conf.level Numeric vector. Confidence level of the confidence interval.
+#' @param missing_prop Numeric vector. Expected proportion of missing data. Defaults to \code{0}.
 #'
-#' @param p Numerique. Proportion a estimer (entre 0 et 1). Peut etre vecteur.
-#' @param prev Numerique. Prevalence de la maladie dans la population etudiee. Peut etre vecteur.
-#' @param sens Numerique. Sensibilite attendue du test diagnostique (entre 0 et 1). Peut etre vecteur.
-#' @param spec Numerique. Specificite attendue du test diagnostique (entre 0 et 1). Peut etre vecteur.
-#' @param precision Numerique. Demi-largeur souhaitee de l intervalle de confiance. Peut etre vecteur.
-#' @param conf.level Numerique. Niveau de confiance de l intervalle de confiance. Peut etre vecteur.
-#' @param missing_prop Numerique. Proportion attendue de donnees manquantes. Peut etre vecteur. Par defaut 0.
-#'
-#' @return Un data.frame dont les colonnes dependent du mode de calcul :
-#'   proportion (n_prop, n_prop_ajuste), sensibilite (n_sens, n_sens_ajuste),
-#'   specificite (n_spec, n_spec_ajuste), ou les deux simultanement.
-#'
+#' @return A data frame with one row for each combination of input parameters. The
+#' returned columns depend on the requested calculation:
+#' \itemize{
+#' \item \strong{Proportion estimation}: \code{n_prop}, the required sample size, and
+#' \code{n_prop_ajuste}, the sample size adjusted for missing data.
+#' \item \strong{Sensitivity estimation}: \code{n_sens}, the required number of subjects
+#' for sensitivity estimation, and \code{n_sens_ajuste}, the corresponding number adjusted for missing data.
+#' \item \strong{Specificity estimation}: \code{n_spec}, the required number of subjects
+#' for specificity estimation, and \code{n_spec_ajuste}, the corresponding number adjusted for missing data.
+#' \item \strong{Simultaneous estimation of sensitivity and specificity}: the corresponding sample size requirements
+#' for both measures.
+#' }
 #' @export
 #'
 #' @importFrom dplyr mutate select

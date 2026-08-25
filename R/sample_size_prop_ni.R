@@ -1,44 +1,48 @@
-#' FONCTION ss_prop_ni()
+#' Calculate sample size for a non-inferiority trial with a binary endpoint
 #'
 #' @description
-#' Calcule le nombre de sujets necessaire pour demontrer la non-inferiorite
-#' entre deux groupes sur un critere binaire (deux proportions).
+#' Calculates the required sample size to demonstrate non-inferiority between
+#' two treatment groups for a binary endpoint.
 #'
-#' Hypotheses :
+#' Hypotheses:
 #' \itemize{
-#'   \item H0 : p1 - p2 <= -marge (inferiorite)
-#'   \item H1 : p1 - p2 >  -marge (non-inferiorite)
+#' \item \eqn{H_0: p_1 - p_2 \leq -\Delta}, corresponding to inferiority.
+#' \item \eqn{H_1: p_1 - p_2 > -\Delta}, corresponding to non-inferiority.
 #' }
 #'
-#' @note Seul le test du Khi-2 est disponible en NI.
+#' @note Only the chi-squared test is currently available for non-inferiority calculations.
 #'
-#' @param p1 Numerique. Proportion attendue dans le groupe 1 (traitement), entre 0 et 1. Peut etre un vecteur.
-#' @param p2 Numerique. Proportion attendue dans le groupe 2 (controle), entre 0 et 1. Peut etre un vecteur.
-#' @param marge Numerique. Marge de non-inferiorite (valeur strictement positive). Peut etre un vecteur.
-#' @param power Numerique. Puissance souhaitee. Par defaut 0.80. Peut etre un vecteur.
-#' @param alpha Numerique. Risque de 1ere espece. Par defaut 0.025. Peut etre un vecteur.
-#' @param kappa Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres).
-#' @param missing_prop Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur.
-#' @param sided Numerique. Test unilateral (1) ou bilateral (2). Par defaut 1. Peut prendre la valeur 1 ou 2 uniquement.
-#' @param choice Caractere. Unique valeur acceptee : \code{"khi2"}. Conserve pour uniformite avec les autres fonctions du package.
+#' @param p1 Numeric vector. Expected proportion in group 1 (treatment group), ranging from 0 to 1.
+#' @param p2 Numeric vector. Expected proportion in group 2 (control group), ranging from 0 to 1.
+#' @param marge Numeric vector. Non-inferiority margin. Must be strictly positive.
+#' @param power Numeric vector. Desired statistical power. Defaults to \code{0.80}.
+#' @param alpha Numeric vector. Type I error rate. Defaults to \code{0.025}.
+#' @param kappa Numeric. Allocation ratio \code{n1 / n2}. Defaults to \code{1}, corresponding to equal group sizes.
+#' @param missing_prop Numeric vector. Proportion of missing data. Defaults to \code{0}.
+#' @param sided Integer. Number of sides of the test: \code{1} for a one-sided test or
+#' \code{2} for a two-sided test. Defaults to \code{1}.
+#' @param choice Character string. The only accepted value is \code{"khi2"}.
+#' This argument is retained for consistency with the other sample size functions in the package.
 #'
-#' @return Un data.frame avec une ligne par combinaison de parametres et les colonnes :
+#' @return A data frame with one row for each combination of input parameters and the
+#' following columns:
 #' \itemize{
-#'   \item \code{test} : Methode utilisee (\code{"khi2"}).
-#'   \item \code{puissance} : Puissance.
-#'   \item \code{p1}, \code{p2} : Proportions.
-#'   \item \code{marge} : Marge de non-inferiorite.
-#'   \item \code{alpha} : Risque de 1ere espece.
-#'   \item \code{kappa} : Ratio d'allocation n1/n2.
-#'   \item \code{missing_prop} : Proportion de donnees manquantes.
-#'   \item \code{n1}, \code{n2} : Effectifs par groupe.
-#'   \item \code{n_total} : Effectif total.
-#'   \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe avec prise en compte des donnees manquantes.
-#'   \item \code{n_total_pdv} : Effectif total avec prise en compte des donnees manquantes.
+#' \item \code{test}: Statistical method used (\code{"khi2"}).
+#' \item \code{p1}, \code{p2}: Expected proportions in groups 1 and 2.
+#' \item \code{marge}: Non-inferiority margin.
+#' \item \code{puissance}: Desired statistical power.
+#' \item \code{alpha}: Type I error rate.
+#' \item \code{kappa}: Allocation ratio \code{n1 / n2}.
+#' \item \code{missing_prop}: Proportion of missing data.
+#' \item \code{n1}, \code{n2}: Required sample sizes in groups 1 and 2.
+#' \item \code{n_total}: Total required sample size.
+#' \item \code{n1_pdv}, \code{n2_pdv}: Required sample sizes after adjustment for missing data.
+#' \item \code{n_total_pdv}: Total required sample size after adjustment for missing data.
 #' }
-#' Les combinaisons infaisables (|delta| >= marge) sont silencieusement retirees.
-#' Un attribut \code{ssdesignr_type = "prop_ni"} est attache au resultat
-#' pour permettre la validation dans \code{ss_cluster()}.
+#' Parameter combinations for which the non-inferiority calculation is not
+#' feasible (\code{|p1 - p2| >= marge}) are silently removed from the result.
+#' The result is assigned the attribute \code{ssdesignr_type = "prop_ni"},
+#' which allows its validation when passed to \code{\link{ss_cluster}}.
 #'
 #' @importFrom dplyr mutate filter select
 #' @importFrom purrr pmap map_dbl
@@ -46,7 +50,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Khi-2 equilibre
+#' # Chi-squared test with equal group sizes
 # ss_prop_ni(
 #   p1     = c(0.20, 0.30),
 #   p2     = 0.70,
@@ -55,7 +59,7 @@
 #   alpha  = 0.025
 # )
 #'
-#' # Khi-2 desequilibre (kappa = 2)
+#' # Chi-squared test with unequal group sizes (kappa = 2)
 # ss_prop_ni(
 #   p1     = 0.20,
 #   p2     = 0.70,
