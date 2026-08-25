@@ -1,4 +1,3 @@
-
 # TrialDesign
 
 <!-- badges: start -->
@@ -23,6 +22,7 @@ You can install the development version of trialdesign from [GitHub](https://git
 ``` r
 install.packages("pak")
 pak::pak("BiostatUSMR/TrialDesign")
+library(TrialDesign)
 ```
 
 ## Additional requirements
@@ -44,9 +44,6 @@ tinytex::install_tinytex()
 
 ``` r
 # Clinical trial definition using init_essai():
-
-library(trialdesign)
-
 essai <- init_essai(
   nom_etude       = "Study Name",
   libelle_etude   = "Example clinical trial",
@@ -66,29 +63,29 @@ essai <- init_essai(
   )
 )
 
-
 # Randomization list
 randomization  <- rand(
      essai,
-     seed = 42,
-     statut = "FICTIVE",
-     version = "V1",
+     seed       = 42,
+     statut     = "FICTIVE",
+     version    = "V1",
      col_widths = NULL,
-     chemin     = NULL )
+     chemin     = NULL
+     )
 head(randomization)
-
 
 # Treatment allocation list
 allocation <- corresp(
      essai,
-     mini = 1,
-     maxi = 50,
-     seed = 42,
-     statut = "FICTIVE",
-     version = "v01",
-     boi_label = NULL,
+     mini       = 1,
+     maxi       = 50,
+     seed       = 42,
+     statut     = "FICTIVE",
+     version    = "v01",
+     boi_label  = NULL,
      col_widths = c("4cm", "4cm", "7cm"),
-     chemin     = NULL)
+     chemin     = NULL
+     )
 head(allocation)
 ```
 Both functions return the generated data frame and automatically export
@@ -99,28 +96,27 @@ the corresponding files.
 ``` r
 # Sample size for a superiority trial comparing two means
 ss_mean_sup(
-  mu1 = 60,
-  mu2 = 50,
-  sd = 10,
-  power = 0.80,
-  alpha = 0.05,
+  mu1    = 60,
+  mu2    = 50,
+  sd     = 10,
+  power  = 0.80,
+  alpha  = 0.05,
   choice = "student"
 )
 
 # Result subsequently adjusted for a cluster randomized design
-
 res <- ss_mean_sup(
-  mu1 = 60,
-  mu2 = 50,
-  sd = 10,
-  power = 0.80,
-  alpha = 0.05,
+  mu1    = 60,
+  mu2    = 50,
+  sd     = 10,
+  power  = 0.80,
+  alpha  = 0.05,
   choice = "student"
 )
 ss_cluster(
-  n_ind = res,
+  n_ind  = res,
   schema = "crt",
-  m = 25,
-  icc = 0.05
+  m      = 25,
+  icc    = 0.05
 )
 ```
