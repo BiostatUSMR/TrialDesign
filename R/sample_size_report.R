@@ -38,6 +38,37 @@
 #' @importFrom flextable flextable theme_booktabs autofit fontsize font
 #'
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Calculate the sample size for a superiority trial comparing two means
+#' res <- ss_mean_sup(
+#'   mu1   = 10,
+#'   mu2   = 12,
+#'   sd    = 4,
+#'   alpha = 0.05,
+#'   power = 0.80,
+#'   sided = 2
+#' )
+#'
+#'# Adjust the sample size for a cluster randomized design
+#' res_cluster <- ss_cluster(
+#'   n_ind  = res,
+#'   schema = "crt",
+#'   m      = 25,
+#'   icc     = 0.05
+#' )
+#'
+#' # Generate the Word report
+#' ss_report(
+#'   result = res_cluster,
+#'   file = "sample_size_report.docx",
+#'   nom_etude = "Study name",
+#'   investigateur = "Investigator name",
+#'   methodologiste = "Methodologist name",
+#'   biostatisticien = "Biostatistician name"
+#' )
+#' }
 
 ss_report <- function(
     result,

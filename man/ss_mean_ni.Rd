@@ -2,7 +2,7 @@
 % Please edit documentation in R/sample_size_mean_ni.R
 \name{ss_mean_ni}
 \alias{ss_mean_ni}
-\title{FONCTION ss_mean_ni()}
+\title{Calculate sample size for a non-inferiority trial with a continuous endpoint}
 \usage{
 ss_mean_ni(
   mu1 = NULL,
@@ -20,67 +20,74 @@ ss_mean_ni(
 )
 }
 \arguments{
-\item{mu1}{Numerique. Moyenne attendue dans le groupe 1 (traitement). Peut etre un vecteur.}
+\item{mu1}{Numeric vector. Expected mean in group 1 (treatment group).}
 
-\item{mu2}{Numerique. Moyenne attendue dans le groupe 2 (controle). Peut etre un vecteur.}
+\item{mu2}{Numeric vector. Expected mean in group 2 (control group).}
 
-\item{sd}{Numerique. Ecart-type commun aux deux groupes. Requis pour le test de Student.}
+\item{sd}{Numeric vector. Common standard deviation for the two groups.
+Required when \code{choice = "student"}.}
 
-\item{sd1}{Numerique. Ecart-type du groupe 1. Requis pour le test de Welch.}
+\item{sd1}{Numeric vector. Standard deviation in group 1. Required when \code{choice = "welch"}.}
 
-\item{sd2}{Numerique. Ecart-type du groupe 2. Requis pour le test de Welch.}
+\item{sd2}{Numeric vector. Standard deviation in group 2. Required when \code{choice = "welch"}.}
 
-\item{marge}{Numerique. Marge de non-inferiorite (valeur strictement positive). Peut etre un vecteur.}
+\item{marge}{Numeric vector. Non-inferiority margin. Must be strictly positive.}
 
-\item{power}{Numerique. Puissance souhaitee. Par defaut 0.80. Peut etre un vecteur.}
+\item{power}{Numeric vector. Desired statistical power. Defaults to \code{0.80}.}
 
-\item{alpha}{Numerique. Risque de premiere espece. Par defaut 0.025. Peut etre un vecteur.}
+\item{alpha}{Numeric vector. Type I error rate. Defaults to \code{0.025}.}
 
-\item{kappa}{Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres). Ne peut pas etre un vecteur. Un ratio > 1 indique plus de sujets dans le groupe 1.}
+\item{kappa}{Numeric. Allocation ratio \code{n1 / n2}. Defaults to \code{1}, corresponding to equal group sizes. Must contain a single value.
+A value greater than \code{1} allocates more subjects to group 1.}
 
-\item{missing_prop}{Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur. Utilise pour calculer n1_pdv, n2_pdv et n_total_pdv.}
+\item{missing_prop}{Numeric vector. Proportion of missing data. Defaults to \code{0}.
+Used to calculate \code{n1_pdv}, \code{n2_pdv}, and \code{n_total_pdv}.}
 
-\item{sided}{Numerique. Test unilateral (1) ou bilateral (2). Par defaut 1. Peut prendre la valeur 1 ou 2 uniquement.}
+\item{sided}{Integer. Number of sides of the test: \code{1} for a one-sided test or
+\code{2} for a two-sided test. Defaults to \code{1}.}
 
-\item{choice}{Caractere. Test statistique a utiliser :
+\item{choice}{Character string. Statistical test used for the sample size calculation:
 \itemize{
-  \item \code{"student"} : Test de Student, variances egales. Utilise \code{rpact::getSampleSizeMeans()}.
-  \item \code{"welch"} : Test de Welch, variances inegales. Utilise \code{rpact::getSampleSizeMeans()}.
+\item \code{"student"}: Student's t-test assuming equal variances.
+\item \code{"welch"}: Welch's t-test allowing unequal variances.
 }}
 }
 \value{
-Un data.frame avec une ligne par combinaison de parametres et les colonnes :
+A data frame with one row for each combination of input parameters and the
+following columns:
 \itemize{
-  \item \code{test} : Methode utilisee.
-  \item \code{puissance} : Puissance.
-  \item \code{mu1}, \code{mu2} : Moyennes.
-  \item \code{marge} : Marge de non-inferiorite.
-  \item \code{alpha} : Risque de 1ere espece.
-  \item \code{kappa} : Ratio d'allocation n1/n2.
-  \item \code{missing_prop} : Proportion de donnees manquantes.
-  \item \code{n1}, \code{n2} : Effectifs par groupe.
-  \item \code{n_total} : Effectif total.
-  \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe avec prise en compte des donnees manquantes.
-  \item \code{n_total_pdv} : Effectif total avec prise en compte des donnees manquantes.
+\item \code{test}: Statistical method used.
+\item \code{mu1}, \code{mu2}: Expected group means.
+\item \code{marge}: Non-inferiority margin.
+\item \code{sd}: Common standard deviation for Student's t-test.
+\item \code{sd1}, \code{sd2}: Group-specific standard deviations for Welch's t-test.
+\item \code{puissance}: Desired statistical power.
+\item \code{alpha}: Type I error rate.
+\item \code{kappa}: Allocation ratio \code{n1 / n2}.
+\item \code{missing_prop}: Proportion of missing data.
+\item \code{n1}, \code{n2}: Required sample sizes in groups 1 and 2.
+\item \code{n_total}: Total required sample size.
+\item \code{n1_pdv}, \code{n2_pdv}: Required sample sizes after adjustment for missing data.
+\item \code{n_total_pdv}: Total required sample size after adjustment for missing data.
 }
-Un attribut \code{ssdesignr_type = "mean_ni"} est attache au resultat
-pour permettre la validation dans \code{ss_cluster()}.
+The result is assigned the attribute \code{ssdesignr_type = "mean_ni"},
+which allows its validation when passed to \code{\link{ss_cluster}}.
 }
 \description{
-Calcule le nombre de sujets necessaire pour demontrer la non-inferiorite
-entre deux groupes sur un critere continu (deux moyennes).
+Calculates the required sample size to demonstrate non-inferiority between
+two treatment groups for a continuous endpoint.
 
-Hypotheses :
+Hypotheses:
 \itemize{
-  \item H0 : mu1 - mu2 <= -marge (inferiorite)
-  \item H1 : mu1 - mu2 >  -marge (non-inferiorite)
+\item \eqn{H_0: \mu_1 - \mu_2 \leq -\Delta}, corresponding to inferiority.
+\item \eqn{H_1: \mu_1 - \mu_2 > -\Delta}, corresponding to non-inferiority.
 }
 }
 \examples{
 \dontrun{
-# Student equilibre
+# Student's t-test with equal group sizes
 
-# Welch desequilibre (kappa = 1/2)
+# Welch's t-test with unequal group sizes (kappa = 1/2)
 }
 
 }

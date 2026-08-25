@@ -2,7 +2,7 @@
 % Please edit documentation in R/sample_size_phase2.R
 \name{sample_size_phase2}
 \alias{sample_size_phase2}
-\title{FONCTION sample_size_phase2}
+\title{Calculate sample size for a single-arm phase II trial}
 \usage{
 sample_size_phase2(
   p0,
@@ -15,37 +15,53 @@ sample_size_phase2(
 )
 }
 \arguments{
-\item{p0}{Numerique. Proportion de succes sous l'hypothese nulle (taux inacceptable). Peut etre un vecteur.}
+\item{p0}{Numeric vector. Success proportion under the null hypothesis, corresponding to an unacceptable response rate.}
 
-\item{p1}{Numerique. Proportion de succes sous l'hypothese alternative (taux attendu).  Peut etre un vecteur. Attention : un ecart p1 - p0 tres faible peut rendre le calcul
-tres long (recherche exhaustive), en particulier pour method = "fleming".}
+\item{p1}{Numeric vector. Expected success proportion under the alternative hypothesis.
+Very small differences between \code{p1} and \code{p0} may result in long computation times, particularly when
+\code{method = "fleming"}.}
 
-\item{alpha}{Numerique. Risque de premiere espece. Par defaut = 0.05. Peut etre un vecteur}
+\item{alpha}{Numeric vector. Type I error rate. Defaults to \code{0.05}.}
 
-\item{power}{Numerique. Puissance. Par defaut 0.80. Peut etre un vecteur.}
+\item{power}{Numeric vector. Desired statistical power. Defaults to \code{0.80}.}
 
-\item{method}{Caractere. Methode de calcul ("ahern" ou "fleming").
+\item{method}{Character string. Method used for the sample size calculation:
 \itemize{
-  \item \code{"ahern"} : Recherche exacte sur la loi binomiale (A'Hern, 2001).
-    Plus precise mais generalement des effectifs plus eleves. Recherche exhaustive
-    via \code{stats::pbinom()}.
-  \item \code{"fleming"} : Approximation normale de la loi binomiale (Fleming, 1982).
-    Calcul direct (formule fermee), effectifs generalement plus faibles que A'Hern,
-    mais approximation moins fiable pour les petits echantillons (< 50 sujets).
+\item \code{"ahern"}: Exact method based on the binomial distribution
+(A'Hern, 2001). This method performs an exhaustive search using
+\code{\link[stats]{pbinom}} and generally results in larger sample sizes.
+\item \code{"fleming"}: Normal approximation to the binomial distribution (Fleming, 1982).
+This method uses a closed-form formula and generally results in smaller sample sizes
+than A'Hern's method, but may be less reliable for small samples (fewer than 50 subjects).
 }}
 
-\item{missing_prop}{Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur. Utilise pour calculer n1_pdv, n2_pdv et n_total_pdv.}
+\item{missing_prop}{Numeric vector. Proportion of missing data. Defaults to \code{0}.
+Used to adjust the required number of patients.}
 
-\item{nmax}{Numerique. Taille maximale testee pour A'Hern. Par defaut = 200.}
+\item{nmax}{Numeric. Maximum sample size considered by the exhaustive search
+used with A'Hern's method. Defaults to \code{200}.}
 }
 \value{
-Un data.frame avec les colonnes : methode, p0, p1, alpha, puissance,
-  missing_prop, n_patient, n_ajuste, n_succes.
+A data frame with one row for each combination of input parameters and the following columns:
+\itemize{
+\item \code{methode}: Sample size calculation method.
+\item \code{p0}: Success proportion under the null hypothesis.
+\item \code{p1}: Expected success proportion under the alternative
+hypothesis.
+\item \code{alpha}: Type I error rate.
+\item \code{puissance}: Desired statistical power.
+\item \code{missing_prop}: Proportion of missing data.
+\item \code{n_patient}: Required number of patients before adjustment for missing data.
+\item \code{n_ajuste}: Required number of patients after adjustment for missing data.
+\item \code{n_succes}: Minimum number of successes required to declare
+ the treatment sufficiently promising.
+}
 }
 \description{
-Calcule le nombre de sujets necessaire pour un essai de phase II a un bras
-selon les methodes de A'Hern ou de Fleming, pour tester si la proportion de succes
-attendue est suffisamment elevee pour justifier un essai de phase III.
+Calculates the required sample size for a single-arm phase II trial using
+A'Hern's or Fleming's method. These methods are used to assess whether an
+observed success rate is sufficiently promising to justify further
+investigation in a subsequent phase III trial.
 }
 \examples{
  \dontrun{

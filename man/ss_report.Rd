@@ -2,7 +2,7 @@
 % Please edit documentation in R/sample_size_report.R
 \name{ss_report}
 \alias{ss_report}
-\title{FONCTION ss_report()}
+\title{Generate a Word report for a sample size calculation}
 \usage{
 ss_report(
   result,
@@ -20,42 +20,80 @@ ss_report(
 )
 }
 \arguments{
-\item{result}{data.frame retourne par ss_mean_sup(), ss_mean_ni(),
-ss_prop_sup() ou ss_prop_ni().}
+\item{result}{A data frame returned by one of the sample size calculation
+functions, such as \code{ss_mean_sup()}, \code{ss_mean_ni()}, \code{ss_prop_sup()}, or \code{ss_prop_ni()}.}
 
-\item{file}{Caractere. Nom du fichier Word (sans chemin). Par defaut "sample_size_report.docx".}
+\item{file}{Character string. Name of the output Word file. Defaults to \code{"sample_size_report.docx"}.}
 
-\item{nom_etude}{Caractere. Nom de l'etude.}
+\item{nom_etude}{Character string. Study name.}
 
-\item{investigateur}{Caractere. Nom de l'investigateur.}
+\item{investigateur}{Character string. Name of the principal investigator.}
 
-\item{methodologiste}{Caractere. Nom du methodologiste.}
+\item{methodologiste}{Character string. Name of the methodologist.}
 
-\item{biostatisticien}{Caractere. Nom du biostatisticien.}
+\item{biostatisticien}{Character string. Name of the biostatistician.}
 
-\item{font}{Caractere. Police. Par defaut "Arial".}
+\item{font}{Character string. Font family used in the report. Defaults to \code{"Arial"}.}
 
-\item{size}{Caractere. Taille de police. Par defaut 11.}
+\item{size}{Numeric. Font size used in the report. Defaults to \code{11}.}
 
-\item{col_widths}{Numerique. Vecteur donnant la largeur de colonnes du tableau de resultats (nom de colonne = largeur). Exprime dans l'unite definie par \code{unit}. Par defaut NULL.}
+\item{col_widths}{Numeric vector specifying the widths of the columns in the
+results table. Column names must correspond to the names of the columns in
+\code{result}, and values specify their widths in the unit defined by \code{unit}. Defaults to \code{NULL}.}
 
-\item{min_width}{Numerique. Largeur minimale appliquee a chaque colonne. Exprime dans l'unite definie par \code{unit}. Par defaut 1 (cm).}
+\item{min_width}{Numeric. Minimum width applied to each column. Expressed in the
+unit defined by \code{unit}. Defaults to \code{1}.}
 
-\item{unit}{Caractere. Unite utilisee pour \code{col_widths} et \code{min_width} : \code{"cm"} (par defaut) ou \code{"in"} (pouces).}
+\item{unit}{Character string. Unit used for \code{col_widths}, \code{min_width},
+and \code{margin}. Either \code{"cm"} (the default) or \code{"in"}.}
 
-\item{margin}{Numerique. Marge de page (haut, bas, gauche, droite) appliquee au document. Exprimee dans l'unite definie par \code{unit}. Par defaut 1.5 (cm).}
+\item{margin}{Numeric. Page margin applied to the document. Can be a single value
+applied to all margins or a numeric vector specifying the top, bottom, left, and
+right margins. Expressed in the unit defined by \code{unit}. Defaults to \code{1.5}.}
 }
 \value{
-Chemin du fichier genere (invisiblement).
+The path to the generated Word file, returned invisibly.
 }
 \description{
-Genere un rapport Word (.docx) contenant le resultat d'un calcul
-du nombre de sujets necessaires realise avec les fonctions du package.
+Generates a Word (\code{.docx}) report containing the results of a sample
+size calculation performed using the sample size functions provided by the
+package.
 
-Le document contient :
+The report includes:
 \itemize{
-  \item un titre ;
-  \item les informations generales de l'etude ;
-  \item le tableau des resultats.
+  \item a title;
+  \item general study information;
+  \item a table summarizing the sample size calculation results.
+}
+}
+\examples{
+\dontrun{
+# Calculate the sample size for a superiority trial comparing two means
+res <- ss_mean_sup(
+  mu1   = 10,
+  mu2   = 12,
+  sd    = 4,
+  alpha = 0.05,
+  power = 0.80,
+  sided = 2
+)
+
+# Adjust the sample size for a cluster randomized design
+res_cluster <- ss_cluster(
+  n_ind  = res,
+  schema = "crt",
+  m      = 25,
+  icc     = 0.05
+)
+
+# Generate the Word report
+ss_report(
+  result = res_cluster,
+  file = "sample_size_report.docx",
+  nom_etude = "Study name",
+  investigateur = "Investigator name",
+  methodologiste = "Methodologist name",
+  biostatisticien = "Biostatistician name"
+)
 }
 }

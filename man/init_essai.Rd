@@ -2,7 +2,7 @@
 % Please edit documentation in R/aa_init_essai.R
 \name{init_essai}
 \alias{init_essai}
-\title{FONCTION init_essai()}
+\title{Initialize a clinical trial design}
 \usage{
 init_essai(
   nom_etude,
@@ -24,48 +24,52 @@ init_essai(
 )
 }
 \arguments{
-\item{nom_etude}{Caractere. Nom de l'etude (utilise dans les noms de fichiers).}
+\item{nom_etude}{Character string. Name of the study, used in generated file names.}
 
-\item{circuit}{Caractere. Circuit de randomisation : \code{"ennov"} ou \code{"redcap"}.}
+\item{circuit}{Character string. Randomization system to use: \code{"ennov"} or \code{"redcap"}.}
 
-\item{k}{Entier. Nombre de groupes de traitement (>= 2).}
+\item{k}{nteger. Number of treatment groups. Must be greater than or equal to 2.}
 
-\item{block_sizes}{Vecteur numerique. Tailles reelles des blocs.}
+\item{block_sizes}{Integer vector. Sizes of the randomization blocks.}
 
-\item{nb_block}{Vecteur numerique. Nombre de blocs souhaites pour chaque taille.}
+\item{nb_block}{Integer vector. Number of blocks to generate for each corresponding block size.}
 
-\item{ratio}{Vecteur numerique de longueur k. Ratio d'allocation. Si NULL, un ratio equilibre 1:1:...:1 est utilise.}
+\item{ratio}{Numeric vector of length \code{k}. Allocation ratio between treatment groups. If \code{NULL}, an equal allocation ratio
+(\code{1:1:...:1}) is used.}
 
-\item{arm_label}{Vecteur de caracteres de longueur k. Libelles des groupes. Si NULL, "Groupe1", "Groupe2"... sont utilises.}
+\item{arm_label}{Character vector of length \code{k}. Labels of the treatment groups. If \code{NULL}, \code{"Groupe1"}, \code{"Groupe2"},
+..., are used.}
 
-\item{arm_code}{Vecteur numerique de longueur k. Codes des groupes. Si NULL, 1, 2, ..., k sont utilises.}
+\item{arm_code}{Integer vector of length \code{k}. Codes assigned to the treatment groups. If \code{NULL}, \code{1, 2, ..., k} are used.}
 
-\item{strat_vars}{Liste optionnelle decrivant les variables de stratification.
-Chaque element est une liste avec \code{codes} (vecteur numerique) et \code{labels} (vecteur de caracteres).
-Exemple : \code{list(sexe = list(codes = c(1,2), labels = c("Homme","Femme")))}.}
+\item{strat_vars}{Optional list describing the stratification variables.
+Each element must be a list containing \code{codes}, a numeric vector, and \code{labels}, a character vector.
+For example:
+\code{list(sex = list(codes = c(1, 2), labels = c("Male", "Female")))}.}
 
-\item{id_etude}{Caractere. Identifiant officiel de l'etude. Ex : "CHUBX2024/01". Par defaut NULL.}
+\item{id_etude}{Character string. Official study identifier, for example: \code{"CHUBX2024/01"}. Defaults to \code{NULL}.}
 
-\item{libelle_etude}{Caractere. Libelle complet de l'etude. Par defaut NULL.}
+\item{libelle_etude}{Character string. Full study title. Defaults to \code{NULL}.}
 
-\item{investigateur}{Caractere. Nom de l'investigateur principal. Par defaut NULL.}
+\item{investigateur}{Character string. Name of the principal investigator. Defaults to \code{NULL}.}
 
-\item{methodologiste}{Caractere. Nom du methodologiste. Par defaut NULL.}
+\item{methodologiste}{Character string. Name of the methodologist. Defaults to \code{NULL}.}
 
-\item{biostatisticien}{Caractere. Nom du biostatisticien. Par defaut NULL.}
+\item{biostatisticien}{Character string. Name of the biostatistician. Defaults to \code{NULL}.}
 
-\item{confidentiel}{Logique. Si TRUE, affiche la mention CONFIDENTIEL sur la page de garde. Par defaut FALSE.}
+\item{confidentiel}{Logical. If \code{TRUE}, displays a \code{"CONFIDENTIAL"} notice on the cover page. Defaults to \code{FALSE}.}
 
-\item{indice_document}{Caractere. Indice du document. Par defaut 02.}
+\item{indice_document}{Character string. Document version or index. Defaults to \code{"02"}.}
 }
 \value{
-Une liste contenant tous les parametres valides de l'essai.
-  Doit etre assignee : \code{essai <- init_essai(...)}.
+A list containing the validated trial parameters. The returned object should
+typically be assigned to an object, for example: \code{essai <- init_essai(...)}.
 }
 \description{
-Definit et valide les parametres de l'essai clinique, puis les retourne
-sous forme d'un objet liste. Cet objet doit etre assigne et passe en
-argument a rand() et corresp().
+Defines and validates the main parameters of a clinical trial and returns
+them as a list. The resulting object is intended to be passed to
+\code{\link{rand}} and \code{\link{corresp}} to generate the randomization
+and treatment allocation lists.
 }
 \examples{
 \dontrun{

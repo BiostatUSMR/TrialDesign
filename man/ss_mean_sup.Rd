@@ -2,7 +2,7 @@
 % Please edit documentation in R/sample_size_mean_sup.R
 \name{ss_mean_sup}
 \alias{ss_mean_sup}
-\title{FONCTION ss_mean_sup()}
+\title{Calculate sample size for a superiority trial with a continuous endpoint}
 \usage{
 ss_mean_sup(
   mu1 = NULL,
@@ -22,64 +22,77 @@ ss_mean_sup(
 )
 }
 \arguments{
-\item{mu1}{Numerique. Moyenne attendue dans le groupe 1 (traitement). Peut etre un vecteur.}
+\item{mu1}{Numeric vector. Expected mean in group 1 (treatment group).}
 
-\item{mu2}{Numerique. Moyenne attendue dans le groupe 2 (controle). Peut etre un vecteur. Les combinaisons mu1 == mu2 sont automatiquement exclues.}
+\item{mu2}{Numeric vector. Expected mean in group 2 (control group).
+Combinations for which \code{mu1 == mu2} are automatically excluded.}
 
-\item{sd}{Numerique. Ecart-type commun aux deux groupes. Requis pour le test de Student.}
+\item{sd}{Numeric vector. Common standard deviation for the two groups.
+Required when \code{choice = "student"}.}
 
-\item{sd1}{Numerique. Ecart-type du groupe 1. Requis pour les tests de Welch et Wilcoxon.}
+\item{sd1}{Numeric vector. Standard deviation in group 1. Required when
+\code{choice = "welch"} or \code{choice = "wilcoxon"}.}
 
-\item{sd2}{Numerique. Ecart-type du groupe 2. Requis pour les tests de Welch et Wilcoxon.}
+\item{sd2}{Numeric vector. Standard deviation in group 2. Required when
+\code{choice = "welch"} or \code{choice = "wilcoxon"}.}
 
-\item{seed}{Entier. Graine utilisee pour les simulations du test de Wilcoxon. Par defaut NULL.}
+\item{seed}{Integer. Random seed used for simulations performed for the Wilcoxon test.
+Defaults to \code{NULL}.}
 
-\item{thetaH0}{Numerique. Valeur sous l'hypothese nulle. Par defaut 0. Ne peut pas etre un vecteur}
+\item{thetaH0}{Numeric. Difference between group means under the null
+hypothesis. Defaults to \code{0}. Must contain a single value.}
 
-\item{power}{Numerique. Puissance souhaitee. Par defaut 0.80. Peut etre un vecteur.}
+\item{power}{Numeric vector. Desired statistical power. Defaults to \code{0.80}.}
 
-\item{alpha}{Numerique. Risque de premiere espece. Par defaut 0.05. Peut etre un vecteur.}
+\item{alpha}{Numeric vector. Type I error rate. Defaults to \code{0.05}.}
 
-\item{kappa}{Numerique. Ratio n1/n2. Par defaut 1 (groupes equilibres). Ne peut pas etre un vecteur. Un ratio > 1 indique plus de sujets dans le groupe 1.}
+\item{kappa}{Numeric. Allocation ratio \code{n1 / n2}. Defaults to \code{1},
+corresponding to equal group sizes. Must contain a single value.
+A value greater than \code{1} allocates more subjects to group 1.}
 
-\item{missing_prop}{Numerique. Taux de donnees manquantes. Par defaut 0. Peut etre un vecteur. Utilise pour calculer n1_pdv, n2_pdv et n_total_pdv.}
+\item{missing_prop}{Numeric vector. Proportion of missing data. Defaults to \code{0}.
+Used to calculate \code{n1_pdv}, \code{n2_pdv}, and \code{n_total_pdv}.}
 
-\item{nsim}{Entier. Nombre de simulations pour le test de Wilcoxon. Par defaut 10000.}
+\item{nsim}{Integer. Number of simulations used for the Wilcoxon test. Defaults to \code{10000}.}
 
-\item{sided}{Numerique. Test unilateral (1) ou bilateral (2). Par defaut 2. Peut prendre la valeur 1 ou 2 uniquement.}
+\item{sided}{Integer. Number of sides of the test: \code{1} for a one-sided test or
+\code{2} for a two-sided test. Defaults to \code{2}.}
 
-\item{choice}{Caractere. Test statistique a utiliser :
+\item{choice}{Character string. Statistical test used for the sample size calculation:
 \itemize{
-  \item \code{"student"} : Test de Student, variances egales. Utilise \code{rpact::getSampleSizeMeans()}.
-  \item \code{"welch"} : Test de Welch, variances inegales. Utilise \code{rpact::getSampleSizeMeans()}.
-  \item \code{"wilcoxon"} : Test de Wilcoxon-MWW, non parametrique.
-    Utilise \code{WMWssp::WMWssp_minimize()} (ne supporte pas kappa).
+\item \code{"student"}: Student's t-test assuming equal variances.
+\item \code{"welch"}: Welch's t-test allowing unequal variances.
+\item \code{"wilcoxon"}: Wilcoxon-Mann-Whitney non-parametric test.
+This method does not support unequal allocation through \code{kappa}.
 }}
 }
 \value{
-Un data.frame avec une ligne par combinaison de parametres et les colonnes :
+A data frame with one row for each combination of input parameters and the following columns:
 \itemize{
-  \item \code{test} : Methode utilisee.
-  \item \code{puissance} : Puissance.
-  \item \code{mu1}, \code{mu2} : Moyennes.
-  \item \code{alpha} : Risque de 1ere espece.
-  \item \code{kappa} : Ratio d'allocation n1/n2.
-  \item \code{missing_prop} : Proportion de donnees manquantes.
-  \item \code{n1}, \code{n2} : Effectifs par groupe.
-  \item \code{n_total} : Effectif total.
-  \item \code{n1_pdv}, \code{n2_pdv} : Effectifs par groupe avec prise en compte des donnees manquantes.
-  \item \code{n_total_pdv} : Effectif total avec prise en compte des donnees manquantes.
+\item \code{test}: Statistical method used.
+\item \code{mu1}, \code{mu2}: Expected group means.
+\item \code{thetaH0}: Difference under the null hypothesis, when applicable.
+\item \code{sd}: Common standard deviation for Student's t-test.
+\item \code{sd1}, \code{sd2}: Group-specific standard deviations for Welch's or Wilcoxon tests.
+\item \code{puissance}: Desired statistical power.
+\item \code{alpha}: Type I error rate.
+\item \code{kappa}: Allocation ratio \code{n1 / n2}.
+\item \code{missing_prop}: Proportion of missing data.
+\item \code{n1}, \code{n2}: Required sample sizes in groups 1 and 2.
+\item \code{n_total}: Total required sample size.
+\item \code{n1_pdv}, \code{n2_pdv}: Required sample sizes after adjustment for missing data.
+\item \code{n_total_pdv}: Total required sample size after adjustment for missing data.
 }
-Un attribut \code{ssdesignr_type = "mean_sup"} est attache au resultat
-pour permettre la validation dans \code{ss_cluster()}.
+The result is assigned the attribute \code{ssdesignr_type = "mean_sup"},
+which allows its validation when passed to \code{\link{ss_cluster}}.
 }
 \description{
-Calcule le nombre de sujets necessaire pour comparer deux moyennes
-dans le cadre d'un essai de superiorite.
+Calculates the required sample size to compare two treatment groups for a
+continuous endpoint in the context of a superiority trial.
 }
 \examples{
 \dontrun{
-# Student equilibre
+# Student's t-test with equal group sizes
 }
 
 }

@@ -95,16 +95,6 @@ the corresponding files.
 
 ``` r
 # Sample size for a superiority trial comparing two means
-ss_mean_sup(
-  mu1    = 60,
-  mu2    = 50,
-  sd     = 10,
-  power  = 0.80,
-  alpha  = 0.05,
-  choice = "student"
-)
-
-# Result subsequently adjusted for a cluster randomized design
 res <- ss_mean_sup(
   mu1    = 60,
   mu2    = 50,
@@ -113,10 +103,24 @@ res <- ss_mean_sup(
   alpha  = 0.05,
   choice = "student"
 )
-ss_cluster(
+res
+
+# Result subsequently adjusted for a cluster randomized design
+res_cluster <- ss_cluster(
   n_ind  = res,
   schema = "crt",
   m      = 25,
   icc    = 0.05
+)
+res_cluster
+
+# Generate a Word report from the sample size calculation
+ss_report(
+  result          = res_cluster,
+  file            = "sample_size_report.docx",
+  nom_etude       = "Study name",
+  investigateur   = "Investigator name",
+  methodologiste  = "Methodologist name",
+  biostatisticien = "Biostatistician name"
 )
 ```
