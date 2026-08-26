@@ -170,6 +170,8 @@ if (choice == "mcnemar") {
     # Grille de parametres
     # ------------------------------------
     params <- expand.grid(
+      p01          = p01,
+      p10          = p10,
       power         = power,
       alpha         = alpha,
       missing_prop = missing_prop
@@ -213,18 +215,20 @@ if (choice == "mcnemar") {
         puissance = power,
         test      = choice
       ) |>
-      dplyr::select(test, puissance, alpha, missing_prop, n_total, n_total_pdv)
+      dplyr::select(test, p01, p10, puissance, alpha, missing_prop, n_total, n_total_pdv)
 
     # ------------------------------------
     # Labels
     # ------------------------------------
     labels <- list(
       test = "Test",
+      p01 = "Proportion discordante p01",
+      p10 = "Proportion discordante p10",
       puissance = "Puissance",
       alpha = "Alpha",
       missing_prop = "% d.m",
       n_total = "Nombre de paires",
-      n_total_pdv = "Nombre de paires - PDV pris en compte"
+      n_total_pdv = "Nombre de paires - avec d.m"
     )
 
     res <- labelled::set_variable_labels(res, !!!labels)
