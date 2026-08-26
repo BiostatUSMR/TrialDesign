@@ -152,7 +152,7 @@ ss_report <- function(
   if (!is.null(investigateur))
   {infos <- c(infos,list(htmltools::tags$p(htmltools::tags$b("Investigateur : "),investigateur)))}
   if (!is.null(methodologiste))
-  {infos <- c(infos,list(htmltools::tags$p(htmltools::tags$b("Méthodologiste : "),methodologiste)))}
+  {infos <- c(infos,list(htmltools::tags$p(htmltools::tags$b("Methodologiste : "),methodologiste)))}
   if (!is.null(biostatisticien))
   {infos <- c(infos,list(htmltools::tags$p(htmltools::tags$b("Biostatisticien : "),biostatisticien)))}
 

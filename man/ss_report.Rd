@@ -2,69 +2,64 @@
 % Please edit documentation in R/sample_size_report.R
 \name{ss_report}
 \alias{ss_report}
-\title{Generate a Word report for a sample size calculation}
+\title{Generate an HTML report for a sample size calculation}
 \usage{
 ss_report(
   result,
-  file = "sample_size_report.docx",
+  file = "sample_size_report.html",
   nom_etude = NULL,
   investigateur = NULL,
   methodologiste = NULL,
   biostatisticien = NULL,
   font = "Arial",
-  size = 11,
-  col_widths = NULL,
-  min_width = 1,
-  unit = c("cm", "in"),
-  margin = 1.5
+  size = 11
 )
 }
 \arguments{
 \item{result}{A data frame returned by one of the sample size calculation
-functions, such as \code{ss_mean_sup()}, \code{ss_mean_ni()}, \code{ss_prop_sup()}, or \code{ss_prop_ni()}.}
+functions of the package, such as \code{ss_mean_sup()},
+\code{ss_mean_ni()}, \code{ss_prop_sup()}, \code{ss_prop_ni()},
+\code{sample_size_phase2()}, or \code{sample_size_precision()}.
 
-\item{file}{Character string. Name of the output Word file. Defaults to \code{"sample_size_report.docx"}.}
+The result may also be returned by \code{ss_cluster()}.}
 
-\item{nom_etude}{Character string. Study name.}
+\item{file}{Character string. Name of the output HTML file. Defaults to
+\code{"sample_size_report.html"}. The current date is automatically appended to the file name.}
 
-\item{investigateur}{Character string. Name of the principal investigator.}
+\item{nom_etude}{Character string. Study name. Defaults to \code{NULL}.}
 
-\item{methodologiste}{Character string. Name of the methodologist.}
+\item{investigateur}{Character string. Name of the principal investigator. Defaults to \code{NULL}.}
 
-\item{biostatisticien}{Character string. Name of the biostatistician.}
+\item{methodologiste}{Character string. Name of the methodologist. Defaults to \code{NULL}.}
+
+\item{biostatisticien}{Character string. Name of the biostatistician. Defaults to \code{NULL}.}
 
 \item{font}{Character string. Font family used in the report. Defaults to \code{"Arial"}.}
 
-\item{size}{Numeric. Font size used in the report. Defaults to \code{11}.}
-
-\item{col_widths}{Numeric vector specifying the widths of the columns in the
-results table. Column names must correspond to the names of the columns in
-\code{result}, and values specify their widths in the unit defined by \code{unit}. Defaults to \code{NULL}.}
-
-\item{min_width}{Numeric. Minimum width applied to each column. Expressed in the
-unit defined by \code{unit}. Defaults to \code{1}.}
-
-\item{unit}{Character string. Unit used for \code{col_widths}, \code{min_width},
-and \code{margin}. Either \code{"cm"} (the default) or \code{"in"}.}
-
-\item{margin}{Numeric. Page margin applied to the document. Can be a single value
-applied to all margins or a numeric vector specifying the top, bottom, left, and
-right margins. Expressed in the unit defined by \code{unit}. Defaults to \code{1.5}.}
+\item{size}{Numeric. Base font size used in the report, in pixels. Defaults to \code{14}.}
 }
 \value{
-The path to the generated Word file, returned invisibly.
+The path to the generated HTML file, returned invisibly.
 }
 \description{
-Generates a Word (\code{.docx}) report containing the results of a sample
-size calculation performed using the sample size functions provided by the
-package.
+Generates an HTML report containing the results of a sample size calculation
+performed using one of the sample size functions provided by the package.
 
 The report includes:
 \itemize{
-  \item a title;
+  \item a title describing the type of sample size calculation;
   \item general study information;
   \item a table summarizing the sample size calculation results.
 }
+
+The results table is displayed in a horizontally scrollable container when
+necessary, allowing wide tables to be viewed without manual specification of
+column widths.
+}
+\details{
+The HTML report is self-contained and can be opened directly in a web
+browser. When the results table is wider than the available display area,
+a horizontal scrollbar is automatically provided.
 }
 \examples{
 \dontrun{
@@ -83,17 +78,18 @@ res_cluster <- ss_cluster(
   n_ind  = res,
   schema = "crt",
   m      = 25,
-  icc     = 0.05
+  icc    = 0.05
 )
 
-# Generate the Word report
+# Generate the HTML report
 ss_report(
   result = res_cluster,
-  file = "sample_size_report.docx",
+  file = "sample_size_report.html",
   nom_etude = "Study name",
   investigateur = "Investigator name",
   methodologiste = "Methodologist name",
   biostatisticien = "Biostatistician name"
 )
 }
+
 }
