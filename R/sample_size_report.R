@@ -1,41 +1,41 @@
-#' Generate a Word report for a sample size calculation
+#' Generate an HTML report for a sample size calculation
 #'
 #' @description
-#' Generates a Word (\code{.docx}) report containing the results of a sample
-#' size calculation performed using the sample size functions provided by the
-#' package.
+#' Generates an HTML report containing the results of a sample size calculation
+#' performed using one of the sample size functions provided by the package.
 #'
 #' The report includes:
 #' \itemize{
-#'   \item a title;
+#'   \item a title describing the type of sample size calculation;
 #'   \item general study information;
 #'   \item a table summarizing the sample size calculation results.
 #' }
 #'
+#' The results table is displayed in a horizontally scrollable container when
+#' necessary, allowing wide tables to be viewed without manual specification of
+#' column widths.
+#'
 #' @param result A data frame returned by one of the sample size calculation
-#' functions, such as \code{ss_mean_sup()}, \code{ss_mean_ni()}, \code{ss_prop_sup()}, or \code{ss_prop_ni()}.
-#' @param file Character string. Name of the output Word file. Defaults to \code{"sample_size_report.docx"}.
-#' @param nom_etude Character string. Study name.
-#' @param investigateur Character string. Name of the principal investigator.
-#' @param methodologiste Character string. Name of the methodologist.
-#' @param biostatisticien Character string. Name of the biostatistician.
+#' functions of the package, such as \code{ss_mean_sup()},
+#' \code{ss_mean_ni()}, \code{ss_prop_sup()}, \code{ss_prop_ni()},
+#' \code{sample_size_phase2()}, or \code{sample_size_precision()}.
+#'
+#' The result may also be returned by \code{ss_cluster()}.
+#' @param file Character string. Name of the output HTML file. Defaults to
+#' \code{"sample_size_report.html"}. The current date is automatically appended to the file name.
+#' @param nom_etude Character string. Study name. Defaults to \code{NULL}.
+#' @param investigateur Character string. Name of the principal investigator. Defaults to \code{NULL}.
+#' @param methodologiste Character string. Name of the methodologist. Defaults to \code{NULL}.
+#' @param biostatisticien Character string. Name of the biostatistician. Defaults to \code{NULL}.
 #' @param font Character string. Font family used in the report. Defaults to \code{"Arial"}.
-#' @param size Numeric. Font size used in the report. Defaults to \code{11}.
-#' @param col_widths Numeric vector specifying the widths of the columns in the
-#' results table. Column names must correspond to the names of the columns in
-#' \code{result}, and values specify their widths in the unit defined by \code{unit}. Defaults to \code{NULL}.
-#' @param min_width Numeric. Minimum width applied to each column. Expressed in the
-#' unit defined by \code{unit}. Defaults to \code{1}.
-#' @param unit Character string. Unit used for \code{col_widths}, \code{min_width},
-#' and \code{margin}. Either \code{"cm"} (the default) or \code{"in"}.
-#' @param margin Numeric. Page margin applied to the document. Can be a single value
-#' applied to all margins or a numeric vector specifying the top, bottom, left, and
-#' right margins. Expressed in the unit defined by \code{unit}. Defaults to \code{1.5}.
+#' @param size Numeric. Base font size used in the report, in pixels. Defaults to \code{14}.
 #'
-#' @return The path to the generated Word file, returned invisibly.
+#' @return The path to the generated HTML file, returned invisibly.
 #'
-#' @importFrom officer read_docx body_add_par body_add_fpar fpar ftext fp_text
-#' @importFrom flextable flextable theme_booktabs autofit fontsize font
+#' @details
+#' The HTML report is self-contained and can be opened directly in a web
+#' browser. When the results table is wider than the available display area,
+#' a horizontal scrollbar is automatically provided.
 #'
 #' @export
 #'
@@ -51,52 +51,58 @@
 #'   sided = 2
 #' )
 #'
-#'# Adjust the sample size for a cluster randomized design
+#' # Adjust the sample size for a cluster randomized design
 #' res_cluster <- ss_cluster(
 #'   n_ind  = res,
 #'   schema = "crt",
 #'   m      = 25,
-#'   icc     = 0.05
+#'   icc    = 0.05
 #' )
 #'
-#' # Generate the Word report
+#' # Generate the HTML report
 #' ss_report(
 #'   result = res_cluster,
-#'   file = "sample_size_report.docx",
+#'   file = "sample_size_report.html",
 #'   nom_etude = "Study name",
 #'   investigateur = "Investigator name",
 #'   methodologiste = "Methodologist name",
 #'   biostatisticien = "Biostatistician name"
 #' )
 #' }
+#'
 
 ss_report <- function(
     result,
-    file = "sample_size_report.docx",
+    file = "sample_size_report.html",
     nom_etude = NULL,
     investigateur = NULL,
     methodologiste = NULL,
     biostatisticien = NULL,
     font = "Arial",
-    size = 11,
-    col_widths = NULL,
-    min_width = 1,
-    unit = c("cm", "in"),
-    margin = 1.5
+    size = 11
 ) {
-
-  unit <- match.arg(unit)
-  cm_to_in <- function(x) x / 2.54
 
   #--------------------------------------------------
   # Verifications
   #--------------------------------------------------
-  if (!inherits(result, "data.frame")) stop("'result' doit etre un data.frame.")
+
+  if (!inherits(result, "data.frame")) {
+    stop("'result' doit etre un data.frame.")
+  }
 
   type <- attr(result, "ssdesignr_type")
-  if (is.null(type)) stop("'result' ne provient pas d'une fonction ssdesignr.")
 
-  is_cluster <- isTRUE(attr(result, "ssdesignr_cluster"))
+  if (is.null(type)) {
+    stop("'result' ne provient pas d'une fonction de calcul de taille d'echantillon de TrialDesign.")
+  }
+
+  is_cluster <- isTRUE(
+    attr(result, "ssdesignr_cluster")
+  )
+
+  #--------------------------------------------------
+  # Titre
+  #--------------------------------------------------
 
   titre <- switch(
     type,
@@ -104,7 +110,7 @@ ss_report <- function(
     mean_ni  = "Calcul du NSN - Comparaison de deux moyennes (non-inferiorite)",
     prop_sup = "Calcul du NSN - Comparaison de deux proportions (superiorite)",
     prop_ni  = "Calcul du NSN - Comparaison de deux proportions (non-inferiorite)",
-    phase2   = "Calcul du NSN - Essai de phase II a un bras",
+    phase2   = "Calcul du NSN - Essai de phase II mono-bras",
     precision_prop      = "Calcul du NSN - Precision d'une proportion",
     precision_sens      = "Calcul du NSN - Precision d'une sensibilite",
     precision_spec      = "Calcul du NSN - Precision d'une specificite",
@@ -112,121 +118,78 @@ ss_report <- function(
     "Calcul du NSN"
   )
 
-  if (is_cluster) {
-    titre <- paste(titre, "- Essai randomise en clusters")
-  }
+  if (is_cluster) {titre <- paste(titre," - Essai randomise en clusters")}
 
   #--------------------------------------------------
-  # Date + fichier
+  # Nom du fichier
   #--------------------------------------------------
+
   date_str <- format(Sys.Date(), "%Y%m%d")
-
-  if (!grepl("\\.docx$", file)) {file <- paste0(file, "_", date_str, ".docx")}
-  else {file <- sub("\\.docx$", paste0("_", date_str, ".docx"), file)}
-
-  #--------------------------------------------------
-  # Styles texte
-  #--------------------------------------------------
-  style_titre <- fp_text(font.family = font, font.size = size + 4, bold = TRUE)
-  style_texte <- fp_text(font.family = font, font.size = size)
+  if (!grepl("\\.html$", file, ignore.case = TRUE)) {file <- paste0(file, "_", date_str, ".html")}
+  else {file <- sub("\\.html$", paste0("_", date_str, ".html"), file, ignore.case = TRUE)}
 
   #--------------------------------------------------
-  # Document
-  #--------------------------------------------------
-    # Conversion cm -> pouces si necessaire (flextable/officer travaillent en pouces)
-  if (unit == "cm") {
-    if (!is.null(col_widths)) col_widths <- cm_to_in(col_widths)
-    min_width <- cm_to_in(min_width)
-    margin    <- cm_to_in(margin)
-  }
-
-  doc <- read_docx()
-
-  # Marges resserrees (deja en pouces a ce stade), reutilisees pour le calcul de largeur utile
-  custom_margins <- officer::page_mar(
-    top = margin, bottom = margin,
-    left = margin, right = margin,
-    gutter = 0, header = 0.3, footer = 0.3
-  )
-
-  doc <- officer::body_set_default_section(
-    doc,
-    officer::prop_section(
-      page_size    = officer::page_size(orient = "landscape"),
-      page_margins = custom_margins,
-      type         = "continuous"
-    )
-  )
-
-   # Titre
-  doc <- body_add_fpar(doc, fpar(ftext(titre, prop = style_titre)))
-  for (i in 1:3) {doc <- body_add_par(doc, "")}
-
-  # Infos etude
-  if (!is.null(nom_etude))       {doc <- body_add_fpar(doc,fpar(ftext(paste("etude :", nom_etude), prop = style_texte)))
-  doc <- body_add_par(doc, "")}
-  if (!is.null(investigateur))   {doc <- body_add_fpar(doc,fpar(ftext(paste("Investigateur :", investigateur), prop = style_texte)))
-  doc <- body_add_par(doc, "")}
-  if (!is.null(methodologiste))  {doc <- body_add_fpar(doc,fpar(ftext(paste("Methodologiste :", methodologiste), prop = style_texte)))
-  doc <- body_add_par(doc, "")}
-  if (!is.null(biostatisticien)) {doc <- body_add_fpar(doc,fpar(ftext(paste("Biostatisticien :", biostatisticien), prop = style_texte)))
-  doc <- body_add_par(doc, "")}
-
   # Tableau
-  doc <- body_add_par(doc, "")
-  ft <- flextable(result)
-  ft <- theme_booktabs(ft)
-  ft <- fontsize(ft, size = size, part = "all")
-  ft <- font(ft, fontname = font, part = "all")
+  #--------------------------------------------------
 
-  # 1. Largeurs calculees automatiquement sur le corps de tableau
-  largeurs <- flextable::dim_pretty(ft, part = "body")$widths
-  names(largeurs) <- ft$col_keys   # <-- correctif : on nomme le vecteur
-
-  # 2. Plancher de largeur
-  largeurs <- pmax(largeurs, min_width)
-
-  # 3. Surcharge manuelle par l'utilisateur
-  if (!is.null(col_widths)) {
-
-    noms_inconnus <- setdiff(names(col_widths), names(largeurs))
-    if (length(noms_inconnus) > 0) {
-      warning("Colonnes inconnues dans 'col_widths' et ignorees : ",
-              paste(noms_inconnus, collapse = ", "))
-    }
-
-    noms_valides <- intersect(names(col_widths), names(largeurs))
-    largeurs[noms_valides] <- col_widths[noms_valides]
-  }
-
-  # 4. Normalisation a la largeur utile de la page (memes marges que le document)
-  page_dims    <- officer::page_size(orient = "landscape")
-  usable_width <- page_dims$width - custom_margins$left - custom_margins$right
-
-  if (sum(largeurs) > usable_width) {
-    ratio <- usable_width / sum(largeurs)
-    largeurs <- largeurs * ratio
-    message("Largeurs totales trop importantes pour la page : ",
-            "redimensionnement proportionnel applique (ratio = ", round(ratio, 2), ").")
-  }
-
-  # 5. Application
-  ft <- flextable::width(ft, width = largeurs)
-  ft <- flextable::set_table_properties(ft, layout = "fixed")
-
-
-  ft <- flextable::style(ft, part = "header", pr_t = officer::fp_text(font.family = font, font.size = size, bold = TRUE))
+  ft <- flextable::flextable(result)
+  ft <- flextable::theme_booktabs(ft)
+  ft <- flextable::fontsize(ft, size = size, part = "all")
+  ft <- flextable::font(ft, fontname = font, part = "all")
+  ft <- flextable::bold(ft, bold = TRUE, part = "header")
   ft <- flextable::valign(ft, valign = "center", part = "header")
 
-  doc <- flextable::body_add_flextable(doc, ft)
+  # Largeur naturelle selon le contenu
+  ft <- flextable::autofit(ft)
 
+  #--------------------------------------------------
+  # Informations de l'etude
+  #--------------------------------------------------
+
+  infos <- list()
+  if (!is.null(nom_etude))
+  {infos <- c(infos,list(htmltools::tags$p(htmltools::tags$b("Etude : "), nom_etude)))}
+  if (!is.null(investigateur))
+  {infos <- c(infos,list(htmltools::tags$p(htmltools::tags$b("Investigateur : "),investigateur)))}
+  if (!is.null(methodologiste))
+  {infos <- c(infos,list(htmltools::tags$p(htmltools::tags$b("Méthodologiste : "),methodologiste)))}
+  if (!is.null(biostatisticien))
+  {infos <- c(infos,list(htmltools::tags$p(htmltools::tags$b("Biostatisticien : "),biostatisticien)))}
+
+  #--------------------------------------------------
+  # CSS
+  #--------------------------------------------------
+
+  css <- htmltools::tags$style(
+    htmltools::HTML(paste0("
+    body {font-family: ", font, "; font-size: ", size, "pt; margin: 40px;}
+    h1 {font-size: ", size + 6, "pt; margin-bottom: 30px;}
+    .study-info {margin-bottom: 30px;}
+    .study-info p {margin: 5px 0;}
+    .table-container {width: 100%; overflow-x: auto; margin-top: 25px;}
+    .table-container table {width: max-content; min-width: 100%;}")))
+
+  #--------------------------------------------------
+  # Document HTML
+  #--------------------------------------------------
+
+  contenu <- htmltools::tagList(
+
+    htmltools::tags$head(htmltools::tags$meta(charset = "UTF-8"), css),
+    htmltools::tags$body(
+      htmltools::tags$h1(titre),
+      htmltools::tags$div(class = "study-info", htmltools::tagList(infos)),
+      htmltools::tags$hr(),
+      htmltools::tags$div(class = "table-container", flextable::htmltools_value(ft))))
 
   #--------------------------------------------------
   # Export
   #--------------------------------------------------
-  out_dir <- getwd()
-  full_path <- file.path(out_dir, file)
-  print(doc, target = full_path)
-  message("Rapport Word genere sous : ", out_dir)
+
+  full_path <- file.path(getwd(), file)
+  htmltools::save_html(html = contenu, file = full_path)
+  message("\u2714 Rapport HTML genere sous : ", full_path)
   invisible(full_path)
+
 }
+
