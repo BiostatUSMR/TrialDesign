@@ -117,7 +117,7 @@ res_cluster
 # Generate a Word report from the sample size calculation
 ss_report(
   result          = res_cluster,
-  file            = "sample_size_report.docx",
+  file            = "sample_size_report",
   nom_etude       = "Study name",
   investigateur   = "Investigator name",
   methodologiste  = "Methodologist name",
