@@ -7,7 +7,7 @@
 init_essai(
   nom_etude,
   circuit,
-  k,
+  k = 2,
   block_sizes,
   nb_block,
   ratio = NULL,
@@ -24,11 +24,11 @@ init_essai(
 )
 }
 \arguments{
-\item{nom_etude}{Character string. Name of the study, used in generated file names.}
+\item{nom_etude}{Character string. Study acronym, used in generated file names.}
 
-\item{circuit}{Character string. Randomization system to use: \code{"ennov"} or \code{"redcap"}.}
+\item{circuit}{Character string. Data management system used: \code{"ennov"} or \code{"redcap"}.}
 
-\item{k}{nteger. Number of treatment groups. Must be greater than or equal to 2.}
+\item{k}{Integer. Number of treatment groups. Must be greater than or equal to 2. Defaults to \code{2}.}
 
 \item{block_sizes}{Integer vector. Sizes of the randomization blocks.}
 

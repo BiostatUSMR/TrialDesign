@@ -28,6 +28,7 @@ Imports:
     flextable,
     htmltools,
     labelled,
+    officer,
     openxlsx,
     presize,
     purrr,

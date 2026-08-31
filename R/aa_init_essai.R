@@ -6,9 +6,9 @@
 #' \code{\link{rand}} and \code{\link{corresp}} to generate the randomization
 #' and treatment allocation lists.
 #'
-#' @param nom_etude Character string. Name of the study, used in generated file names.
-#' @param circuit Character string. Randomization system to use: \code{"ennov"} or \code{"redcap"}.
-#' @param k nteger. Number of treatment groups. Must be greater than or equal to 2.
+#' @param nom_etude Character string. Study acronym, used in generated file names.
+#' @param circuit Character string. Data management system used: \code{"ennov"} or \code{"redcap"}.
+#' @param k Integer. Number of treatment groups. Must be greater than or equal to 2. Defaults to \code{2}.
 #' @param block_sizes Integer vector. Sizes of the randomization blocks.
 #' @param nb_block Integer vector. Number of blocks to generate for each corresponding block size.
 #' @param ratio Numeric vector of length \code{k}. Allocation ratio between treatment groups. If \code{NULL}, an equal allocation ratio
@@ -51,7 +51,7 @@
 
 init_essai <- function(nom_etude,
                        circuit,
-                       k,
+                       k                 = 2,
                        block_sizes,
                        nb_block,
                        ratio             = NULL,
@@ -76,29 +76,30 @@ init_essai <- function(nom_etude,
          "Fournissez 'strat_vars' (ex : strat_vars = list(centre = list(codes = c(1,2), labels = c(\"Centre 1\",\"Centre 2\")))).")
   }
 
+  # --- Vérification de k ---
+  if (!is.numeric(k) || k < 2 || k != round(k))
+    stop("'k' doit etre un entier >= 2.")
+
   # --- Valeurs par defaut ---
   if (is.null(ratio))     ratio     <- rep(1, k)
   if (is.null(arm_label)) arm_label <- paste0("Groupe", 1:k)
   if (is.null(arm_code))  arm_code  <- 1:k
 
   # --- Verifications arguments randomisation ---
-  if (!is.numeric(k) || k < 2 || k != round(k))
-    stop("'k' doit etre un entier >= 2.")
-
-  if (!is.numeric(block_sizes) || any(block_sizes <= 0))
+  if (!is.numeric(block_sizes) || any(block_sizes <= 0) || any(block_sizes != round(block_sizes)))
     stop("'block_sizes' doit contenir des entiers strictement positifs.")
 
-  if (!is.numeric(nb_block) || any(nb_block <= 0))
+  if (!is.numeric(nb_block) || any(nb_block <= 0) || any(nb_block != round(nb_block)))
     stop("'nb_block' doit contenir des entiers strictement positifs.")
 
   if (length(block_sizes) != length(nb_block))
     stop("'block_sizes' et 'nb_block' doivent avoir la meme longueur.")
 
-  if (any(block_sizes %% sum(ratio) != 0))
-    stop("Chaque taille de bloc doit etre divisible par sum(ratio) = ", sum(ratio), ".")
-
   if (length(ratio) != k)
     stop("'ratio' doit etre un vecteur de longueur k.")
+
+  if (any(block_sizes %% sum(ratio) != 0))
+    stop("Chaque taille de bloc doit etre divisible par sum(ratio) = ", sum(ratio), ".")
 
   if (length(arm_label) != k)
     stop("'arm_label' doit avoir exactement k elements.")

@@ -23,7 +23,8 @@ The function checks for the presence of the \code{ssdesignr_type} attribute.}
   \item \code{"crt"}: Standard parallel CRT. The design effect is
 calculated as \code{DEFF = 1 + (m_eff - 1) * icc}.
   \item \code{"baseline"}: Parallel CRT with a baseline period. The design effect is calculated according to Teerenstra et al. (2012).
-  \item \code{"sw"}: Stepped-wedge CRT. The design effect is calculated according to Woertman et al. (2013). Requires \code{k_steps}.
+  \item \code{"sw"}: Stepped-wedge CRT. The design effect is calculated according to Woertman et al. (2013).
+  This approach assumes a balanced stepped-wedge design, with an equal number of clusters at each step. Requires \code{k_steps}.
 }}
 
 \item{m}{Numeric vector. Cluster size per period. Can be fixed or represent the mean cluster size when \code{cv > 0}.}

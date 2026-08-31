@@ -19,7 +19,7 @@ ss_report(
 \item{result}{A data frame returned by one of the sample size calculation
 functions of the package, such as \code{ss_mean_sup()},
 \code{ss_mean_ni()}, \code{ss_prop_sup()}, \code{ss_prop_ni()},
-\code{sample_size_phase2()}, or \code{sample_size_precision()}.
+\code{ss_phase2()}, or \code{ss_precision()}.
 
 The result may also be returned by \code{ss_cluster()}.}
 
@@ -51,10 +51,6 @@ The report includes:
   \item general study information;
   \item a table summarizing the sample size calculation results.
 }
-
-The results table is displayed in a horizontally scrollable container when
-necessary, allowing wide tables to be viewed without manual specification of
-column widths.
 }
 \details{
 The HTML report is self-contained and can be opened directly in a web

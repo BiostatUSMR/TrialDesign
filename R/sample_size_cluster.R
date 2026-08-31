@@ -20,7 +20,8 @@
 #'   \item \code{"crt"}: Standard parallel CRT. The design effect is
 #' calculated as \code{DEFF = 1 + (m_eff - 1) * icc}.
 #'   \item \code{"baseline"}: Parallel CRT with a baseline period. The design effect is calculated according to Teerenstra et al. (2012).
-#'   \item \code{"sw"}: Stepped-wedge CRT. The design effect is calculated according to Woertman et al. (2013). Requires \code{k_steps}.
+#'   \item \code{"sw"}: Stepped-wedge CRT. The design effect is calculated according to Woertman et al. (2013).
+#'   This approach assumes a balanced stepped-wedge design, with an equal number of clusters at each step. Requires \code{k_steps}.
 #' }
 #' @param m Numeric vector. Cluster size per period. Can be fixed or represent the mean cluster size when \code{cv > 0}.
 #' @param icc Numeric vector. Intra-cluster correlation coefficient, ranging from 0 to 1.
@@ -235,8 +236,9 @@ ss_cluster <- function(
 
   colonnes <- c(
     colonnes,
-    "deff", "n_total", "n_total_pdv", "n_cluster", "n_cluster_pdv",
+    "deff", "n_total", "n_cluster", "n_total_pdv", "n_cluster_pdv",
     "k_par_bras", "k_total"
+
   )
 
   res <- dplyr::select(res, dplyr::any_of(colonnes))
@@ -265,9 +267,9 @@ ss_cluster <- function(
     k_steps       = "Nb steps (SW)",
     deff          = "Design Effect",
     n_total       = "N (individuel)",
-    n_total_pdv   = "N (individuel) - avec d.m",
+    n_total_pdv   = "N (individuel)",
     n_cluster     = "N (clusterise)",
-    n_cluster_pdv = "N (clusterise) - avec d.m",
+    n_cluster_pdv = "N (clusterise)",
     k_par_bras    = "Clusters / bras",
     k_total       = "Clusters (total)"
   )

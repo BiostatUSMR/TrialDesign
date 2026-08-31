@@ -7,8 +7,8 @@
 #   - Tester certains cas vectorisés.
 #   - Vérifier certains comportements d'erreur attendus.
 #   - Tester ss_cluster() sur les résultats compatibles.
-#   - Tester sample_size_phase2().
-#   - Tester sample_size_precision().
+#   - Tester ss_phase2().
+#   - Tester ss_precision().
 #   - Vérifier que ss_report() génère correctement un fichier HTML.
 #
 # Utilisation :
@@ -1075,12 +1075,12 @@ if (!is.null(res_cluster_crt)) {
 
 
 #==============================================================================
-# 6. sample_size_phase2()
+# 6. ss_phase2()
 #==============================================================================
 
 cat("\n")
 cat("============================================================\n")
-cat("sample_size_phase2()\n")
+cat("ss_phase2()\n")
 cat("============================================================\n")
 
 
@@ -1090,11 +1090,11 @@ cat("============================================================\n")
 
 res_phase2_ahern <- run_test(
 
-  "sample_size_phase2 - ahern",
+  "ss_phase2 - ahern",
 
   quote(
 
-    sample_size_phase2(
+    ss_phase2(
 
       p0 = c(
         0.10,
@@ -1129,11 +1129,11 @@ res_phase2_ahern <- run_test(
 
 res_phase2_fleming <- run_test(
 
-  "sample_size_phase2 - fleming",
+  "ss_phase2 - fleming",
 
   quote(
 
-    sample_size_phase2(
+    ss_phase2(
 
       p0 = 0.20,
 
@@ -1155,12 +1155,12 @@ res_phase2_fleming <- run_test(
 
 
 #==============================================================================
-# 7. sample_size_precision()
+# 7. ss_precision()
 #==============================================================================
 
 cat("\n")
 cat("============================================================\n")
-cat("sample_size_precision()\n")
+cat("ss_precision()\n")
 cat("============================================================\n")
 
 
@@ -1170,11 +1170,11 @@ cat("============================================================\n")
 
 res_precision_prop <- run_test(
 
-  "sample_size_precision - proportion",
+  "ss_precision - proportion",
 
   quote(
 
-    sample_size_precision(
+    ss_precision(
 
       p = c(
         0.10,
@@ -1201,11 +1201,11 @@ res_precision_prop <- run_test(
 
 res_precision_sens <- run_test(
 
-  "sample_size_precision - sensibilite",
+  "ss_precision - sensibilite",
 
   quote(
 
-    sample_size_precision(
+    ss_precision(
 
       sens = 0.80,
 
@@ -1230,11 +1230,11 @@ res_precision_sens <- run_test(
 
 res_precision_spec <- run_test(
 
-  "sample_size_precision - specificite",
+  "ss_precision - specificite",
 
   quote(
 
-    sample_size_precision(
+    ss_precision(
 
       spec = 0.90,
 
@@ -1259,11 +1259,11 @@ res_precision_spec <- run_test(
 
 res_precision_sens_spec <- run_test(
 
-  "sample_size_precision - sensibilite + specificite",
+  "ss_precision - sensibilite + specificite",
 
   quote(
 
-    sample_size_precision(
+    ss_precision(
 
       sens = 0.80,
 

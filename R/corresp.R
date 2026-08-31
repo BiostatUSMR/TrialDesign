@@ -2,10 +2,11 @@
 #'
 #' @description
 #' Generates a treatment allocation list: treatment box numbers/treatment
-#' assignments, according to the randomization system defined in the
-#' \code{essai} object created with \code{\link{init_essai}}. The generated
-#' list is automatically exported in the appropriate formats, depending on
-#' the selected system, and is also returned as a data frame for inspection.
+#' assignments, according to the data management system (\code{"ennov"} or
+#' \code{"redcap"}) defined in the \code{essai} object created with
+#' \code{\link{init_essai}}. The generated list is automatically exported in the
+#' appropriate formats, depending on the selected system, and is also
+#' returned as a data frame for inspection.
 #'
 #' @param essai Liste. Trial object created with \code{\link{init_essai}}.
 #'   For example: \code{essai <- init_essai(...)}.

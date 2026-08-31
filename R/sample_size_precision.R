@@ -36,11 +36,11 @@
 #'
 #' @examples
 #' \dontrun{
-#' sample_size_precision(p=c(0.10,0.15,0.20,0.25,0.30,0.35,0.40),
+#' ss_precision(p=c(0.10,0.15,0.20,0.25,0.30,0.35,0.40),
 #' missing_prop =c(0.1,0.2))
 #' }
 
-sample_size_precision <- function(
+ss_precision <- function(
     p = NULL,
     prev = NULL,
     sens = NULL,
@@ -202,25 +202,25 @@ sample_size_precision <- function(
 
   if(!all(is.na(res$p))){
     res <- dplyr::select(res, p, precision, conf.level, missing_prop, n_prop, n_prop_ajuste)
-    labs <- c(labels_communs, list(p = "Proportion", n_prop = "N", n_prop_ajuste = "N - avec d.m"))
+    labs <- c(labels_communs, list(p = "Proportion", n_prop = "N", n_prop_ajuste = "N"))
     type_res <- "precision_prop"
 
   } else if(!all(is.na(res$sens)) & all(is.na(res$spec))){
     res <- dplyr::select(res, sens, prev, precision, conf.level, missing_prop, n_sens, n_sens_ajuste)
-    labs <- c(labels_communs, list(sens = "Sensibilite", n_sens = "N", n_sens_ajuste = "N - avec d.m"))
+    labs <- c(labels_communs, list(sens = "Sensibilite", n_sens = "N", n_sens_ajuste = "N"))
     type_res <- "precision_sens"
 
   } else if(all(is.na(res$sens)) & !all(is.na(res$spec))){
     res <- dplyr::select(res, spec, prev, precision, conf.level, missing_prop, n_spec, n_spec_ajuste)
-    labs <- c(labels_communs, list(spec = "Specificite", n_spec = "N", n_spec_ajuste = "N - avec d.m"))
+    labs <- c(labels_communs, list(spec = "Specificite", n_spec = "N", n_spec_ajuste = "N"))
     type_res <- "precision_spec"
 
   } else if(!all(is.na(res$sens)) & !all(is.na(res$spec))){
     res <- dplyr::select(res, sens, spec, prev, precision, conf.level, missing_prop,
                          n_sens, n_sens_ajuste, n_spec, n_spec_ajuste)
     labs <- c(labels_communs, list(
-      sens = "Sensibilite", n_sens = "N (sens.)", n_sens_ajuste = "N - avec d.m (sens.)",
-      spec = "Specificite", n_spec = "N (spec.)", n_spec_ajuste = "N - avec d.m (spec.)"
+      sens = "Sensibilite", n_sens = "N", n_sens_ajuste = "N",
+      spec = "Specificite", n_spec = "N", n_spec_ajuste = "N"
     ))
     type_res <- "precision_sens_spec"
   }

@@ -1,10 +1,10 @@
 #' Generate a randomization list
 #'
 #' @description
-#' Generates a randomization list according to the randomization system defined in the
-#' \code{essai} object created with \code{\link{init_essai}}. The
-#' generated list is automatically exported as a data file and a PDF document
-#' and is also returned as a data frame for inspection.
+#' Generates a randomization list according to the data management system (\code{"ennov"} or
+#' \code{"redcap"}) defined in the \code{essai} object created with
+#' \code{\link{init_essai}}. The generated list is automatically exported as a
+#' data file and a PDF document and is also returned as a data frame for inspection.
 #'
 #' @param essai List. Trial object created with \code{\link{init_essai}}.
 #'   For example: \code{essai <- init_essai(...)}.

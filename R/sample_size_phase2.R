@@ -16,7 +16,7 @@
 #' \itemize{
 #' \item \code{"ahern"}: Exact method based on the binomial distribution
 #' (A'Hern, 2001). This method performs an exhaustive search using
-#' \code{\link[stats]{pbinom}} and generally results in larger sample sizes.
+#' \code{\link[stats]{pbinom}} and may result in larger sample sizes than the Fleming method.
 #' \item \code{"fleming"}: Normal approximation to the binomial distribution (Fleming, 1982).
 #' This method uses a closed-form formula and generally results in smaller sample sizes
 #' than A'Hern's method, but may be less reliable for small samples (fewer than 50 subjects).
@@ -49,7 +49,7 @@
 #'
 #' @examples
 #'  \dontrun{
-#' sample_size_phase2(
+#' ss_phase2(
 #'   p0 = c(0.10,0.20),
 #'   p1 = c(0.30,0.40),
 #'   method = "ahern",
@@ -57,7 +57,7 @@
 #'   nmax = 50)
 #'   }
 #'
-sample_size_phase2 <- function(
+ss_phase2 <- function(
     p0,
     p1,
     alpha = 0.05,
@@ -164,8 +164,8 @@ sample_size_phase2 <- function(
     alpha        = "Alpha",
     puissance    = "Puissance",
     missing_prop = "% d.m",
-    n_patient    = "N patients",
-    n_ajuste     = "N - avec d.m",
+    n_patient    = "N sans d.m",
+    n_ajuste     = "N avec d.m",
     n_succes     = "Seuil de succes (r)"
   )
   res <- labelled::set_variable_labels(res, !!!labels)

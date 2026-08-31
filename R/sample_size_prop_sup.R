@@ -331,11 +331,11 @@ if (choice == "mcnemar") {
     kappa = "Ratio N1/N2",
     n1 = "N1",
     n2 = "N2",
-    n_total = "N",
+    n_total = "N total",
     missing_prop = "% d.m",
-    n1_pdv = "N1 - avec d.m",
-    n2_pdv = "N2 - avec d.m",
-    n_total_pdv = "N total - avec d.m"
+    n1_pdv = "N1",
+    n2_pdv = "N2",
+    n_total_pdv = "N total"
   )
 
   labels <- labels[names(labels) %in% names(res)]

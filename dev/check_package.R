@@ -95,7 +95,7 @@ pkgs_non_utilises <- setdiff(pkgs_imports, pkgs_utilises)
 if (length(pkgs_non_utilises) > 0) {
   cat("/!\\ Packages declares dans Imports mais jamais appeles via 'pkg::' dans R/ :\n")
   cat("   ", paste(pkgs_non_utilises, collapse = ", "), "\n")
-  cat("   -> Verifiez s'ils sont encore necessaires (ex: clinfun, retire de sample_size_phase2()).\n")
+  cat("   -> Verifiez s'ils sont encore necessaires (ex: clinfun, retire de ss_phase2()).\n")
   cat("   -> Si inutiles, retirez-les de la section Imports du DESCRIPTION.\n\n")
 } else {
   cat("-> Tous les packages d'Imports semblent utilises quelque part dans R/.\n\n")
