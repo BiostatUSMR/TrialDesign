@@ -34,18 +34,21 @@
 #' @examples
 #' \dontrun{
 #' essai <- init_essai(
-#'   nom_etude   = "ESSAI_CLINIQUE",
-#'   circuit     = "ennov",
-#'   k           = 2,
-#'   block_sizes = c(4, 6),
-#'   nb_block    = c(10, 10),
-#'   arm_label   = c("Traitement", "Placebo"),
-#'   strat_vars  = list(
+#'   nom_etude     = "ESSAI_CLINIQUE",
+#'   circuit       = "ennov",
+#'   k             = 2,
+#'   block_sizes   = c(4, 6),
+#'   nb_block      = c(10, 10),
+#'   arm_label     = c("1 - Traitement", "2 - Placebo"),
+#'   arm_code      = c(1,2),
+#'   strat_vars    = list(
 #'     sexe   = list(codes = c(1, 2), labels = c("Femme", "Homme")),
 #'     centre = list(codes = c(1, 2), labels = c("Centre1", "Centre2"))
-#'   )
+#'   ),
+#'   id_etude      = "CHUBX2026-000",
+#'   libelle_etude = "Full study title"
 #' )
-#' rand(essai, seed = 42, statut = "FICTIVE", version = "v01")
+#' rand(essai, seed = 42, statut = "FICTIVE", version = "V01")
 #' }
 #' @export
 
