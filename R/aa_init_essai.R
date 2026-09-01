@@ -146,7 +146,7 @@ init_essai <- function(nom_etude,
   )
 
   # --- Message de confirmation ---
-  message("\u2714 Essai initialise : ", nom_etude)
+  message("\u2714 Essai initialis\u00E9 : ", nom_etude)
   message("  Circuit      : ", circuit)
   message("  N/strate     : ", sum(block_sizes * nb_block))
   if (!is.null(strat_vars)) {
