@@ -99,7 +99,7 @@ corresp <- function(essai, mini, maxi, seed, statut, version,
     .corresp_redcap(essai, mini, maxi, seed, boi_label)
   }
 
-  message("\u2714 Liste de correspondance generee \u2014 ", nrow(df), " boites.")
+  message("\u2714 Liste de correspondance g\u00E9n\u00E9r\u00E9e \u2014 ", nrow(df), " boites.")
 
   # --- Nom de base des fichiers ---
   ext      <- if (circuit == "redcap") "csv" else "txt"
@@ -146,7 +146,7 @@ corresp <- function(essai, mini, maxi, seed, statut, version,
     .export_corresp_xls(df, nom_xls, arm_label, arm_code)
   }
 
-  message("\u2714 Fichiers exportes :")
+  message("\u2714 Fichiers export\u00E9s :")
   message("  ", nom_data)
   message("  ", file.path(chemin, nom_pdf))
   if (!is.null(nom_xls)) message("  ", nom_xls)

@@ -77,7 +77,7 @@ rand <- function(essai, seed, statut, version,
   # --- Generation du data.frame ---
   df <- if (circuit == "ennov") .rand_ennov(essai, seed) else .rand_redcap(essai, seed)
 
-  message("\u2714 Liste de randomisation generee ", nrow(df), " sujets.")
+  message("\u2714 Liste de randomisation g\u00E9n\u00E9r\u00E9e ", nrow(df), " sujets.")
 
   # --- Nom de base des fichiers ---
   ext      <- if (circuit == "redcap") "csv" else "txt"
@@ -107,7 +107,7 @@ rand <- function(essai, seed, statut, version,
               version_doc = version,
               col_widths = col_widths)
 
-  message("\u2714 Fichiers exportes :")
+  message("\u2714 Fichiers export\u00E9s :")
   message("  ", nom_data)
   message("  ", file.path(chemin, nom_pdf))
 
