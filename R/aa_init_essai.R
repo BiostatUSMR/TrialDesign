@@ -16,6 +16,9 @@
 #' @param arm_label Character vector of length \code{k}. Labels of the treatment groups. If \code{NULL}, \code{"Groupe1"}, \code{"Groupe2"},
 #' ..., are used.
 #' @param arm_code Integer vector of length \code{k}. Codes assigned to the treatment groups. If \code{NULL}, \code{1, 2, ..., k} are used.
+#' @param conditionnements Optional list defining the packaging modalities for each treatment group.
+#' Each element must be a data frame with columns \code{code}, \code{label} and \code{n}, where \code{n} is the number of
+#' boxes for the corresponding packaging modality.
 #' @param strat_vars Optional list describing the stratification variables.
 #'  Each element must be a list containing \code{codes}, a numeric vector, and \code{labels}, a character vector.
 #'  For example:
@@ -41,6 +44,12 @@
 #'   nb_block      = c(10, 10),
 #'   arm_label     = c("1 - Traitement", "2 - Placebo"),
 #'   arm_code      = c(1,2),
+#'   conditionnements = list("1" = data.frame(
+#'     code = c(10, 20), label = c("10 µg", "20 µg"), n = c(40, 60),
+#'    stringsAsFactors = FALSE),
+#'    "2" = data.frame(
+#'    code = c(10, 20), label = c("10 µg", "20 µg"), n = c(50, 50),
+#'    stringsAsFactors = FALSE)),
 #'   strat_vars    = list(
 #'     sexe   = list(codes = c(1, 2), labels = c("Femme", "Homme")),
 #'     centre = list(codes = c(1, 2), labels = c("Centre1", "Centre2"))
@@ -60,6 +69,7 @@ init_essai <- function(nom_etude,
                        ratio             = NULL,
                        arm_label         = NULL,
                        arm_code          = NULL,
+                       conditionnements  = NULL,
                        strat_vars        = NULL,
                        id_etude          = NULL,
                        libelle_etude     = NULL,
@@ -110,6 +120,28 @@ init_essai <- function(nom_etude,
   if (!is.numeric(arm_code) || length(arm_code) != k)
     stop("'arm_code' doit etre un vecteur numerique de longueur k.")
 
+  # --- Verification des conditionnements ---
+  if (!is.null(conditionnements)) {
+    if (!is.list(conditionnements)) {stop("'conditionnements' doit etre une liste.")}
+    if (length(conditionnements) != k) {stop("'conditionnements' doit contenir exactement un element par bras.")}
+    for (i in seq_len(k)) {
+      cond <- conditionnements[[i]]
+      if (!is.data.frame(cond)) {stop("Le conditionnement du bras ", i, " doit etre un data.frame.")}
+      if (!all(c("code", "label", "n") %in% names(cond))) {
+        stop("Le conditionnement du bras ", i," doit contenir les colonnes 'code', 'label' et 'n'.")}
+      if (nrow(cond) == 0) {stop("Le bras ", i," doit contenir au moins un conditionnement.")}
+      if (any(is.na(cond$code)) || anyDuplicated(cond$code)) {
+        stop("Les codes de conditionnement du bras ", i," doivent etre non manquants et uniques.")}
+      if (any(is.na(cond$label))) {
+        stop("Les libelles de conditionnement du bras ", i," ne doivent pas contenir de valeur manquante.")}
+      if (!is.numeric(cond$n) ||
+          any(is.na(cond$n)) ||
+          any(cond$n <= 0) ||
+          any(cond$n != round(cond$n))) {
+        stop("La colonne 'n' du bras ", i, " doit contenir des entiers strictement positifs.")}
+    }
+  }
+
   if (!is.null(strat_vars)) {
     if (!is.list(strat_vars))
       stop("'strat_vars' doit etre une liste.")
@@ -126,15 +158,16 @@ init_essai <- function(nom_etude,
   # --- Construction de l'objet essai ---
   essai <- list(
     # Parametres randomisation
-    nom_etude   = nom_etude,
-    circuit     = circuit,
-    k           = k,
-    block_sizes = block_sizes,
-    nb_block    = nb_block,
-    ratio       = ratio,
-    arm_label   = arm_label,
-    arm_code    = arm_code,
-    strat_vars  = strat_vars,
+    nom_etude        = nom_etude,
+    circuit          = circuit,
+    k                = k,
+    block_sizes      = block_sizes,
+    nb_block         = nb_block,
+    ratio            = ratio,
+    arm_label        = arm_label,
+    arm_code         = arm_code,
+    conditionnements = conditionnements,
+    strat_vars       = strat_vars,
     # Parametres page de garde
     id_etude        = id_etude,
     libelle_etude   = libelle_etude,

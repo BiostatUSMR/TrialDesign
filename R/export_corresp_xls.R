@@ -17,11 +17,18 @@
     return(invisible(NULL))
   }
 
-  cols_xlsx <- intersect(c("rdboi", "rdgrp", "rdgrp_lib"), names(df))
+  cols_xlsx <- intersect(c("rdboi", "rdgrp", "rdgrp_lib", "rdcond", "rdcond_lib"),names(df))
   df_export <- df[, cols_xlsx, drop = FALSE]
 
-    # En-tetes de colonnes personnalises
-  names(df_export) <- c("Numero de boite", "Code du traitement", "Libelle de traitement")
+  # En-tetes de colonnes personnalises
+  noms_colonnes <- c(
+    rdboi     = "Numero de boite",
+    rdgrp     = "Code du traitement",
+    rdgrp_lib = "Libelle de traitement",
+    rdcond    = "Code du conditionnement",
+    rdcond_lib = "Libelle du conditionnement"
+  )
+  names(df_export) <- unname(noms_colonnes[names(df_export)])
 
   wb <- openxlsx::createWorkbook()
   openxlsx::addWorksheet(wb, sheetName = "Liste de correspondance")

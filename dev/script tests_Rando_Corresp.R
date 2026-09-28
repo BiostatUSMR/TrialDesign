@@ -241,13 +241,13 @@ if (!is.null(df_rand_redcap_1strate)) {
   ok_grp <- all(df_rand_redcap_1strate$rdgrp %in% essai_redcap_1strate$arm_code)
   log_result("rand - coherence rdgrp dans arm_code", if (ok_grp) "OK" else "ECHEC")
 
-  fichiers_attendus <- list.files(out_dir, pattern = "TEST_ENNOV.*Liste de randomisation")
-  log_result("rand - fichiers generes (ennov)", if (length(fichiers_attendus) >= 2) "OK" else "ECHEC",
+  fichiers_attendus <- list.files(out_dir, pattern = "TEST_REDCAP.*Liste de randomisation")
+  log_result("rand - fichiers generes (redcap)", if (length(fichiers_attendus) >= 2) "OK" else "ECHEC",
              paste(fichiers_attendus, collapse = " | "))
 }
 
 # Redcap 2 variables de stratification
-df_rand_redcap_2strates <- run_test("rand - ennov (2 variables de stratification)", quote(
+df_rand_redcap_2strates <- run_test("rand - redcap (2 variables de stratification)", quote(
   rand(essai_redcap_2strates, seed = 42, statut = "FICTIVE", version = "v01", chemin = out_dir,
        col_widths  = c("3cm", "2cm", "2.5cm", "2cm", "2cm", "2cm", "2cm"))))
 
@@ -276,17 +276,17 @@ t <- tryCatch({
 }, error = function(e) log_result("rand - essai invalide (doit echouer)", "OK", conditionMessage(e)))
 
 t <- tryCatch({
-  rand(essai_ennov_simple, seed = 1.5, statut = "FICTIVE", version = "v01", chemin = out_dir)
+  rand(essai_ennov_1strate, seed = 1.5, statut = "FICTIVE", version = "v01", chemin = out_dir)
   log_result("rand - seed non entier (doit echouer)", "ECHEC", "aucune erreur levee")
 }, error = function(e) log_result("rand - seed non entier (doit echouer)", "OK", conditionMessage(e)))
 
 t <- tryCatch({
-  rand(essai_ennov_simple, seed = 1, statut = "INVALIDE", version = "v01", chemin = out_dir)
+  rand(essai_ennov_1strate, seed = 1, statut = "INVALIDE", version = "v01", chemin = out_dir)
   log_result("rand - statut invalide (doit echouer)", "ECHEC", "aucune erreur levee")
 }, error = function(e) log_result("rand - statut invalide (doit echouer)", "OK", conditionMessage(e)))
 
 t <- tryCatch({
-  rand(essai_ennov_simple, seed = 1, statut = "FICTIVE", version = "v01", chemin = "chemin/inexistant/xyz")
+  rand(essai_ennov_1strate, seed = 1, statut = "FICTIVE", version = "v01", chemin = "chemin/inexistant/xyz")
   log_result("rand - chemin inexistant (doit echouer)", "ECHEC", "aucune erreur levee")
 }, error = function(e) log_result("rand - chemin inexistant (doit echouer)", "OK", conditionMessage(e)))
 
