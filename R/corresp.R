@@ -4,7 +4,11 @@
 #' Generates a treatment allocation list: treatment box numbers/treatment
 #' assignments, according to the data management system (\code{"ennov"} or
 #' \code{"redcap"}) defined in the \code{essai} object created with
-#' \code{\link{init_essai}}. The generated list is automatically exported in the
+#' \code{\link{init_essai}}.
+#' For the Ennov system, packaging modalities defined through
+#' \code{conditionnements} are also assigned to treatment boxes and included
+#' in the generated TXT, Excel and PDF outputs.#'
+#' The generated list is automatically exported in the
 #' appropriate formats, depending on the selected system, and is also
 #' returned as a data frame for inspection.
 #'
@@ -32,14 +36,45 @@
 #'
 #' @examples
 #' \dontrun{
+#' # Exemple simple
 #' essai <- init_essai(
-#'   nom_etude = "ESSAI_ABC", circuit = "ennov", k = 2,
-#'   block_sizes = c(4), nb_block = c(10),
-#'   arm_label = c("Placebo", "Traitement"), arm_code = c(0, 1)
+#' nom_etude = "ESSAI_ABC", circuit = "ennov", k = 2,
+#' block_sizes = c(4), nb_block = c(10),
+#' arm_label = c("Placebo", "Traitement"), arm_code = c(0, 1)
 #' )
 #' df <- corresp(essai, mini = 1, maxi = 50, seed = 42,
-#'               statut = "FICTIVE", version = "v01")
+#' statut = "FICTIVE", version = "v01")
 #' head(df)
+#'
+#' # Exemple avec des conditionnements
+#' essai_cond <- init_essai(
+#' nom_etude = "ESSAI_ABC_COND", circuit = "ennov", k = 2,
+#' block_sizes = c(4), nb_block = c(10),
+#' arm_label = c("Placebo", "Traitement"), arm_code = c(0, 1),
+#' conditionnements = list(
+#' "1" = data.frame(
+#' code = c(10, 20),
+#' label = c("Boite de 10", "Boite de 20"),
+#' n = c(40, 60),
+#' stringsAsFactors = FALSE
+#' ),
+#' "2" = data.frame(
+#' code = c(10, 20),
+#' label = c("Boite de 10", "Boite de 20"),
+#' n = c(50, 50),
+#' stringsAsFactors = FALSE
+#' )
+#' )
+#' )
+#' df_cond <- corresp(
+#' essai_cond,
+#' mini = 1,
+#' maxi = 100,
+#' seed = 42,
+#' statut = "FICTIVE",
+#' version = "v01"
+#' )
+#' head(df_cond)
 #' }
 #'
 #' @importFrom utils write.csv write.table
@@ -125,12 +160,22 @@ corresp <- function(essai, mini, maxi, seed, statut, version,
     write.csv(df_csv, file = con_txt, row.names = FALSE, quote = FALSE)
     close(con_txt)
   } else {
-    write.table(df[, c("rdboi", "rdgrp")],
-                file      = nom_data,
-                row.names = FALSE,
-                col.names = FALSE,
-                sep       = ";")
+
+    cols_txt <- c("rdboi", "rdgrp")
+
+    if (!is.null(essai$conditionnements)) {
+      cols_txt <- c(cols_txt, "rdcond")}
+
+    write.table(
+      df[, cols_txt, drop = FALSE],
+      file = nom_data,
+      row.names = FALSE,
+      col.names = FALSE,
+      sep = ";",
+      quote = FALSE
+    )
   }
+
 
   # --- Export PDF ---
   nom_pdf <- paste0(nom_base, ".pdf")

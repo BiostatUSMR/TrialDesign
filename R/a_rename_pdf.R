@@ -19,7 +19,9 @@
     rdstr     = "Code strate",
     rdstr_lib = "Libelle strate",
     rdboi     = "Numero de boite de traitement",
-    rdboi_lib = "Libelle de boite de traitement"
+    rdboi_lib = "Libelle de boite de traitement",
+    rdcond    = "Code du conditionnement",
+    rdcond_lib = "Libelle du conditionnement"
   )
 
   # Colonnes rdstr1, rdstr_lib1, rdstr2, rdstr_lib2, etc. (circuit REDCap)
@@ -28,14 +30,18 @@
       num <- sub("^rdstr(\\d+)$", "\\1", col)
       rename_map[col] <- paste0("Code strate ", num)
     }
+
     if (grepl("^rdstr_lib(\\d+)$", col)) {
       num <- sub("^rdstr_lib(\\d+)$", "\\1", col)
       rename_map[col] <- paste0("Libelle strate ", num)
     }
   }
 
-  names(df) <- ifelse(names(df) %in% names(rename_map),
-                      rename_map[names(df)],
-                      names(df))
+  names(df) <- ifelse(
+    names(df) %in% names(rename_map),
+    rename_map[names(df)],
+    names(df)
+  )
+
   df
 }

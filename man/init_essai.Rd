@@ -13,6 +13,7 @@ init_essai(
   ratio = NULL,
   arm_label = NULL,
   arm_code = NULL,
+  conditionnements = NULL,
   strat_vars = NULL,
   id_etude = NULL,
   libelle_etude = NULL,
@@ -41,6 +42,10 @@ init_essai(
 ..., are used.}
 
 \item{arm_code}{Integer vector of length \code{k}. Codes assigned to the treatment groups. If \code{NULL}, \code{1, 2, ..., k} are used.}
+
+\item{conditionnements}{Optional list defining the packaging modalities for each treatment group.
+Each element must be a data frame with columns \code{code}, \code{label} and \code{n}, where \code{n} is the number of
+boxes for the corresponding packaging modality.}
 
 \item{strat_vars}{Optional list describing the stratification variables.
 Each element must be a list containing \code{codes}, a numeric vector, and \code{labels}, a character vector.
@@ -74,17 +79,26 @@ and treatment allocation lists.
 \examples{
 \dontrun{
 essai <- init_essai(
-  nom_etude   = "ESSAI_CLINIQUE",
-  circuit     = "ennov",
-  k           = 2,
-  block_sizes = c(4, 6),
-  nb_block    = c(10, 10),
-  arm_label   = c("Traitement", "Placebo"),
-  strat_vars  = list(
+  nom_etude     = "ESSAI_CLINIQUE",
+  circuit       = "ennov",
+  k             = 2,
+  block_sizes   = c(4, 6),
+  nb_block      = c(10, 10),
+  arm_label     = c("1 - Traitement", "2 - Placebo"),
+  arm_code      = c(1,2),
+  conditionnements = list("1" = data.frame(
+    code = c(10, 20), label = c("10 µg", "20 µg"), n = c(40, 60),
+   stringsAsFactors = FALSE),
+   "2" = data.frame(
+   code = c(10, 20), label = c("10 µg", "20 µg"), n = c(50, 50),
+   stringsAsFactors = FALSE)),
+  strat_vars    = list(
     sexe   = list(codes = c(1, 2), labels = c("Femme", "Homme")),
     centre = list(codes = c(1, 2), labels = c("Centre1", "Centre2"))
-  )
+  ),
+  id_etude      = "CHUBX2026-000",
+  libelle_etude = "Full study title"
 )
-rand(essai, seed = 42, statut = "FICTIVE", version = "v01")
+rand(essai, seed = 42, statut = "FICTIVE", version = "V01")
 }
 }

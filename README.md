@@ -39,7 +39,7 @@ tinytex::install_tinytex()
 
 ## Example
 
-### Randomization and treatment allocation lists.
+### Randomization and treatment allocation lists
 
 
 ``` r
@@ -90,6 +90,53 @@ head(allocation)
 ```
 Both functions return the generated data frame and automatically export
 the corresponding files.
+
+Treatment packaging modalities can also be defined using the
+conditionnements argument of `init_essai()`. For each treatment group,
+the user can specify the packaging code, label, and number of boxes to
+generate:
+
+``` r
+essai_cond <- init_essai(
+  nom_etude       = "Study Name",
+  libelle_etude   = "Example clinical trial",
+  id_etude        = "CHUBXYYYY/NN",
+  investigateur   = "Investigator name",
+  methodologiste  = "Methodologist name",
+  biostatisticien = "Biostatistician name",
+  indice_document = "02",
+  circuit         = "ennov",
+  k               = 2,
+  block_sizes     = c(4, 6),
+  nb_block        = c(10, 10),
+  arm_label       = c("Treatment", "Placebo"),
+  conditionnements = list(
+    "1" = data.frame(
+      code  = c(1, 2),
+      label = c("Box of 10", "Box of 20"),
+      n     = c(40, 60),
+      stringsAsFactors = FALSE
+    ),
+    "2" = data.frame(
+      code  = c(1, 2),
+      label = c("Box of 10", "Box of 20"),
+      n     = c(50, 50),
+      stringsAsFactors = FALSE
+    )
+  )
+)
+
+allocation_cond <- corresp(
+  essai_cond,
+  mini    = 1,
+  maxi    = 200,
+  seed    = 42,
+  statut  = "FICTIVE",
+  version = "v01"
+)
+
+head(allocation_cond)
+```
 
 ### Sample size calculation
 
